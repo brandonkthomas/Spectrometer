@@ -3,11 +3,11 @@ using Wpf.Ui.Controls;
 
 namespace Spectrometer.Views.Pages
 {
-    public partial class DataPage : INavigableView<DataViewModel>
+    public partial class SensorsPage : INavigableView<SensorsViewModel>
     {
-        public DataViewModel ViewModel { get; }
+        public SensorsViewModel ViewModel { get; }
 
-        public DataPage(DataViewModel viewModel)
+        public SensorsPage(SensorsViewModel viewModel)
         {
             ViewModel = viewModel;
             DataContext = this;

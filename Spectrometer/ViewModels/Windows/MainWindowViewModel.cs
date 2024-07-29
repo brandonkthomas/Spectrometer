@@ -19,9 +19,9 @@ namespace Spectrometer.ViewModels.Windows
             },
             new NavigationViewItem()
             {
-                Content = "Data",
-                Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
-                TargetPageType = typeof(Views.Pages.DataPage)
+                Content = "Sensors",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.Book24 },
+                TargetPageType = typeof(Views.Pages.SensorsPage)
             }
         };
 

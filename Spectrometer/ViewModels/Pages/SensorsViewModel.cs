@@ -4,7 +4,7 @@ using Wpf.Ui.Controls;
 
 namespace Spectrometer.ViewModels.Pages
 {
-    public partial class DataViewModel : ObservableObject, INavigationAware
+    public partial class SensorsViewModel : ObservableObject, INavigationAware
     {
         private bool _isInitialized = false;
 
