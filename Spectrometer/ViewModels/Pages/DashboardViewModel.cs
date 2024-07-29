@@ -101,10 +101,10 @@ public partial class DashboardViewModel : INotifyPropertyChanged
     private float _gpuTemp;
     public float GpuTemp
     {
-        get => _cpuTemp;
+        get => _gpuTemp;
         set
         {
-            _cpuTemp = value;
+            _gpuTemp = value;
             OnPropertyChanged();
         }
     }
@@ -145,7 +145,7 @@ public partial class DashboardViewModel : INotifyPropertyChanged
     // ------------------------------------------------------------------------------------------------
     // Memory
 
-    private string _memoryUsageDetails;
+    private string _memoryUsageDetails = string.Empty;
     public string MemoryUsageDetails
     {
         get => _memoryUsageDetails;
@@ -220,12 +220,9 @@ public partial class DashboardViewModel : INotifyPropertyChanged
         MemoryUsageDetails = $"{usedMemoryPercent:F0}% ({MemoryUsageGb:F1} GB / {MemoryTotalGb:F1} GB)";
     }
 
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
-    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
+    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
     // ------------------------------------------------------------------------------------------------
     // Dispose

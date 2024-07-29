@@ -25,7 +25,7 @@ namespace Spectrometer
         // https://docs.microsoft.com/dotnet/core/extensions/logging
         private static readonly IHost _host = Host
             .CreateDefaultBuilder()
-            .ConfigureAppConfiguration(c => { c.SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)); })
+            .ConfigureAppConfiguration(c => { c.SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) ?? ""); })
             .ConfigureServices((context, services) =>
             {
                 services.AddHostedService<ApplicationHostService>();
@@ -62,10 +62,10 @@ namespace Spectrometer
         /// </summary>
         /// <typeparam name="T">Type of the service to get.</typeparam>
         /// <returns>Instance of the service or <see langword="null"/>.</returns>
-        public static T GetService<T>()
+        public static T? GetService<T>()
             where T : class
         {
-            return _host.Services.GetService(typeof(T)) as T;
+            return _host.Services.GetService(typeof(T)) as T ?? null;
         }
 
         /// <summary>

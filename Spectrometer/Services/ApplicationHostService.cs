@@ -11,7 +11,7 @@ namespace Spectrometer.Services
     {
         private readonly IServiceProvider _serviceProvider;
 
-        private INavigationWindow _navigationWindow;
+        private INavigationWindow? _navigationWindow;
 
         public ApplicationHostService(IServiceProvider serviceProvider)
         {
@@ -46,9 +46,12 @@ namespace Spectrometer.Services
                 _navigationWindow = (
                     _serviceProvider.GetService(typeof(INavigationWindow)) as INavigationWindow
                 )!;
-                _navigationWindow!.ShowWindow();
 
-                _navigationWindow.Navigate(typeof(Views.Pages.DashboardPage));
+                if (_navigationWindow is not null)
+                {
+                    _navigationWindow!.ShowWindow();
+                    _navigationWindow.Navigate(typeof(Views.Pages.DashboardPage));
+                }
             }
 
             await Task.CompletedTask;
