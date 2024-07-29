@@ -168,7 +168,7 @@
             <!-- ======================================================================= -->
             <!-- GPU Card -->
 
-            <ui:CardAction Grid.Column="1" Grid.Row="0" Height="220px" Margin="5,0,0,0" IsChevronVisible="False">
+            <ui:CardAction Grid.Column="1" Grid.Row="0" Height="225px" Margin="5,0,0,0" IsChevronVisible="False">
                 <StackPanel>
                     <ProgressBar Style="{StaticResource CustomProgressBar}" 
                                  Value="{Binding GpuTemp}" 
