@@ -5,6 +5,9 @@ namespace Spectrometer.ViewModels.Pages;
 
 public partial class SettingsViewModel : ObservableObject, INavigationAware
 {
+    // ------------------------------------------------------------------------------------------------
+    // Fields
+
     private bool _isInitialized = false;
 
     [ObservableProperty]
@@ -12,6 +15,19 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     [ObservableProperty]
     private ApplicationTheme _currentTheme = ApplicationTheme.Unknown;
+
+    // ------------------------------------------------------------------------------------------------
+    // Init
+
+    public SettingsViewModel() { }
+
+    private void InitializeViewModel()
+    {
+        CurrentTheme = ApplicationThemeManager.GetAppTheme();
+        AppVersion = $"Spectrometer v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? String.Empty} (July 29, 2024)";
+
+        _isInitialized = true;
+    }
 
     public void OnNavigatedTo()
     {
@@ -21,19 +37,8 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     public void OnNavigatedFrom() { }
 
-    private void InitializeViewModel()
-    {
-        CurrentTheme = ApplicationThemeManager.GetAppTheme();
-        AppVersion = $"Spectrometer v{GetAssemblyVersion()} (July 28, 2024)";
-
-        _isInitialized = true;
-    }
-
-    private string GetAssemblyVersion()
-    {
-        return System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString()
-            ?? String.Empty;
-    }
+    // ------------------------------------------------------------------------------------------------
+    // Theme change handler
 
     [RelayCommand]
     private void OnChangeTheme(string parameter)

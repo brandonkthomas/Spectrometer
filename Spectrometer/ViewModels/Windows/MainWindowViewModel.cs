@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 using Wpf.Ui.Controls;
 
 namespace Spectrometer.ViewModels.Windows;
@@ -9,36 +10,36 @@ public partial class MainWindowViewModel : ObservableObject
     private string _applicationTitle = "Spectrometer";
 
     [ObservableProperty]
-    private ObservableCollection<object> _menuItems = new()
-    {
+    private ObservableCollection<object> _menuItems =
+    [
         new NavigationViewItem()
         {
             Content = "Dashboard",
             Icon = new SymbolIcon { Symbol = SymbolRegular.Home24 },
             TargetPageType = typeof(Views.Pages.DashboardPage)
-        },
-        new NavigationViewItem()
-        {
-            Content = "Sensors",
-            Icon = new SymbolIcon { Symbol = SymbolRegular.Book24 },
-            TargetPageType = typeof(Views.Pages.SensorsPage)
         }
-    };
+        //new NavigationViewItem()
+        //{
+        //    Content = "Sensors",
+        //    Icon = new SymbolIcon { Symbol = SymbolRegular.Book24 },
+        //    TargetPageType = typeof(Views.Pages.SensorsPage)
+        //}
+    ];
 
     [ObservableProperty]
-    private ObservableCollection<object> _footerMenuItems = new()
-    {
+    private ObservableCollection<object> _footerMenuItems = 
+    [
         new NavigationViewItem()
         {
             Content = "Settings",
             Icon = new SymbolIcon { Symbol = SymbolRegular.Settings24 },
             TargetPageType = typeof(Views.Pages.SettingsPage)
         }
-    };
+    ];
 
     [ObservableProperty]
-    private ObservableCollection<MenuItem> _trayMenuItems = new()
-    {
+    private ObservableCollection<MenuItem> _trayMenuItems = 
+    [
         new MenuItem { Header = "Home", Tag = "tray_home" }
-    };
+    ];
 }

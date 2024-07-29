@@ -75,27 +75,10 @@
             <ui:CardAction Grid.Column="0" Grid.Row="0" Height="225px" Margin="0,0,5,0" IsChevronVisible="False">
                 <StackPanel>
                     <ProgressBar Style="{StaticResource CustomProgressBar}" 
-                                 Value="{Binding CpuTemp}"
-                                 Maximum="100" Height="20"  
-                                 Margin="0,10,0,0"/>
-                    <Grid Margin="0,0,0,10">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <ui:TextBlock Text="Temperature" 
-                                      Grid.Column="0" 
-                                      FontSize="12"/>
-                        <ui:TextBlock Text="{Binding CpuTemp, StringFormat={}{0:F0} °C}" 
-                                      Grid.Column="1" 
-                                      FontSize="12" 
-                                      HorizontalAlignment="Right" />
-                    </Grid>
-
-                    <ProgressBar Style="{StaticResource CustomProgressBar}" 
                                  Value="{Binding CpuUsage}" 
                                  Maximum="100" 
-                                 Height="20" />
+                                 Height="20" 
+                                 Margin="0,10,0,0" />
                     <Grid Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -103,10 +86,30 @@
                         </Grid.ColumnDefinitions>
                         <ui:TextBlock Text="Usage"
                                       Grid.Column="0" 
-                                      FontSize="12"/>
+                                      FontSize="12" 
+                                      Opacity="0.65" />
                         <ui:TextBlock Text="{Binding CpuUsage, StringFormat={}{0:F0}%}"
                                       Grid.Column="1" 
                                       FontSize="12"
+                                      HorizontalAlignment="Right" />
+                    </Grid>
+                    
+                    <ProgressBar Style="{StaticResource CustomProgressBar}" 
+                                 Value="{Binding CpuTemp}"
+                                 Maximum="100" 
+                                 Height="20" />
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <ui:TextBlock Text="Temperature" 
+                                      Grid.Column="0" 
+                                      FontSize="12" 
+                                      Opacity="0.65" />
+                        <ui:TextBlock Text="{Binding CpuTemp, StringFormat={}{0:F0} °C}" 
+                                      Grid.Column="1" 
+                                      FontSize="12" 
                                       HorizontalAlignment="Right" />
                     </Grid>
 
@@ -121,7 +124,8 @@
                         </Grid.ColumnDefinitions>
                         <ui:TextBlock Text="Power" 
                                       Grid.Column="0"
-                                      FontSize="12"/>
+                                      FontSize="12" 
+                                      Opacity="0.65" />
                         <ui:TextBlock Text="{Binding CpuPower, StringFormat={}{0:F0} W}" 
                                       Grid.Column="1" 
                                       FontSize="12" 
@@ -171,27 +175,10 @@
             <ui:CardAction Grid.Column="1" Grid.Row="0" Height="225px" Margin="5,0,0,0" IsChevronVisible="False">
                 <StackPanel>
                     <ProgressBar Style="{StaticResource CustomProgressBar}" 
-                                 Value="{Binding GpuTemp}" 
-                                 Maximum="100" Height="20" 
-                                 Margin="0,10,0,0"/>
-                    <Grid Margin="0,0,0,10">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <ui:TextBlock Text="Temperature" 
-                                      Grid.Column="0" 
-                                      FontSize="12"/>
-                        <ui:TextBlock Text="{Binding GpuTemp, StringFormat={}{0:F0} °C}" 
-                                      Grid.Column="1" 
-                                      FontSize="12"
-                                      HorizontalAlignment="Right" />
-                    </Grid>
-
-                    <ProgressBar Style="{StaticResource CustomProgressBar}" 
                                  Value="{Binding GpuUsage}" 
                                  Maximum="100" 
-                                 Height="20" />
+                                 Height="20" 
+                                 Margin="0,10,0,0" />
                     <Grid Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -199,10 +186,30 @@
                         </Grid.ColumnDefinitions>
                         <ui:TextBlock Text="Usage" 
                                       Grid.Column="0" 
-                                      FontSize="12"/>
+                                      FontSize="12" 
+                                      Opacity="0.65" />
                         <ui:TextBlock Text="{Binding GpuUsage, StringFormat={}{0:F0}%}" 
                                       Grid.Column="1" 
                                       FontSize="12" 
+                                      HorizontalAlignment="Right" />
+                    </Grid>
+                    
+                    <ProgressBar Style="{StaticResource CustomProgressBar}" 
+                                 Value="{Binding GpuTemp}" 
+                                 Maximum="100" 
+                                 Height="20" />
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <ui:TextBlock Text="Temperature" 
+                                      Grid.Column="0" 
+                                      FontSize="12" 
+                                      Opacity="0.65" />
+                        <ui:TextBlock Text="{Binding GpuTemp, StringFormat={}{0:F0} °C}" 
+                                      Grid.Column="1" 
+                                      FontSize="12"
                                       HorizontalAlignment="Right" />
                     </Grid>
 
@@ -217,7 +224,8 @@
                         </Grid.ColumnDefinitions>
                         <ui:TextBlock Text="Power" 
                                       Grid.Column="0" 
-                                      FontSize="12"/>
+                                      FontSize="12" 
+                                      Opacity="0.65" />
                         <ui:TextBlock Text="{Binding GpuPower, StringFormat={}{0:F0} W}"
                                       Grid.Column="1" 
                                       FontSize="12" 
@@ -264,7 +272,7 @@
             <!-- ======================================================================= -->
             <!-- Memory Card -->
 
-            <ui:CardAction Grid.Column="0" Grid.Row="1" Height="125px" Margin="0,10,5,0" IsChevronVisible="False">
+            <ui:CardAction Grid.Column="0" Grid.Row="1" Height="130px" Margin="0,10,5,0" IsChevronVisible="False">
                 <StackPanel>
                     <ProgressBar Style="{StaticResource CustomProgressBar}" 
                                  Value="{Binding MemoryUsageGb}" 
@@ -285,26 +293,31 @@
                                       HorizontalAlignment="Right" />
                     </Grid>
 
-                    <Grid Margin="0,5,0,10" Height="30px">
+                    <Grid Margin="0,5,0,10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
                         <Image Source="pack://application:,,,/Assets/memory-30-white.png"
-                               Height="16" 
-                               Width="16"
+                               Height="20" 
+                               Width="20"
                                VerticalAlignment="Center"
                                HorizontalAlignment="Left"
                                Grid.Column="0" />
 
-                        <ui:TextBlock Text="System Memory" 
-                                      VerticalAlignment="Center" 
-                                      Grid.Column="1" 
-                                      Margin="8,0,0,0"
-                                      Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
-                                      FontSize="14" 
-                                      FontWeight="Bold"/>
+                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                            <ui:TextBlock Text="Memory"
+                                          FontSize="12"
+                                          Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
+                                          Opacity="0.65"/>
+                            <ui:TextBlock Text="Generic Memory Module" 
+                                          VerticalAlignment="Center" 
+                                          Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
+                                          FontSize="14" 
+                                          FontWeight="Bold"/>
+                        </StackPanel>
                     </Grid>
 
                 </StackPanel>
@@ -313,7 +326,7 @@
             <!-- ======================================================================= -->
             <!-- Memory Card -->
 
-            <ui:CardAction Grid.Column="1" Grid.Row="1" Height="125px" Margin="5,10,0,0" IsChevronVisible="False">
+            <ui:CardAction Grid.Column="1" Grid.Row="1" Height="130px" Margin="5,10,0,0" IsChevronVisible="False">
                 <StackPanel>
                     <ProgressBar Style="{StaticResource CustomProgressBar}" 
                                  Value="{Binding MemoryUsageGb}" 
@@ -334,26 +347,31 @@
                                       HorizontalAlignment="Right" />
                     </Grid>
 
-                    <Grid Margin="0,5,0,10" Height="30px">
+                    <Grid Margin="0,5,0,10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
                         <Image Source="pack://application:,,,/Assets/memory-30-white.png"
-                               Height="16" 
-                               Width="16"
+                               Height="20" 
+                               Width="20"
                                VerticalAlignment="Center"
                                HorizontalAlignment="Left"
                                Grid.Column="0" />
 
-                        <ui:TextBlock Text="System Memory" 
-                                      VerticalAlignment="Center" 
-                                      Grid.Column="1" 
-                                      Margin="8,0,0,0"
-                                      Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
-                                      FontSize="14" 
-                                      FontWeight="Bold"/>
+                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                            <ui:TextBlock Text="Memory"
+                                          FontSize="12"
+                                          Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
+                                          Opacity="0.65"/>
+                            <ui:TextBlock Text="Generic Memory Module" 
+                                          VerticalAlignment="Center" 
+                                          Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
+                                          FontSize="14" 
+                                          FontWeight="Bold"/>
+                        </StackPanel>
                     </Grid>
 
                 </StackPanel>
@@ -371,7 +389,8 @@
               Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=False}"
               helpers:TransitionBehavior.Transition="FadeInWithSlide">
             <ui:ProgressRing IsIndeterminate="True" 
-                             Foreground="White"/>
+                             Foreground="White"
+                             Opacity="0.65"/>
         </Grid>
 
     </Grid>

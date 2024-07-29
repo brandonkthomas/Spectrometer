@@ -232,7 +232,7 @@ public partial class DashboardViewModel : INotifyPropertyChanged
     /// </summary>
     public DashboardViewModel()
     {
-        _timer = new System.Timers.Timer(2000);
+        _timer = new System.Timers.Timer(1750);
         _timer.Elapsed += OnTimerElapsed;
         InitializeAsync();
     }
@@ -246,7 +246,7 @@ public partial class DashboardViewModel : INotifyPropertyChanged
         IsLoading = true;
         await Task.Run(() => _hardwareMonitorService = new HardwareMonitorService());
 
-        PollCycle(); // run once before starting timer to get initial values
+        PollSensors(); // run once before starting timer to get initial values
         IsLoading = false;
 
         _timer.Start();
@@ -292,7 +292,7 @@ public partial class DashboardViewModel : INotifyPropertyChanged
     /// <summary>
     /// 
     /// </summary>
-    private void PollCycle()
+    private void PollSensors()
     {
         if (_hardwareMonitorService == null)
             return;
@@ -319,7 +319,7 @@ public partial class DashboardViewModel : INotifyPropertyChanged
         MemoryUsageDetails = $"{usedMemoryPercent:F0}% ({MemoryUsageGb:F1} GB / {MemoryTotalGb:F1} GB)";
     }
 
-    private void OnTimerElapsed(object? sender, ElapsedEventArgs e) => PollCycle();
+    private void OnTimerElapsed(object? sender, ElapsedEventArgs e) => PollSensors();
 
     // ------------------------------------------------------------------------------------------------
     // PropertyChanged event -- used to trigger UI updates
