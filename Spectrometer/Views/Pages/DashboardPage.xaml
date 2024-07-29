@@ -145,7 +145,8 @@
                         <StackPanel Grid.Column="1" Margin="8,0,0,0">
                             <ui:TextBlock Text="Processor"
                                           FontSize="12"
-                                          Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                                          Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                          Opacity="0.65"/>
                             <ui:TextBlock Text="{Binding CpuName}" 
                                           VerticalAlignment="Center" 
                                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
@@ -207,7 +208,7 @@
 
                     <ProgressBar Style="{StaticResource CustomProgressBar}"
                                  Value="{Binding GpuPower}" 
-                                 Maximum="{Binding GpuPowerMax}" 
+                                 Maximum="450" 
                                  Height="20" />
                     <Grid Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>

@@ -311,7 +311,7 @@ public partial class DashboardViewModel : INotifyPropertyChanged
         GpuTemp = _hardwareMonitorService.GetGpuTemp();
         GpuUsage = _hardwareMonitorService.GetGpuUsage();
         GpuPower = _hardwareMonitorService.GetGpuPowerCurrent();
-        GpuPowerMax = _hardwareMonitorService.GetGpuPowerMax();
+        //GpuPowerMax = _hardwareMonitorService.GetGpuPowerMax();
 
         MemoryUsageGb = _hardwareMonitorService.GetMemoryUsageGb();
         MemoryTotalGb = _hardwareMonitorService.GetMemoryTotalGb();
