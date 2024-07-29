@@ -1,4 +1,5 @@
 using LibreHardwareMonitor.Hardware;
+using System.Diagnostics;
 using System.Management;
 
 namespace Spectrometer.Services;
@@ -62,8 +63,11 @@ public class HardwareMonitorService : IDisposable
         var cpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
         if (cpu == null)
             return float.NaN;
-
-        return cpu.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Load)?.Value ?? float.NaN;
+#if false
+        foreach (var sensor in cpu.Sensors.Where(s => s.SensorType == SensorType.Load))
+            Debug.WriteLine($"{sensor.Name}: {sensor.Value}");
+#endif
+        return cpu.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Load && (s.Name.Contains("Total") || s.Name.Contains("Package")))?.Value ?? float.NaN;
     }
 
     public float GetCpuPowerCurrent()
