@@ -55,7 +55,11 @@ public class HardwareMonitorService : IDisposable
         if (cpu == null)
             return float.NaN;
 
-        return cpu.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Temperature && s.Name.Contains("Package"))?.Value ?? float.NaN;
+        var temp = cpu.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Temperature && s.Name.Contains("Package"))?.Value;
+        if (temp == null)
+            return cpu.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Temperature && s.Name.Contains("Core (Tctl/Tdie)"))?.Value ?? float.NaN;
+        else
+            return temp.Value;
     }
 
     public float GetCpuUsage()
