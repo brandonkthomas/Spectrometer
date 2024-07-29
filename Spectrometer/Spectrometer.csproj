@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.3" />
+    <PackageReference Include="System.Text.Json" Version="8.0.4" />
+    <PackageReference Include="WPF-UI" Version="3.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2 " />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\icon.png" />
+    <None Remove="Assets\intel-logo-black.png" />
+    <None Remove="Assets\intel-logo-white.png" />
+    <None Remove="Assets\memory-30-black.png" />
+    <None Remove="Assets\memory-30-white.png" />
+    <None Remove="Assets\nvidia-logo-black.png" />
+    <None Remove="Assets\nvidia-logo-white.png" />
+    <None Remove="Assets\processor-30-black.png" />
+    <None Remove="Assets\processor-30-white.png" />
+    <None Remove="Assets\video-card-48-black.png" />
+    <None Remove="Assets\video-card-48-white.png" />
+    <None Remove="Assets\wpfui-icon-256.png" />
+    <None Remove="Assets\wpfui-icon-1024.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\icon.png" />
+    <Resource Include="Assets\intel-logo-black.png" />
+    <Resource Include="Assets\intel-logo-white.png" />
+    <Resource Include="Assets\memory-30-black.png" />
+    <Resource Include="Assets\memory-30-white.png" />
+    <Resource Include="Assets\nvidia-logo-black.png" />
+    <Resource Include="Assets\nvidia-logo-white.png" />
+    <Resource Include="Assets\processor-30-black.png" />
+    <Resource Include="Assets\processor-30-white.png" />
+    <Resource Include="Assets\video-card-48-black.png" />
+    <Resource Include="Assets\video-card-48-white.png" />
+    <Resource Include="Assets\wpfui-icon-256.png" />
+    <Resource Include="Assets\wpfui-icon-1024.png" />
+  </ItemGroup>
+
+</Project>

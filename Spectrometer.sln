@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35122.118
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spectrometer", "Spectrometer\Spectrometer.csproj", "{77B5C374-D14B-4870-8947-2C9F75F3B30F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{77B5C374-D14B-4870-8947-2C9F75F3B30F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77B5C374-D14B-4870-8947-2C9F75F3B30F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77B5C374-D14B-4870-8947-2C9F75F3B30F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77B5C374-D14B-4870-8947-2C9F75F3B30F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DC018FD3-D3DF-41AC-8616-41382CC2224F}
+	EndGlobalSection
+EndGlobal
