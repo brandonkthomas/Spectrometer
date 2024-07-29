@@ -1,18 +1,17 @@
 ﻿using Spectrometer.ViewModels.Pages;
 using Wpf.Ui.Controls;
 
-namespace Spectrometer.Views.Pages
+namespace Spectrometer.Views.Pages;
+
+public partial class SensorsPage : INavigableView<SensorsViewModel>
 {
-    public partial class SensorsPage : INavigableView<SensorsViewModel>
+    public SensorsViewModel ViewModel { get; }
+
+    public SensorsPage(SensorsViewModel viewModel)
     {
-        public SensorsViewModel ViewModel { get; }
+        ViewModel = viewModel;
+        DataContext = this;
 
-        public SensorsPage(SensorsViewModel viewModel)
-        {
-            ViewModel = viewModel;
-            DataContext = this;
-
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

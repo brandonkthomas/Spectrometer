@@ -2,59 +2,58 @@
 using Spectrometer.Views.Windows;
 using Wpf.Ui;
 
-namespace Spectrometer.Services
+namespace Spectrometer.Services;
+
+/// <summary>
+/// Managed host of the application.
+/// </summary>
+public class ApplicationHostService : IHostedService
 {
-    /// <summary>
-    /// Managed host of the application.
-    /// </summary>
-    public class ApplicationHostService : IHostedService
+    private readonly IServiceProvider _serviceProvider;
+
+    private INavigationWindow? _navigationWindow;
+
+    public ApplicationHostService(IServiceProvider serviceProvider)
     {
-        private readonly IServiceProvider _serviceProvider;
+        _serviceProvider = serviceProvider;
+    }
 
-        private INavigationWindow? _navigationWindow;
+    /// <summary>
+    /// Triggered when the application host is ready to start the service.
+    /// </summary>
+    /// <param name="cancellationToken">Indicates that the start process has been aborted.</param>
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        await HandleActivationAsync();
+    }
 
-        public ApplicationHostService(IServiceProvider serviceProvider)
+    /// <summary>
+    /// Triggered when the application host is performing a graceful shutdown.
+    /// </summary>
+    /// <param name="cancellationToken">Indicates that the shutdown process should no longer be graceful.</param>
+    public async Task StopAsync(CancellationToken cancellationToken)
+    {
+        await Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Creates main window during activation.
+    /// </summary>
+    private async Task HandleActivationAsync()
+    {
+        if (!Application.Current.Windows.OfType<MainWindow>().Any())
         {
-            _serviceProvider = serviceProvider;
-        }
+            _navigationWindow = (
+                _serviceProvider.GetService(typeof(INavigationWindow)) as INavigationWindow
+            )!;
 
-        /// <summary>
-        /// Triggered when the application host is ready to start the service.
-        /// </summary>
-        /// <param name="cancellationToken">Indicates that the start process has been aborted.</param>
-        public async Task StartAsync(CancellationToken cancellationToken)
-        {
-            await HandleActivationAsync();
-        }
-
-        /// <summary>
-        /// Triggered when the application host is performing a graceful shutdown.
-        /// </summary>
-        /// <param name="cancellationToken">Indicates that the shutdown process should no longer be graceful.</param>
-        public async Task StopAsync(CancellationToken cancellationToken)
-        {
-            await Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// Creates main window during activation.
-        /// </summary>
-        private async Task HandleActivationAsync()
-        {
-            if (!Application.Current.Windows.OfType<MainWindow>().Any())
+            if (_navigationWindow is not null)
             {
-                _navigationWindow = (
-                    _serviceProvider.GetService(typeof(INavigationWindow)) as INavigationWindow
-                )!;
-
-                if (_navigationWindow is not null)
-                {
-                    _navigationWindow!.ShowWindow();
-                    _navigationWindow.Navigate(typeof(Views.Pages.DashboardPage));
-                }
+                _navigationWindow!.ShowWindow();
+                _navigationWindow.Navigate(typeof(Views.Pages.DashboardPage));
             }
-
-            await Task.CompletedTask;
         }
+
+        await Task.CompletedTask;
     }
 }

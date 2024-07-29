@@ -1,6 +1,4 @@
 using LibreHardwareMonitor.Hardware;
-using System.CodeDom.Compiler;
-using System.Diagnostics;
 using System.Management;
 
 namespace Spectrometer.Services;
@@ -43,37 +41,24 @@ public class HardwareMonitorService : IDisposable
     // ------------------------------------------------------------------------------------------------
     // Motherboard
 
-    public string GetMotherboardName()
-    {
-        Update();
-        return _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Motherboard)?.Name ?? "Unknown";
-    }
+    public string GetMotherboardName() => _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Motherboard)?.Name ?? "Unknown";
 
     // ------------------------------------------------------------------------------------------------
     // CPU
 
-    public string GetCpuName()
-    {
-        Update();
-        return _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu)?.Name ?? "Unknown";
-    }
+    public string GetCpuName() => _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu)?.Name ?? "Unknown";
 
     public float GetCpuTemp()
     {
-        Update();
-
         var cpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
         if (cpu == null)
             return float.NaN;
 
-        Debug.WriteLine($"CPU Temp: {cpu.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Temperature && s.Name.Contains("Package"))?.Value}");
         return cpu.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Temperature && s.Name.Contains("Package"))?.Value ?? float.NaN;
     }
 
     public float GetCpuUsage()
     {
-        Update();
-
         var cpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
         if (cpu == null)
             return float.NaN;
@@ -83,8 +68,6 @@ public class HardwareMonitorService : IDisposable
 
     public float GetCpuPowerCurrent()
     {
-        Update();
-
         var cpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
         if (cpu == null)
             return float.NaN;
@@ -94,8 +77,6 @@ public class HardwareMonitorService : IDisposable
 
     public float GetCpuPowerMax()
     {
-        Update();
-
         var cpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
         if (cpu == null)
             return float.NaN;
@@ -106,16 +87,10 @@ public class HardwareMonitorService : IDisposable
     // ------------------------------------------------------------------------------------------------
     // GPU
 
-    public string GetGpuName()
-    {
-        Update();
-        return _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.GpuNvidia)?.Name ?? "Unknown";
-    }
+    public string GetGpuName() => _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.GpuNvidia)?.Name ?? "Unknown";
 
     public float GetGpuTemp()
     {
-        Update();
-
         var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.GpuNvidia);
         if (gpu == null)
             return float.NaN;
@@ -125,8 +100,6 @@ public class HardwareMonitorService : IDisposable
 
     public float GetGpuUsage()
     {
-        Update();
-
         var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.GpuNvidia);
         if (gpu == null)
             return float.NaN;
@@ -136,8 +109,6 @@ public class HardwareMonitorService : IDisposable
 
     public float GetGpuPowerCurrent()
     {
-        Update();
-
         var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.GpuNvidia);
         if (gpu == null)
             return float.NaN;
@@ -147,8 +118,6 @@ public class HardwareMonitorService : IDisposable
 
     public float GetGpuPowerMax()
     {
-        Update();
-
         var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.GpuNvidia);
         if (gpu == null)
             return float.NaN;
@@ -173,8 +142,6 @@ public class HardwareMonitorService : IDisposable
 
     public double GetMemoryUsageGb()
     {
-        Update();
-
         var mem = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Memory);
         if (mem == null)
             return double.NaN;
@@ -188,8 +155,6 @@ public class HardwareMonitorService : IDisposable
 
     public float GetMemoryUsagePercent() // percentage
     {
-        Update();
-
         var mem = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Memory);
         if (mem == null)
             return float.NaN;

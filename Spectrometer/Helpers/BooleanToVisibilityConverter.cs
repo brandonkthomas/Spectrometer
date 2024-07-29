@@ -1,10 +1,9 @@
 ﻿using System.Globalization;
 using System.Windows.Data;
-using Wpf.Ui.Appearance;
 
 namespace Spectrometer.Helpers;
 
-internal class EnumToBooleanConverter : IValueConverter
+public class BooleanToVisibilityConverter : IValueConverter
 {
     // ------------------------------------------------------------------------------------------------
     /// <summary>
@@ -15,22 +14,15 @@ internal class EnumToBooleanConverter : IValueConverter
     /// <param name="parameter"></param>
     /// <param name="culture"></param>
     /// <returns></returns>
-    /// <exception cref="ArgumentException"></exception>
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (parameter is not String enumString)
+        if (value is bool boolValue)
         {
-            throw new ArgumentException("ExceptionEnumToBooleanConverterParameterMustBeAnEnumName");
+            bool invert = parameter != null && System.Convert.ToBoolean(parameter);
+            return (boolValue ^ invert) ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        if (!Enum.IsDefined(typeof(ApplicationTheme), value))
-        {
-            throw new ArgumentException("ExceptionEnumToBooleanConverterValueMustBeAnEnum");
-        }
-
-        var enumValue = Enum.Parse(typeof(ApplicationTheme), enumString);
-
-        return enumValue.Equals(value);
+        return Visibility.Collapsed;
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -42,14 +34,14 @@ internal class EnumToBooleanConverter : IValueConverter
     /// <param name="parameter"></param>
     /// <param name="culture"></param>
     /// <returns></returns>
-    /// <exception cref="ArgumentException"></exception>
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (parameter is not String enumString)
+        if (value is Visibility visibility)
         {
-            throw new ArgumentException("ExceptionEnumToBooleanConverterParameterMustBeAnEnumName");
+            bool invert = parameter != null && System.Convert.ToBoolean(parameter);
+            return (visibility == Visibility.Visible) ^ invert;
         }
 
-        return Enum.Parse(typeof(ApplicationTheme), enumString);
+        return false;
     }
 }
