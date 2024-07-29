@@ -78,6 +78,11 @@ public partial class App
     /// </summary>
     private void OnStartup(object sender, StartupEventArgs e)
     {
+        AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
+        {
+            LogUnhandledException(args.ExceptionObject as Exception);
+        };
+
         _host.Start();
     }
 
@@ -97,5 +102,17 @@ public partial class App
     private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
         // For more info see https://docs.microsoft.com/en-us/dotnet/api/system.windows.application.dispatcherunhandledexception?view=windowsdesktop-6.0
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="ex"></param>
+    private void LogUnhandledException(Exception? ex)
+    {
+        if (ex == null) return;
+
+        string logFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "error.log");
+        File.AppendAllText(logFilePath, $"{DateTime.Now}: {ex.Message}{Environment.NewLine}{ex.StackTrace}{Environment.NewLine}");
     }
 }
