@@ -4,6 +4,10 @@ using System.Diagnostics;
 using System.Timers;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
+using System.Net;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Windows.Data;
 
 namespace Spectrometer.ViewModels.Pages;
 
@@ -19,8 +23,21 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
     [ObservableProperty]
     private HardwareStatus? _hwStatus;
 
+    [ObservableProperty]
+    private ProcessesService? _prcssSvc;
+
+    [ObservableProperty]
+    private ObservableCollection<ProcessInfo?> _prcssInfoList;
+
+    private CollectionViewSource _processesViewSource;
+    public ICollectionView ProcessesView => _processesViewSource.View;
+
     private readonly System.Timers.Timer _timer;
-    private void OnTimerElapsed(object? sender, ElapsedEventArgs e) => PollSensors();
+    private void OnTimerElapsed(object? sender, ElapsedEventArgs e)
+    {
+        PollSensors();
+        GetProcesses();
+    }
 
     private readonly int _defaultPollingInterval = 1750; // Default polling interval in milliseconds
 
@@ -35,7 +52,10 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
     public DashboardViewModel()
     {
         HwStatus = new();
+        PrcssInfoList = new();
         HwStatus.IsLoading = true;
+        _processesViewSource = new CollectionViewSource { Source = PrcssInfoList };
+        _processesViewSource.Filter += TopThreeFilter;
 
         _timer = new System.Timers.Timer(_defaultPollingInterval); // TODO: Make this a user setting
         _timer.Elapsed += OnTimerElapsed;
@@ -51,9 +71,12 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
         await Task.Run(() =>
         {
             HwMonSvc = HardwareMonitorService.Instance; // this takes a sec to finish
+            PrcssSvc = ProcessesService.Instance;
 
             GetCpuGpuImagePaths();
             PollSensors(); // run once before starting timer to get initial values
+            GetProcesses();
+
         });
 
         if (HwStatus is not null)
@@ -106,6 +129,36 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
         {
             Debug.WriteLine($"Error polling sensors: {ex.Message}");
         }
+    }
+
+    // ------------------------------------------------------------------------------------------------
+    /// <summary>
+    /// 
+    /// </summary>
+    private void GetProcesses()
+    {
+        if (PrcssSvc is null)
+            return;
+        
+        var processes = PrcssSvc.LoadProcesses();
+
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            PrcssInfoList.Clear();
+            foreach (var proc in processes)
+            {
+                PrcssInfoList.Add(proc);
+            }
+
+            ProcessesView.Refresh();
+        });
+    }
+
+    private void TopThreeFilter(object sender, FilterEventArgs e)
+    {
+        var view = (CollectionView)_processesViewSource.View;
+        var sortedProcesses = view.Cast<ProcessInfo>().ToList();
+        e.Accepted = sortedProcesses.IndexOf((ProcessInfo)e.Item) < 3;
     }
 
     // ------------------------------------------------------------------------------------------------
