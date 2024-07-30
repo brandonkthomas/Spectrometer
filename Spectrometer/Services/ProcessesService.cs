@@ -1,68 +1,70 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics;
-using Spectrometer.Models;
+﻿using Spectrometer.Models;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 
-namespace Spectrometer.Services
+namespace Spectrometer.Services;
+
+public class ProcessesService
 {
-    public class ProcessesService
+    private Dictionary<int, PerformanceCounter> cpuCounters;
+    private static readonly Lazy<ProcessesService> _instance = new(() => new ProcessesService());
+    public static ProcessesService Instance => _instance.Value;
+
+    public ProcessesService() 
     {
-        private Dictionary<int, PerformanceCounter> cpuCounters;
-        private static readonly Lazy<ProcessesService> _instance = new(() => new ProcessesService());
-        public static ProcessesService Instance => _instance.Value;
+        cpuCounters = [];
+    }
 
-        public ProcessesService() 
+    public ObservableCollection<ProcessInfo> LoadProcesses()
+    {
+        ObservableCollection<ProcessInfo> collection = new ObservableCollection<ProcessInfo>();
+        var processes = Process.GetProcesses().Select(p => new ProcessInfo
         {
-            cpuCounters = new Dictionary<int, PerformanceCounter>();
+            ProcessName = p.ProcessName,
+            CpuUsage = GetCpuUsage(p),
+            GpuUsage = GetGpuUsage(p),
+            MemoryUsage = p.WorkingSet64 / 1024.0 / 1024.0,
+            DownloadUsage = GetNetworkDownload(p),
+            UploadUsage = GetNetworkUpload(p)
+        }).ToList();
+
+        foreach(var process in processes)
+        {
+            collection.Add(process);
         }
 
-        public ObservableCollection<ProcessInfo> LoadProcesses()
-        {
-            ObservableCollection<ProcessInfo> collection = new ObservableCollection<ProcessInfo>();
-            var processes = Process.GetProcesses().Select(p => new ProcessInfo
-            {
-                ProcessName = p.ProcessName,
-                CpuUsage = GetCpuUsage(p),
-                GpuUsage = GetGpuUsage(p),
-                MemoryUsage = p.WorkingSet64 / 1024.0 / 1024.0,
-                DownloadUsage = GetNetworkDownload(p),
-                UploadUsage = GetNetworkUpload(p)
-            }).ToList();
+        return collection;
+    }
 
-            foreach(var process in processes)
-            {
-                collection.Add(process);
-            }
+    private double GetCpuUsage(Process process)
+    {
+        // Implement a method to get the CPU usage for the process
+        return 0.42; // Example value
+    }
 
-            return collection;
-        }
+    private double GetGpuUsage(Process process)
+    {
+        // Implement a method to get the GPU usage for the process
+        return 0.42; // Example value
+    }
 
-        private double GetCpuUsage(Process process)
-        {
-            // Implement a method to get the GPU usage for the process
-            return 0.42; // Example value
-        }
+    private double GetNetworkDownload(Process process)
+    {
+        // Implement a method to get the network download speed for the process
+        return 4.4; // Example value in KB/s
+    }
 
-        private double GetGpuUsage(Process process)
-        {
-            // Implement a method to get the GPU usage for the process
-            return 0.42; // Example value
-        }
+    private double GetNetworkUpload(Process process)
+    {
+        // Implement a method to get the network upload speed for the process
+        return 36; // Example value in KB/s
+    }
 
-        private double GetNetworkDownload(Process process)
-        {
-            // Implement a method to get the network download speed for the process
-            return 4.4; // Example value in KB/s
-        }
+    public void Dispose()
+    {
+        foreach (var counter in cpuCounters.Values)
+            counter.Dispose();
 
-        private double GetNetworkUpload(Process process)
-        {
-            // Implement a method to get the network upload speed for the process
-            return 36; // Example value in KB/s
-        }
+        this.Dispose();
     }
 }

@@ -44,6 +44,34 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style x:Key="DataGridHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Padding" Value="8" />
+            <Setter Property="BorderThickness" Value="0,0,0,1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ApplicationBackgroundColorDarkBrush}" />
+        </Style>
+
+        <Style x:Key="DataGridCellStyle" TargetType="DataGridCell">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border Background="{TemplateBinding Background}" 
+                            BorderBrush="{TemplateBinding BorderBrush}" 
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalAlignment}" 
+                                          VerticalAlignment="{TemplateBinding VerticalAlignment}" 
+                                          Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Page.Resources>
 
     <Grid>
@@ -239,7 +267,7 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <Image Source="pack://application:,,,/Assets/processor-30-white.png"
+                        <Image Source="pack://application:,,,/Assets/video-card-48-white.png"
                                Height="20" 
                                Width="20"
                                VerticalAlignment="Center"
@@ -324,19 +352,50 @@
             </ui:CardAction>
 
             <!-- ======================================================================= -->
-            <!-- Memory Card -->
+            <!-- Top Processes Card -->
 
-            <DataGrid x:Name="ProcessesDataGrid" AutoGenerateColumns="False" HeadersVisibility="Column" CanUserAddRows="False" ItemsSource="{Binding ProcessesView}" IsReadOnly="True" Grid.Column="1" Margin="5,10,0,0" Grid.Row="1">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Process" Binding="{Binding ProcessName}" Width="*" SortMemberPath="ProcessName"/>
-                    <DataGridTextColumn Header="CPU" Binding="{Binding CpuUsage, StringFormat={}{0:P0}}" Width="*" SortMemberPath="CpuUsage"/>
-                    <DataGridTextColumn Header="GPU" Binding="{Binding GpuUsage, StringFormat={}{0:P0}}" Width="*" SortMemberPath="GpuUsage"/>
-                    <DataGridTextColumn Header="RAM" Binding="{Binding MemoryUsage, StringFormat={}{0:0.0}MB}" Width="*" SortMemberPath="MemoryUsage"/>
-                    <DataGridTextColumn Header="Download" Binding="{Binding DownloadUsage, StringFormat={}{0:0.0}KB/s}" Width="*" SortMemberPath="DownloadUsage"/>
-                    <DataGridTextColumn Header="Upload" Binding="{Binding UploadUsage, StringFormat={}{0:0.0}KB/s}" Width="*" SortMemberPath="UploadUsage"/>
-                </DataGrid.Columns>
-            </DataGrid>
-
+            <ui:DataGrid x:Name="ProcessesDataGrid" 
+                         ItemsSource="{Binding ProcessesView}" 
+                         AutoGenerateColumns="False" 
+                         Height="130px"
+                         HeadersVisibility="Column" 
+                         VerticalScrollBarVisibility="Disabled"
+                         AllowDrop="False"
+                         IsReadOnly="True" 
+                         CanUserAddRows="False" 
+                         CanUserReorderColumns="False"
+                         CanUserResizeColumns="False"
+                         CanUserResizeRows="False"
+                         Grid.Column="1"
+                         Grid.Row="1"
+                         Margin="6,11,1,1">
+                <ui:DataGrid.Columns>
+                    <DataGridTextColumn Header="Process" 
+                                            HeaderStyle="{StaticResource DataGridHeaderStyle}"
+                                            CellStyle="{StaticResource DataGridCellStyle}"
+                                            Binding="{Binding ProcessName}" 
+                                            Width="*" 
+                                            SortMemberPath="ProcessName"/>
+                    <DataGridTextColumn Header="CPU" 
+                                            HeaderStyle="{StaticResource DataGridHeaderStyle}"
+                                            CellStyle="{StaticResource DataGridCellStyle}"
+                                            Binding="{Binding CpuUsage, StringFormat={}{0:P0}}" 
+                                            Width="50" 
+                                            SortMemberPath="CpuUsage"/>
+                    <DataGridTextColumn Header="GPU" 
+                                            HeaderStyle="{StaticResource DataGridHeaderStyle}"
+                                            CellStyle="{StaticResource DataGridCellStyle}"
+                                            Binding="{Binding GpuUsage, StringFormat={}{0:P0}}" 
+                                            Width="50" 
+                                            SortMemberPath="GpuUsage"/>
+                    <DataGridTextColumn Header="RAM" 
+                                            HeaderStyle="{StaticResource DataGridHeaderStyle}"
+                                            CellStyle="{StaticResource DataGridCellStyle}"
+                                            Binding="{Binding MemoryUsage, StringFormat={}{0:F0}MB}" 
+                                            Width="75" 
+                                            SortMemberPath="MemoryUsage"/>
+                </ui:DataGrid.Columns>
+            </ui:DataGrid>
 
             <!-- Close: Primary Content Grid -->
         </Grid>

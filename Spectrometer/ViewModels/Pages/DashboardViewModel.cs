@@ -1,13 +1,12 @@
 ﻿using Spectrometer.Models;
 using Spectrometer.Services;
-using System.Diagnostics;
-using System.Timers;
-using Wpf.Ui.Appearance;
-using Wpf.Ui.Controls;
-using System.Net;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Timers;
 using System.Windows.Data;
+using Wpf.Ui.Appearance;
+using Wpf.Ui.Controls;
 
 namespace Spectrometer.ViewModels.Pages;
 
@@ -17,15 +16,27 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
     // Private Fields
     // ------------------------------------------------------------------------------------------------
 
+    /// <summary>
+    /// Hardware monitor service
+    /// </summary>
     [ObservableProperty]
     private HardwareMonitorService? _hwMonSvc;
 
+    /// <summary>
+    /// Hardware status collection
+    /// </summary>
     [ObservableProperty]
     private HardwareStatus? _hwStatus;
 
+    /// <summary>
+    /// Process service
+    /// </summary>
     [ObservableProperty]
     private ProcessesService? _prcssSvc;
 
+    /// <summary>
+    /// Process info collection
+    /// </summary>
     [ObservableProperty]
     private ObservableCollection<ProcessInfo?> _prcssInfoList;
 
@@ -63,24 +74,28 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
         InitializeAsync();
     }
 
+    // ------------------------------------------------------------------------------------------------
+    /// <summary>
+    /// 
+    /// </summary>
     private async void InitializeAsync()
     {
-        if (HwStatus is not null)
-            HwStatus.IsLoading = true;
+        if (HwStatus is not null) HwStatus.IsLoading = true;
 
         await Task.Run(() =>
         {
-            HwMonSvc = HardwareMonitorService.Instance; // this takes a sec to finish
+            // This takes a sec to initialize; await it in a new thread so we don't block the UI
+            HwMonSvc = HardwareMonitorService.Instance;
             PrcssSvc = ProcessesService.Instance;
 
             GetCpuGpuImagePaths();
-            PollSensors(); // run once before starting timer to get initial values
-            GetProcesses();
 
+            // Run these once before starting timer to get initial values
+            PollSensors(); 
+            GetProcesses();
         });
 
-        if (HwStatus is not null)
-            HwStatus.IsLoading = false;
+        if (HwStatus is not null) HwStatus.IsLoading = false;
 
         _timer.Start();
     }
@@ -212,5 +227,8 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
     {
         _timer?.Dispose();
         HwMonSvc?.Dispose();
+
+        PrcssInfoList.Clear();
+        PrcssSvc?.Dispose();
     }
 }
