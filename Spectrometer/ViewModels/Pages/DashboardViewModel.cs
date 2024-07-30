@@ -185,38 +185,21 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
         if (HwStatus is null)
             return;
 
-        if (ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Dark) // dark mode -- use white logo
-        {
-            // CPU
-            if (HwStatus.CpuName.Contains("intel", StringComparison.CurrentCultureIgnoreCase))
-                HwStatus.CpuImagePath = "pack://application:,,,/Assets/intel-logo-white.png";
-            else if (HwStatus.CpuName.Contains("amd", StringComparison.CurrentCultureIgnoreCase) || HwStatus.CpuName.Contains("ryzen", StringComparison.CurrentCultureIgnoreCase))
-                HwStatus.CpuImagePath = "pack://application:,,,/Assets/amd-logo-white.png";
+        var isDarkMode = ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Dark;
 
-            // GPU
-            if (HwStatus.GpuName.Contains("nvidia", StringComparison.CurrentCultureIgnoreCase) || HwStatus.GpuName.Contains("geforce", StringComparison.CurrentCultureIgnoreCase))
-                HwStatus.GpuImagePath = "pack://application:,,,/Assets/nvidia-logo-white.png";
-            else if (HwStatus.GpuName.Contains("amd", StringComparison.CurrentCultureIgnoreCase) || HwStatus.GpuName.Contains("radeon", StringComparison.CurrentCultureIgnoreCase))
-                HwStatus.GpuImagePath = "pack://application:,,,/Assets/amd-logo-white.png";
-            else if (HwStatus.GpuName.Contains("intel", StringComparison.CurrentCultureIgnoreCase))
-                HwStatus.GpuImagePath = "pack://application:,,,/Assets/intel-logo-white.png";
-        }
-        else // dark mode -- use black logo
-        {
-            // CPU
-            if (HwStatus.CpuName.Contains("intel", StringComparison.CurrentCultureIgnoreCase))
-                HwStatus.CpuImagePath = "pack://application:,,,/Assets/intel-logo-black.png";
-            else if (HwStatus.CpuName.Contains("amd", StringComparison.CurrentCultureIgnoreCase) || HwStatus.CpuName.Contains("ryzen", StringComparison.CurrentCultureIgnoreCase))
-                HwStatus.CpuImagePath = "pack://application:,,,/Assets/amd-logo-black.png";
+        HwStatus.CpuImagePath = GetImagePath(HwStatus.CpuName, isDarkMode, "intel", "amd", "ryzen");
+        HwStatus.GpuImagePath = GetImagePath(HwStatus.GpuName, isDarkMode, "nvidia", "geforce", "amd", "radeon", "intel");
+    }
 
-            // GPU
-            if (HwStatus.GpuName.Contains("nvidia", StringComparison.CurrentCultureIgnoreCase) || HwStatus.GpuName.Contains("geforce", StringComparison.CurrentCultureIgnoreCase))
-                HwStatus.GpuImagePath = "pack://application:,,,/Assets/nvidia-logo-black.png";
-            else if (HwStatus.GpuName.Contains("amd", StringComparison.CurrentCultureIgnoreCase) || HwStatus.GpuName.Contains("radeon", StringComparison.CurrentCultureIgnoreCase))
-                HwStatus.GpuImagePath = "pack://application:,,,/Assets/amd-logo-black.png";
-            else if (HwStatus.GpuName.Contains("intel", StringComparison.CurrentCultureIgnoreCase))
-                HwStatus.GpuImagePath = "pack://application:,,,/Assets/intel-logo-black.png";
-        }
+    private string GetImagePath(string name, bool isDarkMode, params string[] keywords)
+    {
+        string logoColor = isDarkMode ? "white" : "black";
+
+        foreach (var keyword in keywords)
+            if (name.Contains(keyword, StringComparison.CurrentCultureIgnoreCase))
+                return $"pack://application:,,,/Assets/{keyword}-logo-{logoColor}.png";
+
+        return string.Empty;
     }
 
     // ------------------------------------------------------------------------------------------------
