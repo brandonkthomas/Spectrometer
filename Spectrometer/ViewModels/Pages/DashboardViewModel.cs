@@ -3,10 +3,11 @@ using Spectrometer.Services;
 using System.Diagnostics;
 using System.Timers;
 using Wpf.Ui.Appearance;
+using Wpf.Ui.Controls;
 
 namespace Spectrometer.ViewModels.Pages;
 
-public partial class DashboardViewModel : ObservableObject
+public partial class DashboardViewModel : ObservableObject, INavigationAware
 {
     // ------------------------------------------------------------------------------------------------
     // Private Fields
@@ -60,6 +61,14 @@ public partial class DashboardViewModel : ObservableObject
 
         _timer.Start();
     }
+
+    // ------------------------------------------------------------------------------------------------
+    // Navigation Detection
+    // ------------------------------------------------------------------------------------------------
+
+    public void OnNavigatedTo() => _timer.Stop();
+
+    public void OnNavigatedFrom() => _timer.Start();
 
     // ------------------------------------------------------------------------------------------------
     /// <summary>
