@@ -11,7 +11,14 @@ namespace Spectrometer.Services;
 public class HardwareMonitorService : IDisposable
 {
     // ------------------------------------------------------------------------------------------------
-    // Constructor + Support
+    // Singleton Support
+    // ------------------------------------------------------------------------------------------------
+
+    private static readonly Lazy<HardwareMonitorService> _instance = new(() => new HardwareMonitorService());
+    public static HardwareMonitorService Instance => _instance.Value;
+
+    // ------------------------------------------------------------------------------------------------
+    // Constructor + Events
     // ------------------------------------------------------------------------------------------------
 
     private readonly Computer _computer;
@@ -36,7 +43,7 @@ public class HardwareMonitorService : IDisposable
     public void Dispose() => _computer.Close();
 
     // ------------------------------------------------------------------------------------------------
-    // Value Retrieval Functions
+    // Public Sensor Value Retrieval
     // ------------------------------------------------------------------------------------------------
 
     // ------------------------------------------------------------------------------------------------

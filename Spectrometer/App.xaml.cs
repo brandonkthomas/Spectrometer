@@ -38,7 +38,7 @@ public partial class App
             // Page resolver service
             services.AddSingleton<IPageService, PageService>();
 
-            // Hardware monitor service
+            // Hardware monitor service (singleton so that only one instance is active across the application)
             services.AddSingleton<IDisposable, HardwareMonitorService>();
 
             // Theme manipulation
