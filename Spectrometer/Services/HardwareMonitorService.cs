@@ -1,7 +1,6 @@
 using LibreHardwareMonitor.Hardware;
 using Spectrometer.Models;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Management;
 
 namespace Spectrometer.Services;
@@ -13,7 +12,7 @@ namespace Spectrometer.Services;
 public class HardwareMonitorService : IDisposable
 {
     // ------------------------------------------------------------------------------------------------
-    // Singleton Support
+    // Singleton Support for HW Monitor Service (allows sharing of the same instance across the application)
     // ------------------------------------------------------------------------------------------------
 
     private static readonly Lazy<HardwareMonitorService> _instance = new(() => new HardwareMonitorService());
@@ -27,6 +26,8 @@ public class HardwareMonitorService : IDisposable
 
     public HardwareMonitorService()
     {
+        Logger.Write("HardwareMonitorService initializing...");
+
         _computer = new Computer
         {
             IsCpuEnabled = true,
@@ -37,7 +38,15 @@ public class HardwareMonitorService : IDisposable
             IsStorageEnabled = true
         };
 
-        _computer.Open();
+        try
+        {
+            _computer.Open();
+            Logger.Write("HardwareMonitorService initialized");
+        }
+        catch (Exception ex)
+        {
+            Logger.WriteExc(ex);
+        }
     }
 
     public void Update() => _computer.Accept(new UpdateVisitor());

@@ -6,6 +6,7 @@ global using System.Windows;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Spectrometer.Models;
 using Spectrometer.Services;
 using Spectrometer.ViewModels.Pages;
 using Spectrometer.ViewModels.Windows;
@@ -46,6 +47,9 @@ public partial class App
 
             // TaskBar manipulation
             services.AddSingleton<ITaskBarService, TaskBarService>();
+
+            // Logging service
+            services.AddSingleton<LoggingService>();
 
             // Service containing navigation, same as INavigationWindow... but without window
             services.AddSingleton<INavigationService, NavigationService>();
@@ -112,7 +116,24 @@ public partial class App
     {
         if (ex == null) return;
 
-        string logFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "error.log");
-        File.AppendAllText(logFilePath, $"{DateTime.Now}: {ex.Message}{Environment.NewLine}{ex.StackTrace}{Environment.NewLine}");
+        try
+        {
+            Logger.WriteExc(ex);
+
+            MessageBox.Show("An internal error occurred. The application could not recover and will now close. Please check the log file for more information.", 
+                "Error", 
+                MessageBoxButton.OK, 
+                MessageBoxImage.Error);
+        }
+        catch (Exception ex2)
+        {
+            string logFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "error.log");
+            File.AppendAllText(logFilePath, $"{DateTime.Now}: {ex2.Message}{Environment.NewLine}{ex2.StackTrace}{Environment.NewLine}");
+
+            MessageBox.Show("An internal error occurred. The application could not recover and will now close. Please check the log file for more information.",
+                "Error",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
     }
 }

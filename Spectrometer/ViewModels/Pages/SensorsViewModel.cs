@@ -45,6 +45,8 @@ public partial class SensorsViewModel : ObservableObject, INavigationAware
 
     private async void InitializeAsync()
     {
+        Logger.Write("SensorsViewModel initializing...");
+
         if (HwStatus is not null)
             HwStatus.IsLoading = true;
 
@@ -59,6 +61,8 @@ public partial class SensorsViewModel : ObservableObject, INavigationAware
         if (HwStatus is not null)
             HwStatus.IsLoading = false;
 
+        Logger.Write("SensorsViewModel initialized");
+
         _timer.Start();
     }
 
@@ -68,7 +72,12 @@ public partial class SensorsViewModel : ObservableObject, INavigationAware
 
     public void OnNavigatedTo() => _timer.Stop();
 
-    public void OnNavigatedFrom() => _timer.Start();
+    public void OnNavigatedFrom()
+    {
+        _timer.Interval = _defaultPollingInterval; // TODO: Make this a user setting
+        _timer.Elapsed += OnTimerElapsed;
+        _timer.Start();
+    }
 
     // ------------------------------------------------------------------------------------------------
     /// <summary>

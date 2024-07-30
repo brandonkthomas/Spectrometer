@@ -81,6 +81,8 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
     /// </summary>
     private async void InitializeAsync()
     {
+        Logger.Write("DashboardViewModel initializing...");
+
         if (HwStatus is not null) HwStatus.IsLoading = true;
 
         await Task.Run(() =>
@@ -92,13 +94,23 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
             GetCpuGpuImagePaths();
 
             // Run these once before starting timer to get initial values
-            PollSensors(); 
+            Stopwatch stopwatch = new();
+            stopwatch.Start();
+
+            PollSensors();
+
+            stopwatch.Stop();
+            Logger.Write($"Sensors polled in {stopwatch.ElapsedMilliseconds}ms");
+
             GetProcesses();
+            Logger.Write($"{PrcssInfoList.Count} processes found");
         });
 
         if (HwStatus is not null) HwStatus.IsLoading = false;
 
         _timer.Start();
+
+        Logger.Write("DashboardViewModel initialized");
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -107,7 +119,12 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
 
     public void OnNavigatedTo() => _timer.Stop();
 
-    public void OnNavigatedFrom() => _timer.Start();
+    public void OnNavigatedFrom()
+    {
+        _timer.Interval = _defaultPollingInterval; // TODO: Make this a user setting
+        _timer.Elapsed += OnTimerElapsed;
+        _timer.Start();
+    }
 
     // ------------------------------------------------------------------------------------------------
     /// <summary>
@@ -190,8 +207,8 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
 
         var isDarkMode = ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Dark;
 
-        HwStatus.CpuImagePath = GetImagePath(HwStatus.CpuName, isDarkMode, "intel", "amd", "ryzen");
-        HwStatus.GpuImagePath = GetImagePath(HwStatus.GpuName, isDarkMode, "nvidia", "geforce", "amd", "radeon", "intel");
+        HwStatus.CpuImagePath = GetImagePath(HwStatus.CpuName, isDarkMode, "intel", "amd", "qualcomm");
+        HwStatus.GpuImagePath = GetImagePath(HwStatus.GpuName, isDarkMode, "nvidia", "amd", "intel");
     }
 
     private string GetImagePath(string name, bool isDarkMode, params string[] keywords)
