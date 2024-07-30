@@ -99,6 +99,15 @@
                                    Grid.Column="2"
                                    Opacity="0.65" 
                                    MaxHeight="16" />
+
+                            <ui:InfoBadge Padding="5"
+                                          Severity="Success"
+                                          Value="{Binding HwStatus.MbSensors.Count}" 
+                                          FontFamily="Segoe UI"
+                                          FontSize="12"
+                                          FontWeight="Bold"
+                                          Grid.Column="2"/>
+
                         </Grid>
                     </Grid>
                 </ui:CardExpander.Header>
@@ -180,6 +189,14 @@
                                    Grid.Column="2"
                                    Opacity="0.65" 
                                    MaxHeight="16" />
+
+                            <ui:InfoBadge Padding="5"
+                                          Severity="Success"
+                                          Value="{Binding HwStatus.CpuSensors.Count}" 
+                                          FontFamily="Segoe UI"
+                                          FontSize="12"
+                                          FontWeight="Bold"
+                                          Grid.Column="2"/>
                         </Grid>
                     </Grid>
                 </ui:CardExpander.Header>
@@ -261,6 +278,14 @@
                                    Grid.Column="2"
                                    Opacity="0.65" 
                                    MaxHeight="16" />
+
+                            <ui:InfoBadge Padding="5"
+                                          Severity="Success"
+                                          Value="{Binding HwStatus.GpuSensors.Count}" 
+                                          FontFamily="Segoe UI"
+                                          FontSize="12"
+                                          FontWeight="Bold"
+                                          Grid.Column="2"/>
                         </Grid>
                     </Grid>
                 </ui:CardExpander.Header>
@@ -342,6 +367,14 @@
                                    Grid.Column="2"
                                    Opacity="0.65" 
                                    MaxHeight="16" />
+
+                            <ui:InfoBadge Padding="5"
+                                          Severity="Success"
+                                          Value="{Binding HwStatus.MemorySensors.Count}" 
+                                          FontFamily="Segoe UI"
+                                          FontSize="12"
+                                          FontWeight="Bold"
+                                          Grid.Column="2"/>
                         </Grid>
                     </Grid>
                 </ui:CardExpander.Header>
@@ -423,6 +456,14 @@
                                    Grid.Column="2"
                                    Opacity="0.65" 
                                    MaxHeight="16" />
+
+                            <ui:InfoBadge Padding="5"
+                                          Severity="Success"
+                                          Value="{Binding HwStatus.StorageSensors.Count}" 
+                                          FontFamily="Segoe UI"
+                                          FontSize="12"
+                                          FontWeight="Bold"
+                                          Grid.Column="2"/>
                         </Grid>
                     </Grid>
                 </ui:CardExpander.Header>
