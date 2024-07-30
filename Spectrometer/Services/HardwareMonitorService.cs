@@ -1,4 +1,6 @@
 using LibreHardwareMonitor.Hardware;
+using Spectrometer.Models;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Management;
 
@@ -51,10 +53,49 @@ public class HardwareMonitorService : IDisposable
 
     public string GetMotherboardName() => _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Motherboard)?.Name ?? "Unknown";
 
+    public ObservableCollection<HardwareStatus.SensorData> GetMotherboardSensors()
+    {
+        var mb = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Motherboard);
+        if (mb == null) return [];
+
+        ObservableCollection<HardwareStatus.SensorData> sensors = [];
+
+        foreach (var sensor in mb.Sensors)
+            sensors.Add(new HardwareStatus.SensorData
+            {
+                Name = sensor.Name,
+                Value = sensor.Value.GetValueOrDefault(),
+                Min = sensor.Min.GetValueOrDefault(),
+                Max = sensor.Max.GetValueOrDefault()
+            });
+
+        return sensors;
+    }
+
     // ------------------------------------------------------------------------------------------------
     // CPU
 
     public string GetCpuName() => _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu)?.Name ?? "Unknown";
+
+    public ObservableCollection<HardwareStatus.SensorData> GetCpuSensors()
+    {
+        var cpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
+        if (cpu == null) return [];
+
+        ObservableCollection<HardwareStatus.SensorData> sensors = [];
+
+        foreach (var sensor in cpu.Sensors)
+            sensors.Add(new HardwareStatus.SensorData
+            {
+                Name = sensor.Name,
+                Value = sensor.Value.GetValueOrDefault(),
+                Min = sensor.Min.GetValueOrDefault(),
+                Max = sensor.Max.GetValueOrDefault(),
+                SensorType = sensor.SensorType
+            });
+
+        return sensors;
+    }
 
     public float GetCpuTemp()
     {
@@ -100,11 +141,43 @@ public class HardwareMonitorService : IDisposable
     // ------------------------------------------------------------------------------------------------
     // GPU
 
+    private HardwareType _getGpuType()
+    {
+        if (_computer.Hardware.Any(h => h.HardwareType == HardwareType.GpuNvidia))
+            return HardwareType.GpuNvidia;
+
+        else if (_computer.Hardware.Any(h => h.HardwareType == HardwareType.GpuAmd))
+            return HardwareType.GpuAmd;
+
+        else
+            return HardwareType.GpuIntel;
+    }
+
     public string GetGpuName() => _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.GpuNvidia)?.Name ?? "Unknown";
+
+    public ObservableCollection<HardwareStatus.SensorData> GetGpuSensors()
+    {
+        var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == _getGpuType());
+        if (gpu == null) return [];
+
+        ObservableCollection<HardwareStatus.SensorData> sensors = [];
+
+        foreach (var sensor in gpu.Sensors)
+            sensors.Add(new HardwareStatus.SensorData
+            {
+                Name = sensor.Name,
+                Value = sensor.Value.GetValueOrDefault(),
+                Min = sensor.Min.GetValueOrDefault(),
+                Max = sensor.Max.GetValueOrDefault(),
+                SensorType = sensor.SensorType
+            });
+
+        return sensors;
+    }
 
     public float GetGpuTemp()
     {
-        var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.GpuNvidia);
+        var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == _getGpuType());
         if (gpu == null)
             return float.NaN;
 
@@ -113,7 +186,7 @@ public class HardwareMonitorService : IDisposable
 
     public float GetGpuUsage()
     {
-        var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.GpuNvidia);
+        var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == _getGpuType());
         if (gpu == null)
             return float.NaN;
 
@@ -122,7 +195,7 @@ public class HardwareMonitorService : IDisposable
 
     public float GetGpuPowerCurrent()
     {
-        var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.GpuNvidia);
+        var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == _getGpuType());
         if (gpu == null)
             return float.NaN;
 
@@ -131,7 +204,7 @@ public class HardwareMonitorService : IDisposable
 
     public float GetGpuPowerMax()
     {
-        var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.GpuNvidia);
+        var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == _getGpuType());
         if (gpu == null)
             return float.NaN;
 
@@ -140,6 +213,26 @@ public class HardwareMonitorService : IDisposable
 
     // ------------------------------------------------------------------------------------------------
     // Memory
+
+    public ObservableCollection<HardwareStatus.SensorData> GetMemorySensors()
+    {
+        var mem = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Memory);
+        if (mem == null) return [];
+
+        ObservableCollection<HardwareStatus.SensorData> sensors = [];
+
+        foreach (var sensor in mem.Sensors)
+            sensors.Add(new HardwareStatus.SensorData
+            {
+                Name = sensor.Name,
+                Value = sensor.Value.GetValueOrDefault(),
+                Min = sensor.Min.GetValueOrDefault(),
+                Max = sensor.Max.GetValueOrDefault(),
+                SensorType = sensor.SensorType
+            });
+
+        return sensors;
+    }
 
     public double GetMemoryTotalGb()
     {
@@ -173,6 +266,29 @@ public class HardwareMonitorService : IDisposable
             return float.NaN;
 
         return mem.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Load)?.Value ?? float.NaN;
+    }
+
+    // ------------------------------------------------------------------------------------------------
+    // Storage
+
+    public ObservableCollection<HardwareStatus.SensorData> GetStorageSensors()
+    {
+        var storage = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Storage);
+        if (storage == null) return [];
+
+        ObservableCollection<HardwareStatus.SensorData> sensors = [];
+
+        foreach (var sensor in storage.Sensors)
+            sensors.Add(new HardwareStatus.SensorData
+            {
+                Name = sensor.Name,
+                Value = sensor.Value.GetValueOrDefault(),
+                Min = sensor.Min.GetValueOrDefault(),
+                Max = sensor.Max.GetValueOrDefault(),
+                SensorType = sensor.SensorType
+            });
+
+        return sensors;
     }
 
     // ------------------------------------------------------------------------------------------------

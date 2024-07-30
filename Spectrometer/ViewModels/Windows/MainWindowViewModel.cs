@@ -17,13 +17,13 @@ public partial class MainWindowViewModel : ObservableObject
             Content = "Dashboard",
             Icon = new SymbolIcon { Symbol = SymbolRegular.Home24 },
             TargetPageType = typeof(Views.Pages.DashboardPage)
+        },
+        new NavigationViewItem()
+        {
+            Content = "Sensors",
+            Icon = new SymbolIcon { Symbol = SymbolRegular.Book24 },
+            TargetPageType = typeof(Views.Pages.SensorsPage)
         }
-        //new NavigationViewItem()
-        //{
-        //    Content = "Sensors",
-        //    Icon = new SymbolIcon { Symbol = SymbolRegular.Book24 },
-        //    TargetPageType = typeof(Views.Pages.SensorsPage)
-        //}
     ];
 
     [ObservableProperty]

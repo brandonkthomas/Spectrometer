@@ -1,46 +1,157 @@
 ﻿using Spectrometer.Models;
-using System.Windows.Media;
+using Spectrometer.Services;
+using System.Diagnostics;
+using System.Timers;
+using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 
 namespace Spectrometer.ViewModels.Pages;
 
 public partial class SensorsViewModel : ObservableObject, INavigationAware
 {
-    private bool _isInitialized = false;
+    // ------------------------------------------------------------------------------------------------
+    // Properties
+    // ------------------------------------------------------------------------------------------------
 
     [ObservableProperty]
-    private IEnumerable<DataColor>? _colors;
+    private HardwareMonitorService? _hwMonSvc;
 
-    public void OnNavigatedTo()
+    [ObservableProperty]
+    private HardwareStatus? _hwStatus;
+
+    private readonly System.Timers.Timer _timer;
+    private void OnTimerElapsed(object? sender, ElapsedEventArgs e) => PollSensors();
+
+    private readonly int _defaultPollingInterval = 1750; // Default polling interval in milliseconds
+
+    // ------------------------------------------------------------------------------------------------
+    // Constructor + Events
+    // ------------------------------------------------------------------------------------------------
+
+    // ------------------------------------------------------------------------------------------------
+    /// <summary>
+    /// 
+    /// </summary>
+    public SensorsViewModel()
     {
-        if (!_isInitialized)
-            InitializeViewModel();
+        HwStatus = new();
+        HwStatus.IsLoading = true;
+
+        _timer = new System.Timers.Timer(_defaultPollingInterval); // TODO: Make this a user setting
+        _timer.Elapsed += OnTimerElapsed;
+
+        InitializeAsync();
     }
 
-    public void OnNavigatedFrom() { }
-
-    private void InitializeViewModel()
+    private async void InitializeAsync()
     {
-        var random = new Random();
-        var colorCollection = new List<DataColor>();
+        if (HwStatus is not null)
+            HwStatus.IsLoading = true;
 
-        for (int i = 0; i < 8192; i++)
-            colorCollection.Add(
-                new DataColor
-                {
-                    Color = new SolidColorBrush(
-                        Color.FromArgb(
-                            (byte)200,
-                            (byte)random.Next(0, 250),
-                            (byte)random.Next(0, 250),
-                            (byte)random.Next(0, 250)
-                        )
-                    )
-                }
-            );
+        await Task.Run(() =>
+        {
+            HwMonSvc = HardwareMonitorService.Instance; // this takes a sec to finish
 
-        Colors = colorCollection;
+            GetCpuGpuImagePaths();
+            PollSensors(); // run once before starting timer to get initial values
+        });
 
-        _isInitialized = true;
+        if (HwStatus is not null)
+            HwStatus.IsLoading = false;
+
+        _timer.Start();
+    }
+
+    // ------------------------------------------------------------------------------------------------
+    // Navigation Detection
+    // ------------------------------------------------------------------------------------------------
+
+    public void OnNavigatedTo() => _timer.Stop();
+
+    public void OnNavigatedFrom() => _timer.Start();
+
+    // ------------------------------------------------------------------------------------------------
+    /// <summary>
+    /// 
+    /// </summary>
+    private void PollSensors()
+    {
+        if (HwMonSvc is null || HwStatus is null)
+            return;
+
+        try
+        {
+            HwMonSvc.Update();
+
+            HwStatus.MbName = HwMonSvc.GetMotherboardName();
+            HwStatus.MbSensors = HwMonSvc.GetMotherboardSensors();
+
+            HwStatus.CpuName = HwMonSvc.GetCpuName();
+            HwStatus.CpuSensors = HwMonSvc.GetCpuSensors();
+
+            HwStatus.GpuName = HwMonSvc.GetGpuName();
+            HwStatus.GpuSensors = HwMonSvc.GetGpuSensors();
+
+            HwStatus.MemorySensors = HwMonSvc.GetMemorySensors();
+
+            HwStatus.StorageSensors = HwMonSvc.GetStorageSensors();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error polling sensors: {ex.Message}");
+        }
+    }
+
+    // ------------------------------------------------------------------------------------------------
+    /// <summary>
+    /// 
+    /// </summary>
+    private void GetCpuGpuImagePaths()
+    {
+        if (HwStatus is null)
+            return;
+
+        if (ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Dark) // dark mode -- use white logo
+        {
+            // CPU
+            if (HwStatus.CpuName.Contains("intel", StringComparison.CurrentCultureIgnoreCase))
+                HwStatus.CpuImagePath = "pack://application:,,,/Assets/intel-logo-white.png";
+            else if (HwStatus.CpuName.Contains("amd", StringComparison.CurrentCultureIgnoreCase) || HwStatus.CpuName.Contains("ryzen", StringComparison.CurrentCultureIgnoreCase))
+                HwStatus.CpuImagePath = "pack://application:,,,/Assets/amd-logo-white.png";
+
+            // GPU
+            if (HwStatus.GpuName.Contains("nvidia", StringComparison.CurrentCultureIgnoreCase) || HwStatus.GpuName.Contains("geforce", StringComparison.CurrentCultureIgnoreCase))
+                HwStatus.GpuImagePath = "pack://application:,,,/Assets/nvidia-logo-white.png";
+            else if (HwStatus.GpuName.Contains("amd", StringComparison.CurrentCultureIgnoreCase) || HwStatus.GpuName.Contains("radeon", StringComparison.CurrentCultureIgnoreCase))
+                HwStatus.GpuImagePath = "pack://application:,,,/Assets/amd-logo-white.png";
+            else if (HwStatus.GpuName.Contains("intel", StringComparison.CurrentCultureIgnoreCase))
+                HwStatus.GpuImagePath = "pack://application:,,,/Assets/intel-logo-white.png";
+        }
+        else // dark mode -- use black logo
+        {
+            // CPU
+            if (HwStatus.CpuName.Contains("intel", StringComparison.CurrentCultureIgnoreCase))
+                HwStatus.CpuImagePath = "pack://application:,,,/Assets/intel-logo-black.png";
+            else if (HwStatus.CpuName.Contains("amd", StringComparison.CurrentCultureIgnoreCase) || HwStatus.CpuName.Contains("ryzen", StringComparison.CurrentCultureIgnoreCase))
+                HwStatus.CpuImagePath = "pack://application:,,,/Assets/amd-logo-black.png";
+
+            // GPU
+            if (HwStatus.GpuName.Contains("nvidia", StringComparison.CurrentCultureIgnoreCase) || HwStatus.GpuName.Contains("geforce", StringComparison.CurrentCultureIgnoreCase))
+                HwStatus.GpuImagePath = "pack://application:,,,/Assets/nvidia-logo-black.png";
+            else if (HwStatus.GpuName.Contains("amd", StringComparison.CurrentCultureIgnoreCase) || HwStatus.GpuName.Contains("radeon", StringComparison.CurrentCultureIgnoreCase))
+                HwStatus.GpuImagePath = "pack://application:,,,/Assets/amd-logo-black.png";
+            else if (HwStatus.GpuName.Contains("intel", StringComparison.CurrentCultureIgnoreCase))
+                HwStatus.GpuImagePath = "pack://application:,,,/Assets/intel-logo-black.png";
+        }
+    }
+
+    // ------------------------------------------------------------------------------------------------
+    // Dispose
+    // ------------------------------------------------------------------------------------------------
+
+    public void Dispose()
+    {
+        _timer?.Dispose();
+        HwMonSvc?.Dispose();
     }
 }

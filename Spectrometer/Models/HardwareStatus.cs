@@ -1,4 +1,7 @@
-﻿namespace Spectrometer.Models;
+﻿using LibreHardwareMonitor.Hardware;
+using System.Collections.ObjectModel;
+
+namespace Spectrometer.Models;
 
 public partial class HardwareStatus : ObservableObject
 {
@@ -15,10 +18,16 @@ public partial class HardwareStatus : ObservableObject
     // Motherboard
 
     [ObservableProperty]
+    private ObservableCollection<SensorData> _mbSensors = [];
+
+    [ObservableProperty]
     private string _mbName = string.Empty;
 
     // ------------------------------------------------------------------------------------------------
     // CPU
+
+    [ObservableProperty]
+    private ObservableCollection<SensorData> _cpuSensors = [];
 
     [ObservableProperty]
     private string _cpuImagePath = string.Empty;
@@ -42,6 +51,9 @@ public partial class HardwareStatus : ObservableObject
     // GPU
 
     [ObservableProperty]
+    private ObservableCollection<SensorData> _gpuSensors = [];
+
+    [ObservableProperty]
     private string _gpuImagePath = string.Empty;
 
     [ObservableProperty]
@@ -63,6 +75,9 @@ public partial class HardwareStatus : ObservableObject
     // Memory
 
     [ObservableProperty]
+    private ObservableCollection<SensorData> _memorySensors = [];
+
+    [ObservableProperty]
     private string _memoryUsageDetails = string.Empty;
 
     [ObservableProperty]
@@ -70,4 +85,31 @@ public partial class HardwareStatus : ObservableObject
 
     [ObservableProperty]
     private double _memoryTotalGb;
+
+    // ------------------------------------------------------------------------------------------------
+    // Memory
+
+    [ObservableProperty]
+    private ObservableCollection<SensorData> _storageSensors = [];
+
+    // ------------------------------------------------------------------------------------------------
+    // Recycled Sensor Data Object
+
+    public partial class SensorData : ObservableObject
+    {
+        [ObservableProperty]
+        private string _name = string.Empty;
+
+        [ObservableProperty]
+        private float _value;
+
+        [ObservableProperty]
+        private float _min;
+
+        [ObservableProperty]
+        private float _max;
+
+        [ObservableProperty]
+        private SensorType _sensorType;
+    }
 }

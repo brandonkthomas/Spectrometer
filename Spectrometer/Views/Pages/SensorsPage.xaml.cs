@@ -10,7 +10,7 @@ public partial class SensorsPage : INavigableView<SensorsViewModel>
     public SensorsPage(SensorsViewModel viewModel)
     {
         ViewModel = viewModel;
-        DataContext = this;
+        DataContext = viewModel;
 
         InitializeComponent();
     }
