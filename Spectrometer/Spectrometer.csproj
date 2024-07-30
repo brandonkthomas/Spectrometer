@@ -25,11 +25,15 @@
   <ItemGroup>
     <None Remove="Assets\amd-logo-black.png" />
     <None Remove="Assets\amd-logo-white.png" />
+    <None Remove="Assets\drive-30-black.png" />
+    <None Remove="Assets\drive-30-white.png" />
     <None Remove="Assets\icon.png" />
     <None Remove="Assets\intel-logo-black.png" />
     <None Remove="Assets\intel-logo-white.png" />
     <None Remove="Assets\memory-30-black.png" />
     <None Remove="Assets\memory-30-white.png" />
+    <None Remove="Assets\motherboard-32-black.png" />
+    <None Remove="Assets\motherboard-32-white.png" />
     <None Remove="Assets\nvidia-logo-black.png" />
     <None Remove="Assets\nvidia-logo-white.png" />
     <None Remove="Assets\processor-30-black.png" />
@@ -41,11 +45,15 @@
   <ItemGroup>
     <Resource Include="Assets\amd-logo-black.png" />
     <Resource Include="Assets\amd-logo-white.png" />
+    <Resource Include="Assets\drive-30-black.png" />
+    <Resource Include="Assets\drive-30-white.png" />
     <Resource Include="Assets\icon.png" />
     <Resource Include="Assets\intel-logo-black.png" />
     <Resource Include="Assets\intel-logo-white.png" />
     <Resource Include="Assets\memory-30-black.png" />
     <Resource Include="Assets\memory-30-white.png" />
+    <Resource Include="Assets\motherboard-32-black.png" />
+    <Resource Include="Assets\motherboard-32-white.png" />
     <Resource Include="Assets\nvidia-logo-black.png" />
     <Resource Include="Assets\nvidia-logo-white.png" />
     <Resource Include="Assets\processor-30-black.png" />
