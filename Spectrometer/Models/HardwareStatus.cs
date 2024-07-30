@@ -14,6 +14,9 @@ public partial class HardwareStatus : ObservableObject
     [ObservableProperty]
     private bool _isLoading = true;
 
+    [ObservableProperty]
+    private ObservableCollection<SensorData> _pinnedSensors = [];
+
     // ------------------------------------------------------------------------------------------------
     // Motherboard
 
@@ -64,6 +67,12 @@ public partial class HardwareStatus : ObservableObject
 
     [ObservableProperty]
     private float _gpuUsage;
+
+    [ObservableProperty]
+    private float _gpuMemoryTotal;
+
+    [ObservableProperty]
+    private float _gpuMemoryUsage;
 
     [ObservableProperty]
     private float _gpuPower;

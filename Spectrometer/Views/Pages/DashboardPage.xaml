@@ -23,6 +23,7 @@
         <helpers:ProgressToWidthConverter x:Key="ProgressToWidthConverter" />
         <helpers:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <helpers:StringToImageSourceConverter x:Key="StringToImageSourceConverter" />
+        <helpers:ValueToPercentageMultiConverter x:Key="ValueToPercentageMultiConverter" />
 
         <Style x:Key="CustomProgressBar" TargetType="ProgressBar">
             <Setter Property="Template">
@@ -100,7 +101,7 @@
             <!-- ======================================================================= -->
             <!-- CPU Card -->
 
-            <ui:CardAction Grid.Column="0" Grid.Row="0" Height="225px" Margin="0,0,5,0" IsChevronVisible="False">
+            <ui:CardAction Grid.Column="0" Grid.Row="0" Height="270px" Margin="0,0,5,0" IsChevronVisible="False">
                 <StackPanel>
                     <ProgressBar Style="{StaticResource CustomProgressBar}" 
                                  Value="{Binding HwStatus.CpuUsage}" 
@@ -142,9 +143,15 @@
                     </Grid>
 
                     <ProgressBar Style="{StaticResource CustomProgressBar}" 
-                                 Value="{Binding HwStatus.CpuPower}" 
-                                 Maximum="{Binding HwStatus.CpuPowerMax}" 
-                                 Height="20" />
+                                 Maximum="100" 
+                                 Height="20">
+                        <ProgressBar.Value>
+                            <MultiBinding Converter="{StaticResource ValueToPercentageMultiConverter}">
+                                <Binding Path="HwStatus.CpuPower" />
+                                <Binding Path="HwStatus.CpuPowerMax" />
+                            </MultiBinding>
+                        </ProgressBar.Value>
+                    </ProgressBar>
                     <Grid Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -200,7 +207,7 @@
             <!-- ======================================================================= -->
             <!-- GPU Card -->
 
-            <ui:CardAction Grid.Column="1" Grid.Row="0" Height="225px" Margin="5,0,0,0" IsChevronVisible="False">
+            <ui:CardAction Grid.Column="1" Grid.Row="0" Height="270px" Margin="5,0,0,0" IsChevronVisible="False">
                 <StackPanel>
                     <ProgressBar Style="{StaticResource CustomProgressBar}" 
                                  Value="{Binding HwStatus.GpuUsage}" 
@@ -241,10 +248,16 @@
                                       HorizontalAlignment="Right" />
                     </Grid>
 
-                    <ProgressBar Style="{StaticResource CustomProgressBar}"
-                                 Value="{Binding HwStatus.GpuPower}" 
-                                 Maximum="450" 
-                                 Height="20" />
+                    <ProgressBar Style="{StaticResource CustomProgressBar}" 
+                                 Maximum="100" 
+                                 Height="20">
+                        <ProgressBar.Value>
+                            <MultiBinding Converter="{StaticResource ValueToPercentageMultiConverter}">
+                                <Binding Path="HwStatus.GpuPower" />
+                                <Binding Path="HwStatus.GpuPowerMax" />
+                            </MultiBinding>
+                        </ProgressBar.Value>
+                    </ProgressBar>
                     <Grid Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -255,6 +268,31 @@
                                       FontSize="12" 
                                       Opacity="0.65" />
                         <ui:TextBlock Text="{Binding HwStatus.GpuPower, StringFormat={}{0:F0} W}"
+                                      Grid.Column="1" 
+                                      FontSize="12" 
+                                      HorizontalAlignment="Right" />
+                    </Grid>
+
+                    <ProgressBar Style="{StaticResource CustomProgressBar}" 
+                                 Maximum="100" 
+                                 Height="20">
+                        <ProgressBar.Value>
+                            <MultiBinding Converter="{StaticResource ValueToPercentageMultiConverter}">
+                                <Binding Path="HwStatus.GpuMemoryUsage" />
+                                <Binding Path="HwStatus.GpuMemoryTotal" />
+                            </MultiBinding>
+                        </ProgressBar.Value>
+                    </ProgressBar>
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <ui:TextBlock Text="Memory" 
+                                      Grid.Column="0" 
+                                      FontSize="12" 
+                                      Opacity="0.65" />
+                        <ui:TextBlock Text="{Binding HwStatus.GpuMemoryUsage, StringFormat={}{0:F0} MB}"
                                       Grid.Column="1" 
                                       FontSize="12" 
                                       HorizontalAlignment="Right" />

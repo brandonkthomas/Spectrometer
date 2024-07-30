@@ -63,8 +63,9 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
     public DashboardViewModel()
     {
         HwStatus = new();
-        PrcssInfoList = new();
         HwStatus.IsLoading = true;
+
+        PrcssInfoList = new();
         _processesViewSource = new CollectionViewSource { Source = PrcssInfoList };
         _processesViewSource.Filter += TopThreeFilter;
 
@@ -132,8 +133,10 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
             HwStatus.GpuName = HwMonSvc.GetGpuName();
             HwStatus.GpuTemp = HwMonSvc.GetGpuTemp();
             HwStatus.GpuUsage = HwMonSvc.GetGpuUsage();
+            HwStatus.GpuMemoryTotal = HwMonSvc.GetGpuMemoryTotal();
+            HwStatus.GpuMemoryUsage = HwMonSvc.GetGpuMemoryUsage();
             HwStatus.GpuPower = HwMonSvc.GetGpuPowerCurrent();
-            //HwStatus.GpuPowerMax = HwMonSvc.GetGpuPowerMax();
+            HwStatus.GpuPowerMax = HwMonSvc.GetGpuPowerMax();
 
             HwStatus.MemoryUsageGb = HwMonSvc.GetMemoryUsageGb();
             HwStatus.MemoryTotalGb = HwMonSvc.GetMemoryTotalGb();

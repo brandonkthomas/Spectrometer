@@ -153,7 +153,7 @@ public class HardwareMonitorService : IDisposable
             return HardwareType.GpuIntel;
     }
 
-    public string GetGpuName() => _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.GpuNvidia)?.Name ?? "Unknown";
+    public string GetGpuName() => _computer.Hardware.FirstOrDefault(h => h.HardwareType == _getGpuType())?.Name ?? "Unknown";
 
     public ObservableCollection<HardwareStatus.SensorData> GetGpuSensors()
     {
@@ -191,6 +191,28 @@ public class HardwareMonitorService : IDisposable
             return float.NaN;
 
         return gpu.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Load)?.Value ?? float.NaN;
+    }
+
+    public float GetGpuMemoryTotal()
+    {
+        var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == _getGpuType());
+        if (gpu == null)
+            return float.NaN;
+
+        var gpuMemSensors = gpu.Sensors.Where(s => s.SensorType == SensorType.SmallData);
+
+        return gpuMemSensors.FirstOrDefault(s => s.Name.Contains("Total"))?.Value ?? float.NaN;
+    }
+
+    public float GetGpuMemoryUsage()
+    {
+        var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == _getGpuType());
+        if (gpu == null)
+            return float.NaN;
+
+        var gpuMemSensors = gpu.Sensors.Where(s => s.SensorType == SensorType.SmallData);
+
+        return gpuMemSensors.FirstOrDefault(s => s.Name.Contains("Used") && s.Name.Contains("GPU"))?.Value ?? float.NaN;
     }
 
     public float GetGpuPowerCurrent()
