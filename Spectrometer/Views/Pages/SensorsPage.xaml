@@ -81,7 +81,7 @@
                                             Margin="0,8,0,8"/>
                         </StackPanel>
 
-                        <Image Source="{Binding MbImagePath, Converter={StaticResource StringToImageSourceConverter}}"
+                        <Image Source="{Binding HwStatus.MbImagePath, Converter={StaticResource StringToImageSourceConverter}}"
                                 Height="24" 
                                 VerticalAlignment="Center" 
                                 Grid.Column="2"
@@ -171,7 +171,7 @@
                                             FontWeight="Bold"/>
                         </StackPanel>
 
-                        <Image Source="{Binding MbImagePath, Converter={StaticResource StringToImageSourceConverter}}"
+                        <Image Source="{Binding HwStatus.MbImagePath, Converter={StaticResource StringToImageSourceConverter}}"
                                 Height="24" 
                                 VerticalAlignment="Center" 
                                 Grid.Column="2"

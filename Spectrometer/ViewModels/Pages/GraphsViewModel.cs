@@ -1,43 +1,13 @@
-﻿using Wpf.Ui.Controls;
+﻿using Spectrometer.Models;
+using Spectrometer.ViewModels.Windows;
 
 namespace Spectrometer.ViewModels.Pages;
 
-public partial class GraphsViewModel : ObservableObject, INavigationAware
+public partial class GraphsViewModel : ObservableObject
 {
-    // ------------------------------------------------------------------------------------------------
-    // Properties
-    // ------------------------------------------------------------------------------------------------
+    private readonly MainWindowViewModel _mainWindowViewModel;
 
+    public HardwareStatus? HwStatus => _mainWindowViewModel?.HwStatus ?? new();
 
-    // ------------------------------------------------------------------------------------------------
-    // Constructor + Events
-    // ------------------------------------------------------------------------------------------------
-
-    // ------------------------------------------------------------------------------------------------
-    /// <summary>
-    /// 
-    /// </summary>
-    public GraphsViewModel()
-    {
-        InitializeAsync();
-    }
-
-    private async void InitializeAsync()
-    {
-
-    }
-
-    // ------------------------------------------------------------------------------------------------
-    // Navigation Detection
-    // ------------------------------------------------------------------------------------------------
-
-    public void OnNavigatedTo()
-    {
-
-    }
-
-    public void OnNavigatedFrom()
-    {
-
-    }
+    public GraphsViewModel(MainWindowViewModel mainWindowViewModel) => _mainWindowViewModel = mainWindowViewModel;
 }

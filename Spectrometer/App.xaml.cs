@@ -60,14 +60,15 @@ public partial class App
             services.AddSingleton<INavigationWindow, MainWindow>();
             services.AddSingleton<MainWindowViewModel>();
 
+            // Register ViewModels with MainWindowViewModel dependency
+            services.AddSingleton(provider => new DashboardViewModel(provider.GetRequiredService<MainWindowViewModel>()));
+            services.AddSingleton(provider => new SensorsViewModel(provider.GetRequiredService<MainWindowViewModel>()));
+            services.AddSingleton(provider => new GraphsViewModel(provider.GetRequiredService<MainWindowViewModel>()));
+
+            // Register Pages
             services.AddSingleton<DashboardPage>();
-            services.AddSingleton<DashboardViewModel>();
-
             services.AddSingleton<SensorsPage>();
-            services.AddSingleton<SensorsViewModel>();
-
             services.AddSingleton<GraphsPage>();
-            services.AddSingleton<GraphsViewModel>();
 
             services.AddSingleton<GraphUserControl>();
             services.AddSingleton<GraphViewModel>();
