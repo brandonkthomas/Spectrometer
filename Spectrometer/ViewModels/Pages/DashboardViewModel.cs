@@ -177,16 +177,23 @@ public partial class DashboardViewModel : ObservableObject, INavigationAware
         
         var processes = PrcssSvc.LoadProcesses();
 
-        Application.Current.Dispatcher.Invoke(() =>
+        try
         {
-            PrcssInfoList.Clear();
-            foreach (var proc in processes)
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                PrcssInfoList.Add(proc);
-            }
+                PrcssInfoList.Clear();
+                foreach (var proc in processes)
+                {
+                    PrcssInfoList.Add(proc);
+                }
 
-            ProcessesView.Refresh();
-        });
+                ProcessesView.Refresh();
+            });
+        }
+        catch (Exception ex)
+        {
+            Logger.WriteExc(ex);
+        }
     }
 
     private void TopThreeFilter(object sender, FilterEventArgs e)

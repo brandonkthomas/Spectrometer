@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.3" />
+    <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.0-rc2" />
     <PackageReference Include="System.Text.Json" Version="8.0.4" />
     <PackageReference Include="WPF-UI" Version="3.0.5" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
@@ -37,6 +38,8 @@
     <None Remove="Assets\motherboard-32-white.png" />
     <None Remove="Assets\nvidia-logo-black.png" />
     <None Remove="Assets\nvidia-logo-white.png" />
+    <None Remove="Assets\pin-50-black.png" />
+    <None Remove="Assets\pin-50-white.png" />
     <None Remove="Assets\processor-30-black.png" />
     <None Remove="Assets\processor-30-white.png" />
     <None Remove="Assets\video-card-48-black.png" />
@@ -56,6 +59,8 @@
     <Resource Include="Assets\motherboard-32-white.png" />
     <Resource Include="Assets\nvidia-logo-black.png" />
     <Resource Include="Assets\nvidia-logo-white.png" />
+    <Resource Include="Assets\pin-50-black.png" />
+    <Resource Include="Assets\pin-50-white.png" />
     <Resource Include="Assets\processor-30-black.png" />
     <Resource Include="Assets\processor-30-white.png" />
     <Resource Include="Assets\video-card-48-black.png" />
