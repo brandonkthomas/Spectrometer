@@ -20,6 +20,12 @@ public partial class MainWindowViewModel : ObservableObject
         },
         new NavigationViewItem()
         {
+            Content = "Graphs",
+            Icon = new SymbolIcon { Symbol = SymbolRegular.LineFlowDiagonalUpRight24 },
+            TargetPageType = typeof(Views.Pages.GraphsPage)
+        },
+        new NavigationViewItem()
+        {
             Content = "Sensors",
             Icon = new SymbolIcon { Symbol = SymbolRegular.Book24 },
             TargetPageType = typeof(Views.Pages.SensorsPage)

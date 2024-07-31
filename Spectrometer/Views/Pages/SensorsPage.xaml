@@ -16,7 +16,7 @@
     ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-    ScrollViewer.CanContentScroll="False"
+    ScrollViewer.CanContentScroll="True"
     mc:Ignorable="d">
 
     <!-- ======================================================================= -->
@@ -28,565 +28,553 @@
         <helpers:ValueWithSuffixConverter x:Key="ValueWithSuffixConverter" />
     </Page.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" 
-                  HorizontalScrollBarVisibility="Auto"
-                  PanningRatio="10">
+    <!-- ======================================================================= -->
+    <!-- Primary Content Grid -->
+
+    <Grid Name="ContentGrid" 
+            VerticalAlignment="Top" 
+            helpers:TransitionBehavior.Transition="FadeInWithSlide">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
         <!-- ======================================================================= -->
-        <!-- Primary Content Grid -->
+        <!-- Pinned Sensors Card -->
 
-        <Grid Name="ContentGrid" 
-              VerticalAlignment="Top" 
-              helpers:TransitionBehavior.Transition="FadeInWithSlide">
+        <ui:CardExpander Grid.Column="0" Grid.Row="0" >
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+            <!-- Header -->
+            <ui:CardExpander.Header>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <!-- ======================================================================= -->
-            <!-- Pinned Sensors Card -->
-
-            <ui:CardExpander Grid.Column="0" Grid.Row="0" >
-
-                <!-- Header -->
-                <ui:CardExpander.Header>
                     <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <Grid>
+                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                            <ui:TextBlock Text="Pinned Sensors" 
+                                            VerticalAlignment="Center" 
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
+                                            FontSize="14" 
+                                            FontWeight="Bold"
+                                            Margin="0,8,0,8"/>
+                        </StackPanel>
+
+                        <Image Source="{Binding MbImagePath, Converter={StaticResource StringToImageSourceConverter}}"
+                                Height="24" 
+                                VerticalAlignment="Center" 
+                                Grid.Column="2"
+                                Opacity="0.65" 
+                                MaxHeight="16" />
+
+                        <ui:InfoBadge Padding="5"
+                                        Severity="Success"
+                                        Value="{Binding HwStatus.PinnedSensors.Count}" 
+                                        FontFamily="Segoe UI"
+                                        FontSize="12"
+                                        FontWeight="Bold"
+                                        Grid.Column="2"/>
+
+                    </Grid>
+                </Grid>
+            </ui:CardExpander.Header>
+
+            <!-- Content -->
+            <ItemsControl ItemsSource="{Binding HwStatus.MbSensors}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="0,10,0,0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <Image Source="pack://application:,,,/Assets/motherboard-32-white.png"
-                                   Height="20" 
-                                   Width="20"
-                                   VerticalAlignment="Center"
-                                   HorizontalAlignment="Left"
-                                   Grid.Column="0" />
-                            <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                                <ui:TextBlock Text="Pinned Sensors" 
-                                              VerticalAlignment="Center" 
-                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
-                                              FontSize="14" 
-                                              FontWeight="Bold"
-                                              Margin="0,8,0,8"/>
-                            </StackPanel>
-
-                            <Image Source="{Binding MbImagePath, Converter={StaticResource StringToImageSourceConverter}}"
-                                   Height="24" 
-                                   VerticalAlignment="Center" 
-                                   Grid.Column="2"
-                                   Opacity="0.65" 
-                                   MaxHeight="16" />
-
-                            <ui:InfoBadge Padding="5"
-                                          Severity="Success"
-                                          Value="{Binding HwStatus.PinnedSensors.Count}" 
-                                          FontFamily="Segoe UI"
-                                          FontSize="12"
-                                          FontWeight="Bold"
-                                          Grid.Column="2"/>
-
+                            <ui:TextBlock Text="{Binding Name}"
+                                            VerticalAlignment="Center" 
+                                            HorizontalAlignment="Left"
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                            FontSize="12"
+                                            Margin="15,0,0,0"/>
+                            <ui:TextBlock Text="{Binding ., Converter={StaticResource ValueWithSuffixConverter}}" 
+                                            VerticalAlignment="Center" 
+                                            HorizontalAlignment="Right"
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
+                                            FontSize="12" 
+                                            Margin="0,0,15,0"
+                                            FontWeight="Bold"/>
                         </Grid>
-                    </Grid>
-                </ui:CardExpander.Header>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
-                <!-- Content -->
-                <ItemsControl ItemsSource="{Binding HwStatus.MbSensors}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Margin="0,10,0,0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
+        </ui:CardExpander>
 
-                                <ui:TextBlock Text="{Binding Name}"
-                                              VerticalAlignment="Center" 
-                                              HorizontalAlignment="Left"
-                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                              FontSize="12"
-                                              Margin="15,0,0,0"/>
-                                <ui:TextBlock Text="{Binding ., Converter={StaticResource ValueWithSuffixConverter}}" 
-                                              VerticalAlignment="Center" 
-                                              HorizontalAlignment="Right"
-                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
-                                              FontSize="12" 
-                                              Margin="0,0,15,0"
-                                              FontWeight="Bold"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+        <!-- ======================================================================= -->
+        <!-- Motherboard Card -->
 
-            </ui:CardExpander>
+        <ui:CardExpander Grid.Column="0" Grid.Row="1" >
 
-            <!-- ======================================================================= -->
-            <!-- Motherboard Card -->
+            <!-- Header -->
+            <ui:CardExpander.Header>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-            <ui:CardExpander Grid.Column="0" Grid.Row="1" >
-
-                <!-- Header -->
-                <ui:CardExpander.Header>
                     <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <Grid>
+                        <Image Source="pack://application:,,,/Assets/motherboard-32-white.png"
+                                Height="20" 
+                                Width="20"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Left"
+                                Grid.Column="0" />
+                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                            <ui:TextBlock Text="Motherboard"
+                                            FontSize="12"
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                            Opacity="0.65"/>
+                            <ui:TextBlock Text="{Binding HwStatus.MbName}" 
+                                            VerticalAlignment="Center" 
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
+                                            FontSize="14" 
+                                            FontWeight="Bold"/>
+                        </StackPanel>
+
+                        <Image Source="{Binding MbImagePath, Converter={StaticResource StringToImageSourceConverter}}"
+                                Height="24" 
+                                VerticalAlignment="Center" 
+                                Grid.Column="2"
+                                Opacity="0.65" 
+                                MaxHeight="16" />
+
+                        <ui:InfoBadge Padding="5"
+                                        Severity="Success"
+                                        Value="{Binding HwStatus.MbSensors.Count}" 
+                                        FontFamily="Segoe UI"
+                                        FontSize="12"
+                                        FontWeight="Bold"
+                                        Grid.Column="2"/>
+
+                    </Grid>
+                </Grid>
+            </ui:CardExpander.Header>
+
+            <!-- Content -->
+            <ItemsControl ItemsSource="{Binding HwStatus.MbSensors}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="0,10,0,0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <Image Source="pack://application:,,,/Assets/motherboard-32-white.png"
-                                   Height="20" 
-                                   Width="20"
-                                   VerticalAlignment="Center"
-                                   HorizontalAlignment="Left"
-                                   Grid.Column="0" />
-                            <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                                <ui:TextBlock Text="Motherboard"
-                                              FontSize="12"
-                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                              Opacity="0.65"/>
-                                <ui:TextBlock Text="{Binding HwStatus.MbName}" 
-                                              VerticalAlignment="Center" 
-                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
-                                              FontSize="14" 
-                                              FontWeight="Bold"/>
-                            </StackPanel>
-
-                            <Image Source="{Binding MbImagePath, Converter={StaticResource StringToImageSourceConverter}}"
-                                   Height="24" 
-                                   VerticalAlignment="Center" 
-                                   Grid.Column="2"
-                                   Opacity="0.65" 
-                                   MaxHeight="16" />
-
-                            <ui:InfoBadge Padding="5"
-                                          Severity="Success"
-                                          Value="{Binding HwStatus.MbSensors.Count}" 
-                                          FontFamily="Segoe UI"
-                                          FontSize="12"
-                                          FontWeight="Bold"
-                                          Grid.Column="2"/>
-
+                            <ui:TextBlock Text="{Binding Name}"
+                                            VerticalAlignment="Center" 
+                                            HorizontalAlignment="Left"
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                            FontSize="12"
+                                            Margin="15,0,0,0"/>
+                            <ui:TextBlock Text="{Binding ., Converter={StaticResource ValueWithSuffixConverter}}" 
+                                            VerticalAlignment="Center" 
+                                            HorizontalAlignment="Right"
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
+                                            FontSize="12" 
+                                            Margin="0,0,15,0"
+                                            FontWeight="Bold"/>
                         </Grid>
-                    </Grid>
-                </ui:CardExpander.Header>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
-                <!-- Content -->
-                <ItemsControl ItemsSource="{Binding HwStatus.MbSensors}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Margin="0,10,0,0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
+        </ui:CardExpander>
 
-                                <ui:TextBlock Text="{Binding Name}"
-                                              VerticalAlignment="Center" 
-                                              HorizontalAlignment="Left"
-                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                              FontSize="12"
-                                              Margin="15,0,0,0"/>
-                                <ui:TextBlock Text="{Binding ., Converter={StaticResource ValueWithSuffixConverter}}" 
-                                              VerticalAlignment="Center" 
-                                              HorizontalAlignment="Right"
-                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
-                                              FontSize="12" 
-                                              Margin="0,0,15,0"
-                                              FontWeight="Bold"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+        <!-- ======================================================================= -->
+        <!-- CPU Card -->
 
-            </ui:CardExpander>
+        <ui:CardExpander Grid.Column="0" Grid.Row="2" >
 
-            <!-- ======================================================================= -->
-            <!-- CPU Card -->
+            <!-- Header -->
+            <ui:CardExpander.Header>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-            <ui:CardExpander Grid.Column="0" Grid.Row="2" >
-
-                <!-- Header -->
-                <ui:CardExpander.Header>
                     <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <Grid>
+                        <Image Source="pack://application:,,,/Assets/processor-30-white.png"
+                                Height="20" 
+                                Width="20"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Left"
+                                Grid.Column="0" />
+                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                            <ui:TextBlock Text="Processor"
+                                            FontSize="12"
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                            Opacity="0.65"/>
+                            <ui:TextBlock Text="{Binding HwStatus.CpuName}" 
+                                            VerticalAlignment="Center" 
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
+                                            FontSize="14" 
+                                            FontWeight="Bold"/>
+                        </StackPanel>
+
+                        <Image Source="{Binding HwStatus.CpuImagePath, Converter={StaticResource StringToImageSourceConverter}}"
+                                Height="24" 
+                                VerticalAlignment="Center" 
+                                Grid.Column="2"
+                                Opacity="0.65" 
+                                MaxHeight="16" />
+
+                        <ui:InfoBadge Padding="5"
+                                        Severity="Success"
+                                        Value="{Binding HwStatus.CpuSensors.Count}" 
+                                        FontFamily="Segoe UI"
+                                        FontSize="12"
+                                        FontWeight="Bold"
+                                        Grid.Column="2"/>
+                    </Grid>
+                </Grid>
+            </ui:CardExpander.Header>
+
+            <!-- Content -->
+            <ItemsControl ItemsSource="{Binding HwStatus.CpuSensors}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="0,10,0,0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <Image Source="pack://application:,,,/Assets/processor-30-white.png"
-                                   Height="20" 
-                                   Width="20"
-                                   VerticalAlignment="Center"
-                                   HorizontalAlignment="Left"
-                                   Grid.Column="0" />
-                            <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                                <ui:TextBlock Text="Processor"
-                                              FontSize="12"
-                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                              Opacity="0.65"/>
-                                <ui:TextBlock Text="{Binding HwStatus.CpuName}" 
-                                              VerticalAlignment="Center" 
-                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
-                                              FontSize="14" 
-                                              FontWeight="Bold"/>
-                            </StackPanel>
-
-                            <Image Source="{Binding HwStatus.CpuImagePath, Converter={StaticResource StringToImageSourceConverter}}"
-                                   Height="24" 
-                                   VerticalAlignment="Center" 
-                                   Grid.Column="2"
-                                   Opacity="0.65" 
-                                   MaxHeight="16" />
-
-                            <ui:InfoBadge Padding="5"
-                                          Severity="Success"
-                                          Value="{Binding HwStatus.CpuSensors.Count}" 
-                                          FontFamily="Segoe UI"
-                                          FontSize="12"
-                                          FontWeight="Bold"
-                                          Grid.Column="2"/>
+                            <ui:TextBlock Text="{Binding Name}"
+                                            VerticalAlignment="Center" 
+                                            HorizontalAlignment="Left"
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                            FontSize="12"
+                                            Margin="15,0,0,0"/>
+                            <ui:TextBlock Text="{Binding ., Converter={StaticResource ValueWithSuffixConverter}}" 
+                                            VerticalAlignment="Center" 
+                                            HorizontalAlignment="Right"
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
+                                            FontSize="12" 
+                                            Margin="0,0,15,0"
+                                            FontWeight="Bold"/>
                         </Grid>
-                    </Grid>
-                </ui:CardExpander.Header>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
-                <!-- Content -->
-                <ItemsControl ItemsSource="{Binding HwStatus.CpuSensors}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Margin="0,10,0,0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
+        </ui:CardExpander>
 
-                                <ui:TextBlock Text="{Binding Name}"
-                                              VerticalAlignment="Center" 
-                                              HorizontalAlignment="Left"
-                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                              FontSize="12"
-                                              Margin="15,0,0,0"/>
-                                <ui:TextBlock Text="{Binding ., Converter={StaticResource ValueWithSuffixConverter}}" 
-                                              VerticalAlignment="Center" 
-                                              HorizontalAlignment="Right"
-                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
-                                              FontSize="12" 
-                                              Margin="0,0,15,0"
-                                              FontWeight="Bold"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+        <!-- ======================================================================= -->
+        <!-- GPU Card -->
 
-            </ui:CardExpander>
+        <ui:CardExpander Grid.Column="0" Grid.Row="3" >
 
-            <!-- ======================================================================= -->
-            <!-- GPU Card -->
+            <!-- Header -->
+            <ui:CardExpander.Header>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-            <ui:CardExpander Grid.Column="0" Grid.Row="3" >
-
-                <!-- Header -->
-                <ui:CardExpander.Header>
                     <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <Grid>
+                        <Image Source="pack://application:,,,/Assets/video-card-48-white.png"
+                                Height="20" 
+                                Width="20"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Left"
+                                Grid.Column="0" />
+                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                            <ui:TextBlock Text="Graphics Card"
+                                            FontSize="12"
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                            Opacity="0.65"/>
+                            <ui:TextBlock Text="{Binding HwStatus.GpuName}" 
+                                            VerticalAlignment="Center" 
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
+                                            FontSize="14" 
+                                            FontWeight="Bold"/>
+                        </StackPanel>
+
+                        <Image Source="{Binding HwStatus.GpuImagePath, Converter={StaticResource StringToImageSourceConverter}}"
+                                Height="24" 
+                                VerticalAlignment="Center" 
+                                Grid.Column="2"
+                                Opacity="0.65" 
+                                MaxHeight="16" />
+
+                        <ui:InfoBadge Padding="5"
+                                        Severity="Success"
+                                        Value="{Binding HwStatus.GpuSensors.Count}" 
+                                        FontFamily="Segoe UI"
+                                        FontSize="12"
+                                        FontWeight="Bold"
+                                        Grid.Column="2"/>
+                    </Grid>
+                </Grid>
+            </ui:CardExpander.Header>
+
+            <!-- Content -->
+            <ItemsControl ItemsSource="{Binding HwStatus.GpuSensors}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="0,10,0,0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <Image Source="pack://application:,,,/Assets/video-card-48-white.png"
-                                   Height="20" 
-                                   Width="20"
-                                   VerticalAlignment="Center"
-                                   HorizontalAlignment="Left"
-                                   Grid.Column="0" />
-                            <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                                <ui:TextBlock Text="Graphics Card"
-                                              FontSize="12"
-                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                              Opacity="0.65"/>
-                                <ui:TextBlock Text="{Binding HwStatus.GpuName}" 
-                                              VerticalAlignment="Center" 
-                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
-                                              FontSize="14" 
-                                              FontWeight="Bold"/>
-                            </StackPanel>
-
-                            <Image Source="{Binding HwStatus.GpuImagePath, Converter={StaticResource StringToImageSourceConverter}}"
-                                   Height="24" 
-                                   VerticalAlignment="Center" 
-                                   Grid.Column="2"
-                                   Opacity="0.65" 
-                                   MaxHeight="16" />
-
-                            <ui:InfoBadge Padding="5"
-                                          Severity="Success"
-                                          Value="{Binding HwStatus.GpuSensors.Count}" 
-                                          FontFamily="Segoe UI"
-                                          FontSize="12"
-                                          FontWeight="Bold"
-                                          Grid.Column="2"/>
+                            <ui:TextBlock Text="{Binding Name}"
+                                            VerticalAlignment="Center" 
+                                            HorizontalAlignment="Left"
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                            FontSize="12"
+                                            Margin="15,0,0,0"/>
+                            <ui:TextBlock Text="{Binding ., Converter={StaticResource ValueWithSuffixConverter}}" 
+                                            VerticalAlignment="Center" 
+                                            HorizontalAlignment="Right"
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
+                                            FontSize="12" 
+                                            Margin="0,0,15,0"
+                                            FontWeight="Bold"/>
                         </Grid>
-                    </Grid>
-                </ui:CardExpander.Header>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
-                <!-- Content -->
-                <ItemsControl ItemsSource="{Binding HwStatus.GpuSensors}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Margin="0,10,0,0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
+        </ui:CardExpander>
 
-                                <ui:TextBlock Text="{Binding Name}"
-                                              VerticalAlignment="Center" 
-                                              HorizontalAlignment="Left"
-                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                              FontSize="12"
-                                              Margin="15,0,0,0"/>
-                                <ui:TextBlock Text="{Binding ., Converter={StaticResource ValueWithSuffixConverter}}" 
-                                              VerticalAlignment="Center" 
-                                              HorizontalAlignment="Right"
-                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
-                                              FontSize="12" 
-                                              Margin="0,0,15,0"
-                                              FontWeight="Bold"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-                
-            </ui:CardExpander>
+        <!-- ======================================================================= -->
+        <!-- Memory Card -->
 
-            <!-- ======================================================================= -->
-            <!-- Memory Card -->
+        <ui:CardExpander Grid.Column="0" Grid.Row="4" >
 
-            <ui:CardExpander Grid.Column="0" Grid.Row="4" >
+            <!-- Header -->
+            <ui:CardExpander.Header>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-                <!-- Header -->
-                <ui:CardExpander.Header>
                     <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <Grid>
+                        <Image Source="pack://application:,,,/Assets/memory-30-white.png"
+                                Height="20" 
+                                Width="20"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Left"
+                                Grid.Column="0" />
+                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                            <ui:TextBlock Text="Memory"
+                                            FontSize="12"
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                            Opacity="0.65"/>
+                            <ui:TextBlock Text="n Memory Modules" 
+                                            VerticalAlignment="Center" 
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
+                                            FontSize="14" 
+                                            FontWeight="Bold"/>
+                        </StackPanel>
+
+                        <Image Source="{Binding MotherboardImagePath, Converter={StaticResource StringToImageSourceConverter}}"
+                                Height="24" 
+                                VerticalAlignment="Center" 
+                                Grid.Column="2"
+                                Opacity="0.65" 
+                                MaxHeight="16" />
+
+                        <ui:InfoBadge Padding="5"
+                                        Severity="Success"
+                                        Value="{Binding HwStatus.MemorySensors.Count}" 
+                                        FontFamily="Segoe UI"
+                                        FontSize="12"
+                                        FontWeight="Bold"
+                                        Grid.Column="2"/>
+                    </Grid>
+                </Grid>
+            </ui:CardExpander.Header>
+
+            <!-- Content -->
+            <ItemsControl ItemsSource="{Binding HwStatus.MemorySensors}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="0,10,0,0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <Image Source="pack://application:,,,/Assets/memory-30-white.png"
-                                   Height="20" 
-                                   Width="20"
-                                   VerticalAlignment="Center"
-                                   HorizontalAlignment="Left"
-                                   Grid.Column="0" />
-                            <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                                <ui:TextBlock Text="Memory"
-                                              FontSize="12"
-                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                              Opacity="0.65"/>
-                                <ui:TextBlock Text="n Memory Modules" 
-                                              VerticalAlignment="Center" 
-                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
-                                              FontSize="14" 
-                                              FontWeight="Bold"/>
-                            </StackPanel>
-
-                            <Image Source="{Binding MotherboardImagePath, Converter={StaticResource StringToImageSourceConverter}}"
-                                   Height="24" 
-                                   VerticalAlignment="Center" 
-                                   Grid.Column="2"
-                                   Opacity="0.65" 
-                                   MaxHeight="16" />
-
-                            <ui:InfoBadge Padding="5"
-                                          Severity="Success"
-                                          Value="{Binding HwStatus.MemorySensors.Count}" 
-                                          FontFamily="Segoe UI"
-                                          FontSize="12"
-                                          FontWeight="Bold"
-                                          Grid.Column="2"/>
+                            <ui:TextBlock Text="{Binding Name}"
+                                            VerticalAlignment="Center" 
+                                            HorizontalAlignment="Left"
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                            FontSize="12"
+                                            Margin="15,0,0,0"/>
+                            <ui:TextBlock Text="{Binding ., Converter={StaticResource ValueWithSuffixConverter}}" 
+                                            VerticalAlignment="Center" 
+                                            HorizontalAlignment="Right"
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
+                                            FontSize="12" 
+                                            Margin="0,0,15,0"
+                                            FontWeight="Bold"/>
                         </Grid>
-                    </Grid>
-                </ui:CardExpander.Header>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
-                <!-- Content -->
-                <ItemsControl ItemsSource="{Binding HwStatus.MemorySensors}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Margin="0,10,0,0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
+        </ui:CardExpander>
 
-                                <ui:TextBlock Text="{Binding Name}"
-                                              VerticalAlignment="Center" 
-                                              HorizontalAlignment="Left"
-                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                              FontSize="12"
-                                              Margin="15,0,0,0"/>
-                                <ui:TextBlock Text="{Binding ., Converter={StaticResource ValueWithSuffixConverter}}" 
-                                              VerticalAlignment="Center" 
-                                              HorizontalAlignment="Right"
-                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
-                                              FontSize="12" 
-                                              Margin="0,0,15,0"
-                                              FontWeight="Bold"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-                
-            </ui:CardExpander>
+        <!-- ======================================================================= -->
+        <!-- Storage Card -->
 
-            <!-- ======================================================================= -->
-            <!-- Storage Card -->
+        <ui:CardExpander Grid.Column="0" Grid.Row="5" >
 
-            <ui:CardExpander Grid.Column="0" Grid.Row="5" >
+            <!-- Header -->
+            <ui:CardExpander.Header>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-                <!-- Header -->
-                <ui:CardExpander.Header>
                     <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <Grid>
+                        <Image Source="pack://application:,,,/Assets/drive-30-white.png"
+                                Height="20" 
+                                Width="20"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Left"
+                                Grid.Column="0" />
+                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                            <ui:TextBlock Text="Storage"
+                                            FontSize="12"
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                            Opacity="0.65"/>
+                            <ui:TextBlock Text="n Storage Devices" 
+                                            VerticalAlignment="Center" 
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
+                                            FontSize="14" 
+                                            FontWeight="Bold"/>
+                        </StackPanel>
+
+                        <Image Source="{Binding MotherboardImagePath, Converter={StaticResource StringToImageSourceConverter}}"
+                                Height="24" 
+                                VerticalAlignment="Center" 
+                                Grid.Column="2"
+                                Opacity="0.65" 
+                                MaxHeight="16" />
+
+                        <ui:InfoBadge Padding="5"
+                                        Severity="Success"
+                                        Value="{Binding HwStatus.StorageSensors.Count}" 
+                                        FontFamily="Segoe UI"
+                                        FontSize="12"
+                                        FontWeight="Bold"
+                                        Grid.Column="2"/>
+                    </Grid>
+                </Grid>
+            </ui:CardExpander.Header>
+
+            <!-- Content -->
+            <ItemsControl ItemsSource="{Binding HwStatus.StorageSensors}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="0,10,0,0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <Image Source="pack://application:,,,/Assets/drive-30-white.png"
-                                   Height="20" 
-                                   Width="20"
-                                   VerticalAlignment="Center"
-                                   HorizontalAlignment="Left"
-                                   Grid.Column="0" />
-                            <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                                <ui:TextBlock Text="Storage"
-                                              FontSize="12"
-                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                              Opacity="0.65"/>
-                                <ui:TextBlock Text="n Storage Devices" 
-                                              VerticalAlignment="Center" 
-                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
-                                              FontSize="14" 
-                                              FontWeight="Bold"/>
-                            </StackPanel>
-
-                            <Image Source="{Binding MotherboardImagePath, Converter={StaticResource StringToImageSourceConverter}}"
-                                   Height="24" 
-                                   VerticalAlignment="Center" 
-                                   Grid.Column="2"
-                                   Opacity="0.65" 
-                                   MaxHeight="16" />
-
-                            <ui:InfoBadge Padding="5"
-                                          Severity="Success"
-                                          Value="{Binding HwStatus.StorageSensors.Count}" 
-                                          FontFamily="Segoe UI"
-                                          FontSize="12"
-                                          FontWeight="Bold"
-                                          Grid.Column="2"/>
+                            <ui:TextBlock Text="{Binding Name}"
+                                            VerticalAlignment="Center" 
+                                            HorizontalAlignment="Left"
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                            FontSize="12"
+                                            Margin="15,0,0,0"/>
+                            <ui:TextBlock Text="{Binding ., Converter={StaticResource ValueWithSuffixConverter}}" 
+                                            VerticalAlignment="Center" 
+                                            HorizontalAlignment="Right"
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
+                                            FontSize="12" 
+                                            Margin="0,0,15,0"
+                                            FontWeight="Bold"/>
                         </Grid>
-                    </Grid>
-                </ui:CardExpander.Header>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
-                <!-- Content -->
-                <ItemsControl ItemsSource="{Binding HwStatus.StorageSensors}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Margin="0,10,0,0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
+        </ui:CardExpander>
 
-                                <ui:TextBlock Text="{Binding Name}"
-                                              VerticalAlignment="Center" 
-                                              HorizontalAlignment="Left"
-                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                              FontSize="12"
-                                              Margin="15,0,0,0"/>
-                                <ui:TextBlock Text="{Binding ., Converter={StaticResource ValueWithSuffixConverter}}" 
-                                              VerticalAlignment="Center" 
-                                              HorizontalAlignment="Right"
-                                              Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
-                                              FontSize="12" 
-                                              Margin="0,0,15,0"
-                                              FontWeight="Bold"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-                
-            </ui:CardExpander>
-
-            <!-- Close: Primary Content Grid -->
-        </Grid>
-
-    </ScrollViewer>
+        <!-- Close: Primary Content Grid -->
+    </Grid>
 </Page>

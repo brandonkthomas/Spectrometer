@@ -9,8 +9,10 @@ using Microsoft.Extensions.Hosting;
 using Spectrometer.Models;
 using Spectrometer.Services;
 using Spectrometer.ViewModels.Pages;
+using Spectrometer.ViewModels.UserControls;
 using Spectrometer.ViewModels.Windows;
 using Spectrometer.Views.Pages;
+using Spectrometer.Views.UserControls;
 using Spectrometer.Views.Windows;
 using System.IO;
 using System.Reflection;
@@ -60,8 +62,16 @@ public partial class App
 
             services.AddSingleton<DashboardPage>();
             services.AddSingleton<DashboardViewModel>();
+
             services.AddSingleton<SensorsPage>();
             services.AddSingleton<SensorsViewModel>();
+
+            services.AddSingleton<GraphsPage>();
+            services.AddSingleton<GraphsViewModel>();
+
+            services.AddSingleton<GraphUserControl>();
+            services.AddSingleton<GraphViewModel>();
+
             services.AddSingleton<SettingsPage>();
             services.AddSingleton<SettingsViewModel>();
         }).Build();
@@ -119,21 +129,18 @@ public partial class App
         try
         {
             Logger.WriteExc(ex);
-
-            MessageBox.Show("An internal error occurred. The application could not recover and will now close. Please check the log file for more information.", 
-                "Error", 
-                MessageBoxButton.OK, 
-                MessageBoxImage.Error);
         }
         catch (Exception ex2)
         {
             string logFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "error.log");
             File.AppendAllText(logFilePath, $"{DateTime.Now}: {ex2.Message}{Environment.NewLine}{ex2.StackTrace}{Environment.NewLine}");
-
-            MessageBox.Show("An internal error occurred. The application could not recover and will now close. Please check the log file for more information.",
-                "Error",
-                MessageBoxButton.OK,
-                MessageBoxImage.Error);
         }
+
+        MessageBox.Show("An internal error occurred. The application could not recover and will now close. Please check the log file for more information.",
+            "Error",
+            MessageBoxButton.OK,
+            MessageBoxImage.Error);
+
+        Environment.Exit(1);
     }
 }

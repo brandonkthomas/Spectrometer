@@ -1,0 +1,66 @@
+﻿<Page 
+    x:Class="Spectrometer.Views.Pages.GraphsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Spectrometer.Views.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:Spectrometer.Models"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:helpers="clr-namespace:Spectrometer.Helpers"
+    xmlns:controls="clr-namespace:Spectrometer.Views.UserControls"
+    Title="GraphsPage"
+    d:DataContext="{d:DesignInstance local:GraphsPage,
+                                     IsDesignTimeCreatable=False}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+    ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    ScrollViewer.CanContentScroll="True"
+    mc:Ignorable="d">
+    
+    <!-- ======================================================================= -->
+    <!-- Resources -->
+
+    <Page.Resources>
+        <helpers:ProgressToWidthConverter x:Key="ProgressToWidthConverter" />
+        <helpers:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <helpers:StringToImageSourceConverter x:Key="StringToImageSourceConverter" />
+        <helpers:ValueToPercentageMultiConverter x:Key="ValueToPercentageMultiConverter" />
+    </Page.Resources>
+
+    <Grid>
+
+        <!-- ======================================================================= -->
+        <!-- Primary Content Grid -->
+
+        <Grid Name="ContentGrid" 
+              VerticalAlignment="Top" 
+              helpers:TransitionBehavior.Transition="FadeInWithSlide">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- ======================================================================= -->
+            <!-- Card 1 -->
+
+            <ui:CardAction Grid.Column="0" Grid.Row="0" Height="270px" Margin="0,0,5,0" IsChevronVisible="False">
+                <controls:GraphUserControl Width="300px" Height="300px"/>
+            </ui:CardAction>
+
+            <!-- Close: Primary Content Grid -->
+        </Grid>
+
+    </Grid>
+</Page>
