@@ -89,12 +89,12 @@
                                 MaxHeight="16" />
 
                         <ui:InfoBadge Padding="5"
-                                        Severity="Success"
-                                        Value="{Binding HwStatus.PinnedSensors.Count}" 
-                                        FontFamily="Segoe UI"
-                                        FontSize="12"
-                                        FontWeight="Bold"
-                                        Grid.Column="2"/>
+                                      Severity="Success"
+                                      Value="0" 
+                                      FontFamily="Segoe UI"
+                                      FontSize="12"
+                                      FontWeight="Bold"
+                                      Grid.Column="2"/>
 
                     </Grid>
                 </Grid>
@@ -179,12 +179,12 @@
                                 MaxHeight="16" />
 
                         <ui:InfoBadge Padding="5"
-                                        Severity="Success"
-                                        Value="{Binding HwStatus.MbSensors.Count}" 
-                                        FontFamily="Segoe UI"
-                                        FontSize="12"
-                                        FontWeight="Bold"
-                                        Grid.Column="2"/>
+                                      Severity="Success"
+                                      Value="{Binding HwStatus.MbSensors.Count}" 
+                                      FontFamily="Segoe UI"
+                                      FontSize="12"
+                                      FontWeight="Bold"
+                                      Grid.Column="2"/>
 
                     </Grid>
                 </Grid>

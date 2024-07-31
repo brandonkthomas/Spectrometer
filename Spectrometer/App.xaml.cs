@@ -31,7 +31,7 @@ public partial class App
     // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
     // https://docs.microsoft.com/dotnet/core/extensions/configuration
     // https://docs.microsoft.com/dotnet/core/extensions/logging
-    private static readonly IHost _host = Host
+    public static readonly IHost _host = Host
         .CreateDefaultBuilder()
         .ConfigureAppConfiguration(c => { c.SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) ?? ""); })
         .ConfigureServices((context, services) =>
@@ -68,10 +68,10 @@ public partial class App
             // Register Pages
             services.AddSingleton<DashboardPage>();
             services.AddSingleton<SensorsPage>();
-            services.AddSingleton<GraphsPage>();
+            services.AddSingleton(provider => new GraphsPage(provider.GetRequiredService<GraphsViewModel>(), provider.GetRequiredService<MainWindowViewModel>()));
 
             services.AddSingleton<GraphUserControl>();
-            services.AddSingleton<GraphViewModel>();
+            services.AddTransient(provider => new GraphViewModel(provider.GetRequiredService<MainWindowViewModel>(), provider.GetRequiredService<HardwareSensor>()));
 
             services.AddSingleton<SettingsPage>();
             services.AddSingleton<SettingsViewModel>();

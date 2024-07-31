@@ -5,37 +5,21 @@
     xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
     xmlns:vms="clr-namespace:Spectrometer.ViewModels.UserControls">
 
-    <UserControl.DataContext>
-        <vms:GraphViewModel />
-    </UserControl.DataContext>
-
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="100"/>
-        </Grid.RowDefinitions>
-
         <lvc:CartesianChart
-            Grid.Row="0"
+            SyncContext="{Binding Sync}"
             Series="{Binding Series}"
-            XAxes="{Binding ScrollableAxes}"
-            ZoomMode="X"
-            DrawMargin="{Binding Margin}"
-            UpdateStartedCommand="{Binding ChartUpdatedCommand}">
+            XAxes="{Binding XAxes}"
+            YAxes="{Binding YAxes}"
+            Margin="0,10,0,20"
+            Width="437px"
+            Height="215px">
         </lvc:CartesianChart>
-
-        <lvc:CartesianChart
-            x:Name="ScrollBarChart"
-            Grid.Row="1"
-            Series="{Binding ScrollbarSeries}"
-            DrawMargin="{Binding Margin}"
-            Sections="{Binding Thumbs}"
-            XAxes="{Binding InvisibleX}"
-            YAxes="{Binding InvisibleY}"
-            PointerPressedCommand="{Binding PointerDownCommand}"
-            PointerMoveCommand="{Binding PointerMoveCommand}"
-            PointerReleasedCommand="{Binding PointerUpCommand}"
-            TooltipPosition="Hidden">
-        </lvc:CartesianChart>
+        <TextBlock Text="{Binding ChartTitle}" 
+                   FontSize="14" 
+                   FontWeight="Bold" 
+                   HorizontalAlignment="Center" 
+                   VerticalAlignment="Bottom"
+                   Margin="0,0,0,10"/>
     </Grid>
 </UserControl>

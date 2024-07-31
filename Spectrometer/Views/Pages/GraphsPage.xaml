@@ -7,8 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:Spectrometer.Models"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-    xmlns:helpers="clr-namespace:Spectrometer.Helpers"
-    xmlns:controls="clr-namespace:Spectrometer.Views.UserControls"
+    xmlns:hlp="clr-namespace:Spectrometer.Helpers"
+    xmlns:ctrl="clr-namespace:Spectrometer.Views.UserControls"
     Title="GraphsPage"
     d:DataContext="{d:DesignInstance local:GraphsPage,
                                      IsDesignTimeCreatable=False}"
@@ -24,20 +24,21 @@
     <!-- Resources -->
 
     <Page.Resources>
-        <helpers:ProgressToWidthConverter x:Key="ProgressToWidthConverter" />
-        <helpers:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-        <helpers:StringToImageSourceConverter x:Key="StringToImageSourceConverter" />
-        <helpers:ValueToPercentageMultiConverter x:Key="ValueToPercentageMultiConverter" />
+        <hlp:ProgressToWidthConverter x:Key="ProgressToWidthConverter" />
+        <hlp:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <hlp:StringToImageSourceConverter x:Key="StringToImageSourceConverter" />
+        <hlp:ValueToPercentageMultiConverter x:Key="ValueToPercentageMultiConverter" />
     </Page.Resources>
 
-    <Grid>
+    <!-- ======================================================================= -->
+    <!-- Primary Content Grid -->
+    
+    <Grid Name="ContentGrid" 
+          VerticalAlignment="Top"
+          AllowDrop="True"
+          Drop="Grid_Drop"
+          DragOver="Grid_DragOver">
 
-        <!-- ======================================================================= -->
-        <!-- Primary Content Grid -->
-
-        <Grid Name="ContentGrid" 
-              VerticalAlignment="Top" 
-              helpers:TransitionBehavior.Transition="FadeInWithSlide">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -52,15 +53,6 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- ======================================================================= -->
-            <!-- Card 1 -->
-
-            <ui:CardAction Grid.Column="0" Grid.Row="0" Height="270px" Margin="0,0,5,0" IsChevronVisible="False">
-                <controls:GraphUserControl Width="300px" Height="300px"/>
-            </ui:CardAction>
-
-            <!-- Close: Primary Content Grid -->
-        </Grid>
-
+    <!-- Close: Primary Content Grid -->
     </Grid>
 </Page>

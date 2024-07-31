@@ -62,15 +62,15 @@ public class HardwareMonitorService : IDisposable
 
     public string GetMotherboardName() => _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Motherboard)?.Name ?? "Unknown";
 
-    public ObservableCollection<HardwareStatus.SensorData> GetMotherboardSensors()
+    public ObservableCollection<HardwareSensor> GetMotherboardSensors()
     {
         var mb = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Motherboard);
         if (mb == null) return [];
 
-        ObservableCollection<HardwareStatus.SensorData> sensors = [];
+        ObservableCollection<HardwareSensor> sensors = [];
 
         foreach (var sensor in mb.Sensors)
-            sensors.Add(new HardwareStatus.SensorData
+            sensors.Add(new HardwareSensor
             {
                 Name = sensor.Name,
                 Value = sensor.Value.GetValueOrDefault(),
@@ -86,15 +86,15 @@ public class HardwareMonitorService : IDisposable
 
     public string GetCpuName() => _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu)?.Name ?? "Unknown";
 
-    public ObservableCollection<HardwareStatus.SensorData> GetCpuSensors()
+    public ObservableCollection<HardwareSensor> GetCpuSensors()
     {
         var cpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
         if (cpu == null) return [];
 
-        ObservableCollection<HardwareStatus.SensorData> sensors = [];
+        ObservableCollection<HardwareSensor> sensors = [];
 
         foreach (var sensor in cpu.Sensors)
-            sensors.Add(new HardwareStatus.SensorData
+            sensors.Add(new HardwareSensor
             {
                 Name = sensor.Name,
                 Value = sensor.Value.GetValueOrDefault(),
@@ -164,15 +164,15 @@ public class HardwareMonitorService : IDisposable
 
     public string GetGpuName() => _computer.Hardware.FirstOrDefault(h => h.HardwareType == _getGpuType())?.Name ?? "Unknown";
 
-    public ObservableCollection<HardwareStatus.SensorData> GetGpuSensors()
+    public ObservableCollection<HardwareSensor> GetGpuSensors()
     {
         var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == _getGpuType());
         if (gpu == null) return [];
 
-        ObservableCollection<HardwareStatus.SensorData> sensors = [];
+        ObservableCollection<HardwareSensor> sensors = [];
 
         foreach (var sensor in gpu.Sensors)
-            sensors.Add(new HardwareStatus.SensorData
+            sensors.Add(new HardwareSensor
             {
                 Name = sensor.Name,
                 Value = sensor.Value.GetValueOrDefault(),
@@ -245,15 +245,15 @@ public class HardwareMonitorService : IDisposable
     // ------------------------------------------------------------------------------------------------
     // Memory
 
-    public ObservableCollection<HardwareStatus.SensorData> GetMemorySensors()
+    public ObservableCollection<HardwareSensor> GetMemorySensors()
     {
         var mem = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Memory);
         if (mem == null) return [];
 
-        ObservableCollection<HardwareStatus.SensorData> sensors = [];
+        ObservableCollection<HardwareSensor> sensors = [];
 
         foreach (var sensor in mem.Sensors)
-            sensors.Add(new HardwareStatus.SensorData
+            sensors.Add(new HardwareSensor
             {
                 Name = sensor.Name,
                 Value = sensor.Value.GetValueOrDefault(),
@@ -302,15 +302,15 @@ public class HardwareMonitorService : IDisposable
     // ------------------------------------------------------------------------------------------------
     // Storage
 
-    public ObservableCollection<HardwareStatus.SensorData> GetStorageSensors()
+    public ObservableCollection<HardwareSensor> GetStorageSensors()
     {
         var storage = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Storage);
         if (storage == null) return [];
 
-        ObservableCollection<HardwareStatus.SensorData> sensors = [];
+        ObservableCollection<HardwareSensor> sensors = [];
 
         foreach (var sensor in storage.Sensors)
-            sensors.Add(new HardwareStatus.SensorData
+            sensors.Add(new HardwareSensor
             {
                 Name = sensor.Name,
                 Value = sensor.Value.GetValueOrDefault(),

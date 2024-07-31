@@ -31,7 +31,7 @@ public partial class MainWindowViewModel : ObservableObject
         new NavigationViewItem()
         {
             Content = "Graphs",
-            Icon = new SymbolIcon { Symbol = SymbolRegular.LineFlowDiagonalUpRight24 },
+            Icon = new SymbolIcon { Symbol = SymbolRegular.ArrowTrending24 },
             TargetPageType = typeof(Views.Pages.GraphsPage)
         },
         new NavigationViewItem()

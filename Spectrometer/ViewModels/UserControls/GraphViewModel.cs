@@ -1,124 +1,181 @@
 ﻿using LiveChartsCore;
 using LiveChartsCore.Defaults;
-using LiveChartsCore.Kernel.Events;
-using LiveChartsCore.Kernel.Sketches;
 using LiveChartsCore.SkiaSharpView;
-using LiveChartsCore.SkiaSharpView.Drawing;
 using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
+using Spectrometer.Models;
+using Spectrometer.ViewModels.Windows;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
 
 namespace Spectrometer.ViewModels.UserControls;
 
-public partial class GraphViewModel
+public partial class GraphViewModel : ObservableObject
 {
-    private bool _isDown = false;
-    private readonly ObservableCollection<ObservablePoint> _values = new();
+    // ------------------------------------------------------------------------------------------------
+    // Properties
+    // ------------------------------------------------------------------------------------------------
 
-    public GraphViewModel()
+    private readonly ObservableCollection<DateTimePoint> _values;
+    private readonly DateTimeAxis _customAxis;
+    private readonly MainWindowViewModel _mainWindowViewModel;
+    private readonly HardwareSensor _sensor;
+
+    public ObservableCollection<ISeries> Series { get; set; }
+    public Axis[] XAxes { get; set; }
+    public Axis[] YAxes { get; set; }
+    public object Sync { get; } = new object();
+    public bool IsReading { get; set; } = true;
+    public string ChartTitle { get; set; } = string.Empty;
+
+    // ------------------------------------------------------------------------------------------------
+    // Constructor + Init
+    //   I tried removing mainWindowViewMoel from the constructor, but it's needed for the
+    //   HardwareSensor change handlers - they dont fire from the HardwareSensor class for some reason.
+    //   TBD at a later date. For now it's fine.
+    // ------------------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="mainWindowViewModel"></param>
+    /// <param name="sensor"></param>
+    public GraphViewModel(MainWindowViewModel mainWindowViewModel, HardwareSensor sensor)
     {
-        var trend = 1000;
-        var r = new Random();
+        _mainWindowViewModel = mainWindowViewModel;
+        _sensor = sensor;
+        _values = new ObservableCollection<DateTimePoint>();
 
-        for (var i = 0; i < 500; i++)
+        // ------------------------------------------------------------------------------------------------
+        // Gradients
+
+        var gradientFill = new LinearGradientPaint(
+            new SKColor(0, 151, 38, 90),
+            new SKColor(0, 181, 157, 90));
+
+        var gradientStroke = new LinearGradientPaint(
+            new SKColor(0, 151, 38, 0),
+            new SKColor(0, 181, 157, 0));
+
+        // ------------------------------------------------------------------------------------------------
+        // Graph Configuration
+
+        Series = new ObservableCollection<ISeries>
         {
-            _values.Add(new ObservablePoint(i, trend += r.Next(-20, 20)));
+            new LineSeries<DateTimePoint>
+            {
+                Values = _values,
+                Fill = gradientFill,
+                Stroke = gradientStroke,
+                GeometryFill = null,
+                GeometryStroke = null,
+                Name = _sensor.Name,
+            }
+        };
+
+        _customAxis = new DateTimeAxis(TimeSpan.FromSeconds(1), Formatter)
+        {
+            ShowSeparatorLines = false,
+            AnimationsSpeed = TimeSpan.FromMilliseconds(0),
+            SeparatorsPaint = new SolidColorPaint(SKColors.Black.WithAlpha(100)),
+            LabelsPaint = new SolidColorPaint(SKColors.Transparent) // Hide bottom labels
+        };
+
+        XAxes = [ _customAxis ];
+        YAxes =
+        [
+            new Axis
+            {
+                MinLimit = 0,
+                MaxLimit = 100,
+                LabelsPaint = new SolidColorPaint(SKColors.White.WithAlpha(50))
+            }
+        ];
+
+        ChartTitle = _sensor.Name;
+
+        StartReadingData();
+    }
+
+    // ------------------------------------------------------------------------------------------------
+    // Chart
+    // ------------------------------------------------------------------------------------------------
+
+    private void StartReadingData()
+    {
+        if (_mainWindowViewModel?.HwStatus != null)
+        {
+            _mainWindowViewModel.HwStatus.PropertyChanged += HwStatus_PropertyChanged;
+            foreach (var sensor in _mainWindowViewModel.HwStatus.CpuSensors)
+            {
+                if (sensor.Name == _sensor.Name)
+                {
+                    sensor.PropertyChanged += Sensor_PropertyChanged;
+                    break;
+                }
+            }
         }
+    }
 
-        Series = new ISeries[]
+    private void HwStatus_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is null || !e.PropertyName.Contains("Sensors"))
+            return;
+
+        ObservableCollection<HardwareSensor>? sensors = e.PropertyName switch
         {
-            new LineSeries<ObservablePoint>
-            {
-                Values = _values,
-                GeometryStroke = null,
-                GeometryFill = null,
-                DataPadding = new(0, 1)
-            }
+            nameof(HardwareStatus.CpuSensors) => _mainWindowViewModel.HwStatus?.CpuSensors,
+            nameof(HardwareStatus.GpuSensors) => _mainWindowViewModel.HwStatus?.GpuSensors,
+            nameof(HardwareStatus.MbSensors) => _mainWindowViewModel.HwStatus?.MbSensors,
+            nameof(HardwareStatus.MemorySensors) => _mainWindowViewModel.HwStatus?.MemorySensors,
+            nameof(HardwareStatus.StorageSensors) => _mainWindowViewModel.HwStatus?.StorageSensors,
+            _ => null,
         };
 
-        ScrollbarSeries = new ISeries[]
+        if (sensors != null)
         {
-            new LineSeries<ObservablePoint>
+            var sensor = sensors.FirstOrDefault(s => s.Name == _sensor.Name);
+            if (sensor != null)
             {
-                Values = _values,
-                GeometryStroke = null,
-                GeometryFill = null,
-                DataPadding = new(0, 1)
+                sensor.PropertyChanged += Sensor_PropertyChanged;
+                UpdateChart(sensor.Value);
             }
-        };
+        }
+    }
 
-        ScrollableAxes = new[] { new Axis() };
-
-        Thumbs = new[]
+    private void Sensor_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(HardwareSensor.Value))
         {
-            new RectangularSection
+            var sensor = sender as HardwareSensor;
+            if (sensor != null)
             {
-                Fill = new SolidColorPaint(new SKColor(255, 205, 210, 100))
+                UpdateChart(sensor.Value);
             }
-        };
-
-        InvisibleX = new[] { new Axis { IsVisible = false } };
-        InvisibleY = new[] { new Axis { IsVisible = false } };
-
-        // force the left margin to be 100 and the right margin 50 in both charts, this will
-        // align the start and end point of the "draw margin",
-        // no matter the size of the labels in the Y axis of both chart.
-        var auto = LiveChartsCore.Measure.Margin.Auto;
-        Margin = new(100, auto, 50, auto);
+        }
     }
 
-    public ISeries[] Series { get; set; }
-    public Axis[] ScrollableAxes { get; set; }
-    public ISeries[] ScrollbarSeries { get; set; }
-    public Axis[] InvisibleX { get; set; }
-    public Axis[] InvisibleY { get; set; }
-    public LiveChartsCore.Measure.Margin Margin { get; set; }
-    public RectangularSection[] Thumbs { get; set; }
-
-    [RelayCommand]
-    public void ChartUpdated(ChartCommandArgs args)
+    private void UpdateChart(float cpuUsage)
     {
-        var cartesianChart = (ICartesianChartView<SkiaSharpDrawingContext>)args.Chart;
-
-        var x = cartesianChart.XAxes.First();
-
-        // update the scroll bar thumb when the chart is updated (zoom/pan)
-        // this will let the user know the current visible range
-        var thumb = Thumbs[0];
-
-        thumb.Xi = x.MinLimit;
-        thumb.Xj = x.MaxLimit;
+        lock (Sync)
+        {
+            _values.Add(new DateTimePoint(DateTime.Now, cpuUsage));
+            if (_values.Count > 250) _values.RemoveAt(0);
+        }
     }
 
-    [RelayCommand]
-    public void PointerDown(PointerCommandArgs args)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="date"></param>
+    /// <returns></returns>
+    private static string Formatter(DateTime date)
     {
-        _isDown = true;
-    }
+        var secsAgo = (DateTime.Now - date).TotalSeconds;
 
-    [RelayCommand]
-    public void PointerMove(PointerCommandArgs args)
-    {
-        if (!_isDown) return;
-
-        var chart = (ICartesianChartView<SkiaSharpDrawingContext>)args.Chart;
-        var positionInData = chart.ScalePixelsToData(args.PointerPosition);
-
-        var thumb = Thumbs[0];
-        var currentRange = thumb.Xj - thumb.Xi;
-
-        // update the scroll bar thumb when the user is dragging the chart
-        thumb.Xi = positionInData.X - currentRange / 2;
-        thumb.Xj = positionInData.X + currentRange / 2;
-
-        // update the chart visible range
-        ScrollableAxes[0].MinLimit = thumb.Xi;
-        ScrollableAxes[0].MaxLimit = thumb.Xj;
-    }
-
-    [RelayCommand]
-    public void PointerUp(PointerCommandArgs args)
-    {
-        _isDown = false;
+        return secsAgo < 1
+            ? "now"
+            : $"{secsAgo:N0}s ago";
     }
 }

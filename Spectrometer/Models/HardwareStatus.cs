@@ -14,14 +14,11 @@ public partial class HardwareStatus : ObservableObject
     [ObservableProperty]
     private bool _isLoading = true;
 
-    [ObservableProperty]
-    private ObservableCollection<SensorData> _pinnedSensors = [];
-
     // ------------------------------------------------------------------------------------------------
     // Motherboard
 
     [ObservableProperty]
-    private ObservableCollection<SensorData> _mbSensors = [];
+    private ObservableCollection<HardwareSensor> _mbSensors = [];
 
     [ObservableProperty]
     private string _mbName = string.Empty;
@@ -30,7 +27,7 @@ public partial class HardwareStatus : ObservableObject
     // CPU
 
     [ObservableProperty]
-    private ObservableCollection<SensorData> _cpuSensors = [];
+    private ObservableCollection<HardwareSensor> _cpuSensors = [];
 
     [ObservableProperty]
     private string _cpuImagePath = string.Empty;
@@ -54,7 +51,7 @@ public partial class HardwareStatus : ObservableObject
     // GPU
 
     [ObservableProperty]
-    private ObservableCollection<SensorData> _gpuSensors = [];
+    private ObservableCollection<HardwareSensor> _gpuSensors = [];
 
     [ObservableProperty]
     private string _gpuImagePath = string.Empty;
@@ -84,7 +81,7 @@ public partial class HardwareStatus : ObservableObject
     // Memory
 
     [ObservableProperty]
-    private ObservableCollection<SensorData> _memorySensors = [];
+    private ObservableCollection<HardwareSensor> _memorySensors = [];
 
     [ObservableProperty]
     private string _memoryUsageDetails = string.Empty;
@@ -96,29 +93,35 @@ public partial class HardwareStatus : ObservableObject
     private double _memoryTotalGb;
 
     // ------------------------------------------------------------------------------------------------
-    // Memory
+    // Storage
 
     [ObservableProperty]
-    private ObservableCollection<SensorData> _storageSensors = [];
+    private ObservableCollection<HardwareSensor> _storageSensors = [];
+}
 
-    // ------------------------------------------------------------------------------------------------
-    // Recycled Sensor Data Object
+// ------------------------------------------------------------------------------------------------
+// Sensor Data Object
 
-    public partial class SensorData : ObservableObject
-    {
-        [ObservableProperty]
-        private string _name = string.Empty;
+public partial class HardwareSensor : ObservableObject
+{
+    [ObservableProperty]
+    private string _name = string.Empty;
 
-        [ObservableProperty]
-        private float _value;
+    [ObservableProperty]
+    private float _value;
 
-        [ObservableProperty]
-        private float _min;
+    [ObservableProperty]
+    private float _min;
 
-        [ObservableProperty]
-        private float _max;
+    [ObservableProperty]
+    private float _max;
 
-        [ObservableProperty]
-        private SensorType _sensorType;
-    }
+    [ObservableProperty]
+    private SensorType _sensorType;
+
+    [ObservableProperty]
+    private bool _isGraphEnabled;
+
+    [ObservableProperty]
+    private bool _isPinned;
 }
