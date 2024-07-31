@@ -1,4 +1,5 @@
-﻿using Wpf.Ui.Appearance;
+﻿using Microsoft.Win32;
+using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 
 namespace Spectrometer.ViewModels.Pages;
@@ -16,6 +17,9 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     [ObservableProperty]
     private ApplicationTheme _currentTheme = ApplicationTheme.Unknown;
 
+    [ObservableProperty]
+    private bool _startWithWindows = false;
+
     // ------------------------------------------------------------------------------------------------
     // Init
 
@@ -24,7 +28,8 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     private void InitializeViewModel()
     {
         CurrentTheme = ApplicationThemeManager.GetAppTheme();
-        AppVersion = $"Spectrometer v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? String.Empty} (July 29, 2024)";
+        AppVersion = $"Spectrometer v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? String.Empty} (July 31, 2024)";
+        StartWithWindows = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true).GetValue("Spectrometer") != null ? true : false;
 
         _isInitialized = true;
     }
@@ -61,6 +66,24 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
                 ApplicationThemeManager.Apply(ApplicationTheme.Dark);
                 CurrentTheme = ApplicationTheme.Dark;
 
+                break;
+        }
+    }
+
+    // ------------------------------------------------------------------------------------------------
+    // Startup with Windows handler
+
+    [RelayCommand]
+    private void OnChangeStartWithWindows(bool parameter)
+    {
+        RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+        switch (parameter)
+        {
+            case true:
+                rk.SetValue("Spectrometer", System.Reflection.Assembly.GetEntryAssembly().Location);
+                break;
+            case false:
+                rk.DeleteValue("Spectrometer", false);
                 break;
         }
     }
