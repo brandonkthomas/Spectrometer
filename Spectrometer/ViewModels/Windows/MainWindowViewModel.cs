@@ -87,9 +87,6 @@ public partial class MainWindowViewModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<ProcessInfo?> _prcssInfoList;
 
-    private CollectionViewSource _processesViewSource;
-    public ICollectionView ProcessesView => _processesViewSource.View;
-
     /// <summary>
     /// Sensor poll timer
     /// </summary>
@@ -112,8 +109,6 @@ public partial class MainWindowViewModel : ObservableObject
         HwStatus.IsLoading = true;
 
         PrcssInfoList = new();
-        _processesViewSource = new CollectionViewSource { Source = PrcssInfoList };
-        _processesViewSource.Filter += TopThreeFilter;
 
         _timer = new System.Timers.Timer(_defaultPollingInterval); // TODO: Make this a user setting
         _timer.Elapsed += OnTimerElapsed;
@@ -225,21 +220,12 @@ public partial class MainWindowViewModel : ObservableObject
                 {
                     PrcssInfoList.Add(proc);
                 }
-
-                ProcessesView.Refresh();
             });
         }
         catch (Exception ex)
         {
             Logger.WriteExc(ex);
         }
-    }
-
-    private void TopThreeFilter(object sender, FilterEventArgs e)
-    {
-        var view = (CollectionView)_processesViewSource.View;
-        var sortedProcesses = view.Cast<ProcessInfo>().ToList();
-        e.Accepted = sortedProcesses.IndexOf((ProcessInfo)e.Item) < 3;
     }
 
     // ------------------------------------------------------------------------------------------------
