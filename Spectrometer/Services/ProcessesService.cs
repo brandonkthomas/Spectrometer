@@ -7,18 +7,22 @@ namespace Spectrometer.Services;
 public class ProcessesService
 {
     private Dictionary<int, PerformanceCounter> cpuCounters;
+    private readonly Dictionary<int, TimeSpan> lastCpuTimes;
+    private readonly Dictionary<int, DateTime> lastCheckTimes;
     private static readonly Lazy<ProcessesService> _instance = new(() => new ProcessesService());
     public static ProcessesService Instance => _instance.Value;
 
     public ProcessesService() 
     {
-        cpuCounters = [];
+        cpuCounters = new Dictionary<int, PerformanceCounter>();
+        lastCpuTimes = new Dictionary<int, TimeSpan>();
+        lastCheckTimes = new Dictionary<int, DateTime>();
     }
 
     public ObservableCollection<ProcessInfo> LoadProcesses()
     {
         ObservableCollection<ProcessInfo> collection = new ObservableCollection<ProcessInfo>();
-        var processes = Process.GetProcesses().Select(p => new ProcessInfo
+        var processes = Process.GetProcesses().Where(x => x.ProcessName != "Idle").Select(p => new ProcessInfo
         {
             ProcessName = p.ProcessName,
             CpuUsage = GetCpuUsage(p),
@@ -38,8 +42,28 @@ public class ProcessesService
 
     private double GetCpuUsage(Process process)
     {
-        // Implement a method to get the CPU usage for the process
-        return 0.42; // Example value
+        if (!cpuCounters.TryGetValue(process.Id, out var cpuCounter))
+        {
+            cpuCounter = new PerformanceCounter("Process", "% Processor Time", process.ProcessName, true);
+            cpuCounters[process.Id] = cpuCounter;
+            lastCpuTimes[process.Id] = process.TotalProcessorTime;
+            lastCheckTimes[process.Id] = DateTime.UtcNow;
+            return 0; // Initial value will be 0 until next poll interval
+        }
+
+        var lastCpuTime = lastCpuTimes[process.Id];
+        var lastCheckTime = lastCheckTimes[process.Id];
+        var currentCpuTime = process.TotalProcessorTime;
+        var currentTime = DateTime.UtcNow;
+
+        // Calculate the CPU usage over the interval
+        double cpuUsage = (currentCpuTime.TotalMilliseconds - lastCpuTime.TotalMilliseconds) / currentTime.Subtract(lastCheckTime).TotalMilliseconds / Convert.ToDouble(Environment.ProcessorCount);
+
+        // Update the stored values for the next calculation
+        lastCpuTimes[process.Id] = currentCpuTime;
+        lastCheckTimes[process.Id] = currentTime;
+
+        return cpuUsage;
     }
 
     private double GetGpuUsage(Process process)
