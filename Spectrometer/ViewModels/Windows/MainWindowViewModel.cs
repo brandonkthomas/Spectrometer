@@ -1,6 +1,7 @@
 ﻿using Spectrometer.Models;
 using Spectrometer.Services;
 using System.Collections.ObjectModel;
+using System.Configuration;
 using System.Timers;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
@@ -131,6 +132,10 @@ public partial class MainWindowViewModel : ObservableObject
         IsLoading = true;
 
         PrcssInfoList = [];
+        var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+        var settings = configFile.AppSettings.Settings;
+
+        _defaultPollingInterval = int.Parse(settings["PollRate"].Value.ToString());
 
         _timer = new System.Timers.Timer(_defaultPollingInterval); // TODO: Make this a user setting
         _timer.Elapsed += OnTimerElapsed;

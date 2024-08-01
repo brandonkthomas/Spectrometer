@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using Spectrometer.Models;
+using System.Configuration;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 
@@ -21,6 +22,9 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     [ObservableProperty]
     private bool _startWithWindows = false;
 
+    [ObservableProperty]
+    private int _pollingRate = 0;
+
     // -------------------------------------------------------------------------------------------
     // Init
 
@@ -28,8 +32,11 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     private void InitializeViewModel()
     {
+        var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+        var settings = configFile.AppSettings.Settings;
         CurrentTheme = ApplicationThemeManager.GetAppTheme();
         AppVersion = $"Spectrometer v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? String.Empty} (July 31, 2024)";
+        PollingRate = int.Parse(settings["PollRate"].Value.ToString());
 
         try
         {
@@ -104,5 +111,20 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         {
             Logger.WriteExc(ex);
         }
+    }
+
+    // ------------------------------------------------------------------------------------------------
+    // Polling Rate event handler
+
+    [RelayCommand]
+    private void OnPollingRateChange(int parameter)
+    {
+        var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+        var settings = configFile.AppSettings.Settings;
+
+        settings["PollRate"].Value = parameter.ToString();
+
+        configFile.Save(ConfigurationSaveMode.Modified);
+        ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);
     }
 }
