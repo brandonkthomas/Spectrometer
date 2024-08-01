@@ -13,6 +13,10 @@ public class LoggingService : IDisposable
     private readonly string _logFilePath = string.Empty;
     private readonly StreamWriter? _streamWriter;
 
+    // ------------------------------------------------------------------------------------------------
+    /// <summary>
+    /// Opens Roaming\Spectrograph, handles existing log files, creates a new log file & opens a StreamWriter.
+    /// </summary>
     public LoggingService()
     {
         try
@@ -39,8 +43,16 @@ public class LoggingService : IDisposable
         }
     }
 
+    // ------------------------------------------------------------------------------------------------
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="logFilePath"></param>
     private void HandleExistingLogFiles(string logFilePath)
     {
+        // ------------------------------------------------------------------------------------------------
+        // Rename existing log files if needed
+
         if (File.Exists(logFilePath))
         {
             for (int i = 0; ; i++)
@@ -53,14 +65,38 @@ public class LoggingService : IDisposable
                 }
             }
         }
+
+        // ------------------------------------------------------------------------------------------------
+        // Delete any log files older than 7 days
+
+        string[] logFiles = Directory.GetFiles(_logDirectory, "Spectrometer_*.log");
+
+        foreach (string logFile in logFiles)
+        {
+            FileInfo fileInfo = new FileInfo(logFile);
+            if (fileInfo.LastWriteTime < DateTime.Now.AddDays(-7))
+            {
+                File.Delete(logFile);
+            }
+        }
     }
 
+    // ------------------------------------------------------------------------------------------------
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="message"></param>
     public void Write(string message)
     {
         _streamWriter?.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} - {message}");
         Debug.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} - {message}");
     }
 
+    // ------------------------------------------------------------------------------------------------
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="ex"></param>
     public void WriteExc(Exception ex)
     {
         _streamWriter?.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} - ERROR: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
