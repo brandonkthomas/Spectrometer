@@ -3,6 +3,7 @@ using Spectrometer.Models;
 using System.Configuration;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
+using System.IO;
 
 namespace Spectrometer.ViewModels.Pages;
 
@@ -95,7 +96,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         try
         {
             RegistryKey? rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-            string exePath = System.Reflection.Assembly.GetEntryAssembly()?.Location ?? string.Empty; // todo: set a default location
+            string exePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Spectrometer.exe") ?? string.Empty; // todo: set a default location
 
             switch (parameter)
             {
