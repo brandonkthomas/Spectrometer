@@ -40,6 +40,7 @@ public class LoggingService : IDisposable
         catch (Exception ex)
         {
             Console.WriteLine(ex);
+            Debug.WriteLine(ex);
         }
     }
 

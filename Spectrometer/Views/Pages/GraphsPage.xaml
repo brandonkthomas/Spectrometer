@@ -32,12 +32,12 @@
 
     <!-- ======================================================================= -->
     <!-- Primary Content Grid -->
-    
+
     <Grid Name="ContentGrid" 
           VerticalAlignment="Top"
-          AllowDrop="True"
-          Drop="Grid_Drop"
-          DragOver="Grid_DragOver">
+          AllowDrop="True">
+        <!--Drop="Grid_Drop"
+          DragOver="Grid_DragOver">-->
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>

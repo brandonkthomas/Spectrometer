@@ -1,10 +1,7 @@
 ﻿using Spectrometer.Models;
 using Spectrometer.Services;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Timers;
-using System.Windows.Data;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 
@@ -59,6 +56,14 @@ public partial class MainWindowViewModel : ObservableObject
         new MenuItem { Header = "Home", Tag = "tray_home" }
     ];
 
+    [ObservableProperty]
+    private bool _isLoading = true;
+
+    /// <summary>
+    /// Tabs need to wait for initialization before they can access the HW monitor service
+    /// </summary>
+    private readonly TaskCompletionSource<bool> _initializationTcs = new TaskCompletionSource<bool>();
+
     // -------------------------------------------------------------------------------------------
     // HW Monitor Service + Sensor Collection
     // -------------------------------------------------------------------------------------------
@@ -70,10 +75,40 @@ public partial class MainWindowViewModel : ObservableObject
     private HardwareMonitorService? _hwMonSvc;
 
     /// <summary>
-    /// Hardware status collection
+    /// Sensor poll timer
     /// </summary>
+    private readonly System.Timers.Timer _timer;
+    private void OnTimerElapsed(object? sender, ElapsedEventArgs e)
+    {
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            HwMonSvc?.Update();
+            HwMonSvc?.PollAllSensors();
+            HwMonSvc?.PollSpecificSensors();
+            GetProcesses();
+        });
+    }
+
+    private readonly int _defaultPollingInterval = 1750; // Default polling interval in milliseconds
+
     [ObservableProperty]
-    private HardwareStatus? _hwStatus;
+    private string _cpuImagePath = string.Empty;
+
+    [ObservableProperty]
+    private string _gpuImagePath = string.Empty;
+
+    [ObservableProperty]
+    private string _mbImagePath = string.Empty;
+
+    [ObservableProperty]
+    private string _memoryImagePath = string.Empty;
+
+    [ObservableProperty]
+    private string _storageImagePath = string.Empty;
+
+    // -------------------------------------------------------------------------------------------
+    // Process Service
+    // -------------------------------------------------------------------------------------------
 
     /// <summary>
     /// Process service
@@ -87,28 +122,15 @@ public partial class MainWindowViewModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<ProcessInfo?> _prcssInfoList;
 
-    /// <summary>
-    /// Sensor poll timer
-    /// </summary>
-    private readonly System.Timers.Timer _timer;
-    private void OnTimerElapsed(object? sender, ElapsedEventArgs e)
-    {
-        PollSensors();
-        GetProcesses();
-    }
-
-    private readonly int _defaultPollingInterval = 1750; // Default polling interval in milliseconds
-
     // -------------------------------------------------------------------------------------------
     // Constructor + Events
     // -------------------------------------------------------------------------------------------
 
     public MainWindowViewModel()
     {
-        HwStatus = new();
-        HwStatus.IsLoading = true;
+        IsLoading = true;
 
-        PrcssInfoList = new();
+        PrcssInfoList = [];
 
         _timer = new System.Timers.Timer(_defaultPollingInterval); // TODO: Make this a user setting
         _timer.Elapsed += OnTimerElapsed;
@@ -122,83 +144,33 @@ public partial class MainWindowViewModel : ObservableObject
     /// </summary>
     private async void InitializeAsync()
     {
-        Logger.Write("DashboardViewModel initializing...");
+        Logger.Write("MainWindowViewModel initializing...");
 
-        if (HwStatus is not null) HwStatus.IsLoading = true;
+        IsLoading = true;
 
         await Task.Run(() =>
         {
             // This takes a sec to initialize; await it in a new thread so we don't block the UI
+            // Will also poll all sensors initially in the ctor
             HwMonSvc = HardwareMonitorService.Instance;
+
             PrcssSvc = ProcessesService.Instance;
 
-            GetCpuGpuImagePaths();
-
-            // Run these once before starting timer to get initial values
-            Stopwatch stopwatch = new();
-            stopwatch.Start();
-
-            PollSensors();
-
-            stopwatch.Stop();
-            Logger.Write($"Sensors polled in {stopwatch.ElapsedMilliseconds}ms");
+            GetManufacturerImagePaths();
 
             GetProcesses();
             Logger.Write($"{PrcssInfoList.Count} processes found");
         });
 
-        if (HwStatus is not null) HwStatus.IsLoading = false;
+        IsLoading = false;
 
         _timer.Start();
+        _initializationTcs.SetResult(true); // Signal that initialization is complete
 
-        Logger.Write("DashboardViewModel initialized");
+        Logger.Write("MainWindowViewModel initialized");
     }
 
-    // -------------------------------------------------------------------------------------------
-    /// <summary>
-    /// 
-    /// </summary>
-    private void PollSensors()
-    {
-        if (HwMonSvc is null || HwStatus is null)
-            return;
-
-        try
-        {
-            HwMonSvc.Update();
-
-            HwStatus.MbSensors = HwMonSvc.GetMotherboardSensors();
-            HwStatus.MbName = HwMonSvc.GetMotherboardName();
-
-            HwStatus.CpuSensors = HwMonSvc.GetCpuSensors();
-            HwStatus.CpuName = HwMonSvc.GetCpuName();
-            HwStatus.CpuTemp = HwMonSvc.GetCpuTemp();
-            HwStatus.CpuUsage = HwMonSvc.GetCpuUsage();
-            HwStatus.CpuPower = HwMonSvc.GetCpuPowerCurrent();
-            HwStatus.CpuPowerMax = HwMonSvc.GetCpuPowerMax();
-
-            HwStatus.GpuSensors = HwMonSvc.GetGpuSensors();
-            HwStatus.GpuName = HwMonSvc.GetGpuName();
-            HwStatus.GpuTemp = HwMonSvc.GetGpuTemp();
-            HwStatus.GpuUsage = HwMonSvc.GetGpuUsage();
-            HwStatus.GpuMemoryTotal = HwMonSvc.GetGpuMemoryTotal();
-            HwStatus.GpuMemoryUsage = HwMonSvc.GetGpuMemoryUsage();
-            HwStatus.GpuPower = HwMonSvc.GetGpuPowerCurrent();
-            HwStatus.GpuPowerMax = HwMonSvc.GetGpuPowerMax();
-
-            HwStatus.MemorySensors = HwMonSvc.GetMemorySensors();
-            HwStatus.MemoryUsageGb = HwMonSvc.GetMemoryUsageGb();
-            HwStatus.MemoryTotalGb = HwMonSvc.GetMemoryTotalGb();
-            float usedMemoryPercent = HwMonSvc.GetMemoryUsagePercent();
-            HwStatus.MemoryUsageDetails = $"{usedMemoryPercent:F0}% ({HwStatus.MemoryUsageGb:F1} GB / {HwStatus.MemoryTotalGb:F1} GB)";
-
-            HwStatus.StorageSensors = HwMonSvc.GetStorageSensors();
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Error polling sensors: {ex.Message}");
-        }
-    }
+    public Task InitializationTask => _initializationTcs.Task;
 
     // -------------------------------------------------------------------------------------------
     /// <summary>
@@ -232,15 +204,16 @@ public partial class MainWindowViewModel : ObservableObject
     /// <summary>
     /// 
     /// </summary>
-    private void GetCpuGpuImagePaths()
+    private void GetManufacturerImagePaths()
     {
-        if (HwStatus is null)
-            return;
+        if (HwMonSvc is null)
+            return; // todo: default images
 
         var isDarkMode = ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Dark;
 
-        HwStatus.CpuImagePath = GetImagePath(HwStatus.CpuName, isDarkMode, "intel", "amd", "qualcomm");
-        HwStatus.GpuImagePath = GetImagePath(HwStatus.GpuName, isDarkMode, "nvidia", "amd", "intel");
+        CpuImagePath = GetImagePath(HwMonSvc.CpuName, isDarkMode, "intel", "amd", "qualcomm");
+        GpuImagePath = GetImagePath(HwMonSvc.GpuName, isDarkMode, "nvidia", "amd", "intel");
+        MbImagePath = GetImagePath(HwMonSvc.MbName, isDarkMode, "msi", "asus");
     }
 
     private string GetImagePath(string name, bool isDarkMode, params string[] keywords)

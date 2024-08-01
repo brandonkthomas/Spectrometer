@@ -9,7 +9,7 @@ public class ValueWithSuffixConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value is HardwareSensor sensorData)
+        if (value is ISensor sensorData && sensorData.Value is not null)
         {
             return sensorData.SensorType switch
             {

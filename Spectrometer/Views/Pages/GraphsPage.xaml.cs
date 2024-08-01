@@ -25,7 +25,7 @@ public partial class GraphsPage : INavigableView<GraphsViewModel>
         LoadGraphControls(mainWindowViewModel);
     }
 
-    // -------------------------------------------------------------------------------------------
+    // --------------------------------------------5-----------------------------------------------
     // Graph Building
 
     private void LoadGraphControls(MainWindowViewModel mainWindowViewModel)
@@ -99,18 +99,18 @@ public partial class GraphsPage : INavigableView<GraphsViewModel>
 
     private List<HardwareSensor> GetEnabledGraphSensors(MainWindowViewModel mainWindowViewModel)
     {
-        if (mainWindowViewModel.HwStatus == null)
+        if (mainWindowViewModel.HwMonSvc == null)
             return [];
 
-        var test = mainWindowViewModel.HwStatus.CpuSensors.Where(s => s.Name.Contains("Package")).FirstOrDefault();
+        var test = mainWindowViewModel.HwMonSvc.CpuSensors?.Where(s => s.Name.Contains("Package")).FirstOrDefault();
         if (test != null) test.IsGraphEnabled = true;
 
-        return mainWindowViewModel.HwStatus.MbSensors.Where(s => s.IsGraphEnabled)
-            .Concat(mainWindowViewModel.HwStatus.CpuSensors.Where(s => s.IsGraphEnabled))
-            .Concat(mainWindowViewModel.HwStatus.GpuSensors.Where(s => s.IsGraphEnabled))
-            .Concat(mainWindowViewModel.HwStatus.MemorySensors.Where(s => s.IsGraphEnabled))
-            .Concat(mainWindowViewModel.HwStatus.StorageSensors.Where(s => s.IsGraphEnabled))
-            .ToList();
+        return mainWindowViewModel.HwMonSvc.MbSensors?.Where(s => s.IsGraphEnabled)
+            .Concat(mainWindowViewModel.HwMonSvc.CpuSensors?.Where(s => s.IsGraphEnabled) ?? [])
+            .Concat(mainWindowViewModel.HwMonSvc.GpuSensors?.Where(s => s.IsGraphEnabled) ?? [])
+            .Concat(mainWindowViewModel.HwMonSvc.MemorySensors?.Where(s => s.IsGraphEnabled) ?? [])
+            .Concat(mainWindowViewModel.HwMonSvc.StorageSensors?.Where(s => s.IsGraphEnabled) ?? [])
+            .ToList() ?? [];
     }
 
     // -------------------------------------------------------------------------------------------

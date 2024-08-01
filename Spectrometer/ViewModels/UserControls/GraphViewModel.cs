@@ -4,10 +4,10 @@ using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
 using Spectrometer.Models;
+using Spectrometer.Services;
 using Spectrometer.ViewModels.Windows;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 
 namespace Spectrometer.ViewModels.UserControls;
 
@@ -111,10 +111,10 @@ public partial class GraphViewModel : ObservableObject
     /// </summary>
     private void StartReadingData()
     {
-        if (_mainWindowViewModel?.HwStatus != null)
+        if (_mainWindowViewModel?.HwMonSvc?.AllSensors != null) // HwMonSvc and AllSensors are ObservableObjects
         {
-            _mainWindowViewModel.HwStatus.PropertyChanged += HwStatus_PropertyChanged;
-            foreach (var sensor in _mainWindowViewModel.HwStatus.CpuSensors)
+            _mainWindowViewModel.HwMonSvc.PropertyChanged += HwMonSvc_PropertyChanged;
+            foreach (var sensor in _mainWindowViewModel.HwMonSvc.AllSensors)
             {
                 if (sensor.Name == _sensor.Name)
                 {
@@ -131,18 +131,18 @@ public partial class GraphViewModel : ObservableObject
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void HwStatus_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void HwMonSvc_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName is null || !e.PropertyName.Contains("Sensors"))
             return;
 
         ObservableCollection<HardwareSensor>? sensors = e.PropertyName switch
         {
-            nameof(HardwareStatus.CpuSensors) => _mainWindowViewModel.HwStatus?.CpuSensors,
-            nameof(HardwareStatus.GpuSensors) => _mainWindowViewModel.HwStatus?.GpuSensors,
-            nameof(HardwareStatus.MbSensors) => _mainWindowViewModel.HwStatus?.MbSensors,
-            nameof(HardwareStatus.MemorySensors) => _mainWindowViewModel.HwStatus?.MemorySensors,
-            nameof(HardwareStatus.StorageSensors) => _mainWindowViewModel.HwStatus?.StorageSensors,
+            nameof(HardwareMonitorService.CpuSensors) => _mainWindowViewModel.HwMonSvc?.CpuSensors,
+            nameof(HardwareMonitorService.GpuSensors) => _mainWindowViewModel.HwMonSvc?.GpuSensors,
+            nameof(HardwareMonitorService.MbSensors) => _mainWindowViewModel.HwMonSvc?.MbSensors,
+            nameof(HardwareMonitorService.MemorySensors) => _mainWindowViewModel.HwMonSvc?.MemorySensors,
+            nameof(HardwareMonitorService.StorageSensors) => _mainWindowViewModel.HwMonSvc?.StorageSensors,
             _ => null,
         };
 
@@ -152,7 +152,7 @@ public partial class GraphViewModel : ObservableObject
             if (sensor != null)
             {
                 sensor.PropertyChanged += Sensor_PropertyChanged;
-                UpdateChart(sensor.Value);
+                UpdateChart(sensor.Value ?? float.NaN);
             }
         }
     }
@@ -170,7 +170,7 @@ public partial class GraphViewModel : ObservableObject
             var sensor = sender as HardwareSensor;
             if (sensor != null)
             {
-                UpdateChart(sensor.Value);
+                UpdateChart(sensor.Value ?? float.NaN);
             }
         }
     }

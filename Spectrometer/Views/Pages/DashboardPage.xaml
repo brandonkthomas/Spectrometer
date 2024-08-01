@@ -24,6 +24,7 @@
         <helpers:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <helpers:StringToImageSourceConverter x:Key="StringToImageSourceConverter" />
         <helpers:ValueToPercentageMultiConverter x:Key="ValueToPercentageMultiConverter" />
+        <helpers:ValueWithSuffixConverter x:Key="ValueWithSuffixConverter" />
 
         <Style x:Key="CustomProgressBar" TargetType="ProgressBar">
             <Setter Property="Template">
@@ -82,7 +83,7 @@
 
         <Grid Name="ContentGrid" 
               VerticalAlignment="Top" 
-              Visibility="{Binding HwStatus.IsLoading, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=True}"
+              Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=True}"
               helpers:TransitionBehavior.Transition="FadeInWithSlide">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -104,7 +105,7 @@
             <ui:CardAction Grid.Column="0" Grid.Row="0" Height="270px" Margin="0,0,5,0" IsChevronVisible="False">
                 <StackPanel>
                     <ProgressBar Style="{StaticResource CustomProgressBar}" 
-                                 Value="{Binding HwStatus.CpuUsage}" 
+                                 Value="{Binding HwMonSvc.CpuUsage}" 
                                  Maximum="100" 
                                  Height="20" 
                                  Margin="0,10,0,0" />
@@ -117,14 +118,14 @@
                                       Grid.Column="0" 
                                       FontSize="12" 
                                       Opacity="0.65" />
-                        <ui:TextBlock Text="{Binding HwStatus.CpuUsage, StringFormat={}{0:F0}%}"
+                        <ui:TextBlock Text="{Binding HwMonSvc.CpuUsage, StringFormat={}{0:F0}%}"
                                       Grid.Column="1" 
                                       FontSize="12"
                                       HorizontalAlignment="Right" />
                     </Grid>
 
                     <ProgressBar Style="{StaticResource CustomProgressBar}" 
-                                 Value="{Binding HwStatus.CpuTemp}"
+                                 Value="{Binding HwMonSvc.CpuTemp}"
                                  Maximum="100" 
                                  Height="20" />
                     <Grid Margin="0,0,0,10">
@@ -136,7 +137,7 @@
                                       Grid.Column="0" 
                                       FontSize="12" 
                                       Opacity="0.65" />
-                        <ui:TextBlock Text="{Binding HwStatus.CpuTemp, StringFormat={}{0:F0} °C}" 
+                        <ui:TextBlock Text="{Binding HwMonSvc.CpuTemp, StringFormat={}{0:F0} °C}" 
                                       Grid.Column="1" 
                                       FontSize="12" 
                                       HorizontalAlignment="Right" />
@@ -147,8 +148,8 @@
                                  Height="20">
                         <ProgressBar.Value>
                             <MultiBinding Converter="{StaticResource ValueToPercentageMultiConverter}">
-                                <Binding Path="HwStatus.CpuPower" />
-                                <Binding Path="HwStatus.CpuPowerMax" />
+                                <Binding Path="HwMonSvc.CpuPower" />
+                                <Binding Path="HwMonSvc.CpuPowerMax" />
                             </MultiBinding>
                         </ProgressBar.Value>
                     </ProgressBar>
@@ -161,7 +162,7 @@
                                       Grid.Column="0"
                                       FontSize="12" 
                                       Opacity="0.65" />
-                        <ui:TextBlock Text="{Binding HwStatus.CpuPower, StringFormat={}{0:F0} W}" 
+                        <ui:TextBlock Text="{Binding HwMonSvc.CpuPower, StringFormat={}{0:F0} W}" 
                                       Grid.Column="1" 
                                       FontSize="12" 
                                       HorizontalAlignment="Right" />
@@ -186,14 +187,14 @@
                                           FontSize="12"
                                           Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                           Opacity="0.65"/>
-                            <ui:TextBlock Text="{Binding HwStatus.CpuName}" 
+                            <ui:TextBlock Text="{Binding HwMonSvc.CpuName}" 
                                           VerticalAlignment="Center" 
                                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
                                           FontSize="14" 
                                           FontWeight="Bold"/>
                         </StackPanel>
 
-                        <Image Source="{Binding HwStatus.CpuImagePath, Converter={StaticResource StringToImageSourceConverter}}"
+                        <Image Source="{Binding CpuImagePath, Converter={StaticResource StringToImageSourceConverter}}"
                                    Height="24" 
                                    VerticalAlignment="Center" 
                                    Grid.Column="2" 
@@ -210,7 +211,7 @@
             <ui:CardAction Grid.Column="1" Grid.Row="0" Height="270px" Margin="5,0,0,0" IsChevronVisible="False">
                 <StackPanel>
                     <ProgressBar Style="{StaticResource CustomProgressBar}" 
-                                 Value="{Binding HwStatus.GpuUsage}" 
+                                 Value="{Binding HwMonSvc.GpuUsage}" 
                                  Maximum="100" 
                                  Height="20" 
                                  Margin="0,10,0,0" />
@@ -223,14 +224,14 @@
                                       Grid.Column="0" 
                                       FontSize="12" 
                                       Opacity="0.65" />
-                        <ui:TextBlock Text="{Binding HwStatus.GpuUsage, StringFormat={}{0:F0}%}" 
+                        <ui:TextBlock Text="{Binding HwMonSvc.GpuUsage, StringFormat={}{0:F0}%}" 
                                       Grid.Column="1" 
                                       FontSize="12" 
                                       HorizontalAlignment="Right" />
                     </Grid>
 
                     <ProgressBar Style="{StaticResource CustomProgressBar}" 
-                                 Value="{Binding HwStatus.GpuTemp}" 
+                                 Value="{Binding HwMonSvc.GpuTemp}" 
                                  Maximum="100" 
                                  Height="20" />
                     <Grid Margin="0,0,0,10">
@@ -242,7 +243,7 @@
                                       Grid.Column="0" 
                                       FontSize="12" 
                                       Opacity="0.65" />
-                        <ui:TextBlock Text="{Binding HwStatus.GpuTemp, StringFormat={}{0:F0} °C}" 
+                        <ui:TextBlock Text="{Binding HwMonSvc.GpuTemp, StringFormat={}{0:F0} °C}" 
                                       Grid.Column="1" 
                                       FontSize="12"
                                       HorizontalAlignment="Right" />
@@ -253,8 +254,8 @@
                                  Height="20">
                         <ProgressBar.Value>
                             <MultiBinding Converter="{StaticResource ValueToPercentageMultiConverter}">
-                                <Binding Path="HwStatus.GpuPower" />
-                                <Binding Path="HwStatus.GpuPowerMax" />
+                                <Binding Path="HwMonSvc.GpuPower" />
+                                <Binding Path="HwMonSvc.GpuPowerMax" />
                             </MultiBinding>
                         </ProgressBar.Value>
                     </ProgressBar>
@@ -267,7 +268,7 @@
                                       Grid.Column="0" 
                                       FontSize="12" 
                                       Opacity="0.65" />
-                        <ui:TextBlock Text="{Binding HwStatus.GpuPower, StringFormat={}{0:F0} W}"
+                        <ui:TextBlock Text="{Binding HwMonSvc.GpuPower, StringFormat={}{0:F0} W}"
                                       Grid.Column="1" 
                                       FontSize="12" 
                                       HorizontalAlignment="Right" />
@@ -278,8 +279,8 @@
                                  Height="20">
                         <ProgressBar.Value>
                             <MultiBinding Converter="{StaticResource ValueToPercentageMultiConverter}">
-                                <Binding Path="HwStatus.GpuMemoryUsage" />
-                                <Binding Path="HwStatus.GpuMemoryTotal" />
+                                <Binding Path="HwMonSvc.GpuMemoryUsage" />
+                                <Binding Path="HwMonSvc.GpuMemoryTotal" />
                             </MultiBinding>
                         </ProgressBar.Value>
                     </ProgressBar>
@@ -292,7 +293,7 @@
                                       Grid.Column="0" 
                                       FontSize="12" 
                                       Opacity="0.65" />
-                        <ui:TextBlock Text="{Binding HwStatus.GpuMemoryUsage, StringFormat={}{0:F0} MB}"
+                        <ui:TextBlock Text="{Binding HwMonSvc.GpuMemoryUsage, StringFormat={}{0:F0} MB}"
                                       Grid.Column="1" 
                                       FontSize="12" 
                                       HorizontalAlignment="Right" />
@@ -317,14 +318,14 @@
                                           FontSize="12"
                                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
                                           Opacity="0.65"/>
-                            <ui:TextBlock Text="{Binding HwStatus.GpuName}" 
+                            <ui:TextBlock Text="{Binding HwMonSvc.GpuName}" 
                                           VerticalAlignment="Center" 
                                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
                                           FontSize="14" 
                                           FontWeight="Bold"/>
                         </StackPanel>
 
-                        <Image Source="{Binding HwStatus.GpuImagePath, Converter={StaticResource StringToImageSourceConverter}}"
+                        <Image Source="{Binding GpuImagePath, Converter={StaticResource StringToImageSourceConverter}}"
                                    Height="24" 
                                    VerticalAlignment="Center" 
                                    Grid.Column="2" 
@@ -341,8 +342,8 @@
             <ui:CardAction Grid.Column="0" Grid.Row="1" Height="130px" Margin="2,12,2,0" IsChevronVisible="False" VerticalAlignment="Top">
                 <StackPanel>
                     <ProgressBar Style="{StaticResource CustomProgressBar}" 
-                                 Value="{Binding HwStatus.MemoryUsageGb}" 
-                                 Maximum="{Binding HwStatus.MemoryTotalGb}" 
+                                 Value="{Binding HwMonSvc.MemoryUsageGb}" 
+                                 Maximum="{Binding HwMonSvc.MemoryTotalGb}" 
                                  Height="20" 
                                  Margin="0,10,0,0"/>
                     <Grid Margin="0,0,0,10">
@@ -353,7 +354,7 @@
                         <ui:TextBlock Text="" 
                                       Grid.Column="0" 
                                       FontSize="12"/>
-                        <ui:TextBlock Text="{Binding HwStatus.MemoryUsageDetails}" 
+                        <ui:TextBlock Text="{Binding HwMonSvc.MemoryUsageDetails}" 
                                       Grid.Column="1" 
                                       FontSize="12" 
                                       HorizontalAlignment="Right" />
@@ -391,22 +392,24 @@
 
             <!-- ======================================================================= -->
             <!-- Top Processes Card -->
-            <Grid/>
+
             <DataGrid x:Name="ProcessesDataGrid" 
-                         ItemsSource="{Binding ProcessesList}" 
-                         AutoGenerateColumns="False"
-                         Height="130px"
-                         MaxHeight="130px"
-                         HeadersVisibility="Column" 
-                         VerticalScrollBarVisibility="Disabled"
-                         AllowDrop="False"
-                         IsReadOnly="True" 
-                         CanUserAddRows="False" 
-                         CanUserReorderColumns="False"
-                         CanUserResizeColumns="False"
-                         CanUserResizeRows="False"
-                         CanUserSortColumns="True"
-                         Margin="5,12,2,133" Grid.Column="1" Grid.Row="1">
+                      ItemsSource="{Binding ProcessesList}" 
+                      AutoGenerateColumns="False"
+                      Height="130px"
+                      MaxHeight="130px"
+                      HeadersVisibility="Column" 
+                      VerticalScrollBarVisibility="Disabled"
+                      AllowDrop="False"
+                      IsReadOnly="True" 
+                      CanUserAddRows="False" 
+                      CanUserReorderColumns="False"
+                      CanUserResizeColumns="False"
+                      CanUserResizeRows="False"
+                      CanUserSortColumns="True"
+                      Margin="5,12,2,133" 
+                      Grid.Column="1" 
+                      Grid.Row="1">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Process" 
                                             HeaderStyle="{StaticResource DataGridHeaderStyle}"
@@ -444,7 +447,7 @@
         <Grid Name="LoadingGrid" 
               VerticalAlignment="Center" 
               HorizontalAlignment="Center" 
-              Visibility="{Binding HwStatus.IsLoading, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=False}"
+              Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=False}"
               helpers:TransitionBehavior.Transition="FadeInWithSlide">
             <ui:ProgressRing IsIndeterminate="True" 
                              Foreground="White"
