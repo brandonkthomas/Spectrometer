@@ -4,6 +4,7 @@ using System.Configuration;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 using System.IO;
+using Spectrometer.Helpers;
 
 namespace Spectrometer.ViewModels.Pages;
 
@@ -13,6 +14,8 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     // Fields
 
     private bool _isInitialized = false;
+
+    private KeyValueConfigurationCollection _configuration;
 
     [ObservableProperty]
     private string _appVersion = String.Empty;
@@ -26,6 +29,12 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     [ObservableProperty]
     private int _pollingRate = 0;
 
+    [ObservableProperty]
+    private List<string> listOfPages = new List<string>();
+
+    [ObservableProperty]
+    private string selectedStartTab = string.Empty;
+
     // -------------------------------------------------------------------------------------------
     // Init
 
@@ -34,10 +43,13 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     private void InitializeViewModel()
     {
         var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-        var settings = configFile.AppSettings.Settings;
+        _configuration = configFile.AppSettings.Settings;
+        var startTabHelper = new StartingTabPageHelper();
         CurrentTheme = ApplicationThemeManager.GetAppTheme();
         AppVersion = $"Spectrometer v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? String.Empty} (July 31, 2024)";
-        PollingRate = int.Parse(settings["PollRate"].Value.ToString());
+        PollingRate = int.Parse(_configuration["PollRate"].Value.ToString());
+        ListOfPages = startTabHelper.GetAllPageNames();
+        SelectedStartTab = _configuration["StartingTab"].Value ?? "Dashboard";
 
         try
         {
@@ -120,10 +132,22 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     [RelayCommand]
     private void OnPollingRateChange(int parameter)
     {
+        UpdateAppSettings(parameter.ToString(), "PollRate");
+    }
+
+    // ------------------------------------------------------------------------------------------------
+    // Starting Tab event handler
+
+    private void OnStartingTabChange(string parameter)
+    {
+        UpdateAppSettings(parameter, "StartingTab");
+    }
+
+    public void UpdateAppSettings(string parameter, string settingName)
+    {
         var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
         var settings = configFile.AppSettings.Settings;
-
-        settings["PollRate"].Value = parameter.ToString();
+        settings[settingName].Value = parameter;
 
         configFile.Save(ConfigurationSaveMode.Modified);
         ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);
