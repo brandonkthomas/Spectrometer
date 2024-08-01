@@ -36,6 +36,8 @@
     <None Remove="Assets\memory-30-white.png" />
     <None Remove="Assets\motherboard-32-black.png" />
     <None Remove="Assets\motherboard-32-white.png" />
+    <None Remove="Assets\msi-logo-black.png" />
+    <None Remove="Assets\msi-logo-white.png" />
     <None Remove="Assets\nvidia-logo-black.png" />
     <None Remove="Assets\nvidia-logo-white.png" />
     <None Remove="Assets\pin-50-black.png" />
@@ -57,6 +59,8 @@
     <Resource Include="Assets\memory-30-white.png" />
     <Resource Include="Assets\motherboard-32-black.png" />
     <Resource Include="Assets\motherboard-32-white.png" />
+    <Resource Include="Assets\msi-logo-black.png" />
+    <Resource Include="Assets\msi-logo-white.png" />
     <Resource Include="Assets\nvidia-logo-black.png" />
     <Resource Include="Assets\nvidia-logo-white.png" />
     <Resource Include="Assets\pin-50-black.png" />
