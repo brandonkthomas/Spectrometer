@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Spectrometer.Services;
 
-// ------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------
 /// <summary>
 /// Logging service that handles writing logs to a file in appdata/roaming.
 /// </summary>
@@ -13,7 +13,7 @@ public class LoggingService : IDisposable
     private readonly string _logFilePath = string.Empty;
     private readonly StreamWriter? _streamWriter;
 
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     /// <summary>
     /// Opens Roaming\Spectrograph, handles existing log files, creates a new log file & opens a StreamWriter.
     /// </summary>
@@ -43,14 +43,14 @@ public class LoggingService : IDisposable
         }
     }
 
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     /// <summary>
     /// 
     /// </summary>
     /// <param name="logFilePath"></param>
     private void HandleExistingLogFiles(string logFilePath)
     {
-        // ------------------------------------------------------------------------------------------------
+        // -------------------------------------------------------------------------------------------
         // Rename existing log files if needed
 
         if (File.Exists(logFilePath))
@@ -66,7 +66,7 @@ public class LoggingService : IDisposable
             }
         }
 
-        // ------------------------------------------------------------------------------------------------
+        // -------------------------------------------------------------------------------------------
         // Delete any log files older than 7 days
 
         string[] logFiles = Directory.GetFiles(_logDirectory, "Spectrometer_*.log");
@@ -81,7 +81,7 @@ public class LoggingService : IDisposable
         }
     }
 
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     /// <summary>
     /// 
     /// </summary>
@@ -92,7 +92,7 @@ public class LoggingService : IDisposable
         Debug.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} - {message}");
     }
 
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     /// <summary>
     /// 
     /// </summary>

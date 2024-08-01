@@ -6,6 +6,14 @@ namespace Spectrometer.Views.UserControls;
 
 public partial class GraphUserControl : UserControl
 {
+    // -------------------------------------------------------------------------------------------
+    // Constructor
+    // -------------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="viewModel"></param>
     public GraphUserControl(GraphViewModel viewModel)
     {
         InitializeComponent();
@@ -15,13 +23,27 @@ public partial class GraphUserControl : UserControl
         this.MouseLeftButtonDown += GraphUserControl_MouseLeftButtonDown;
     }
 
+    // -------------------------------------------------------------------------------------------
+    // Drag and Drop Support
+    // -------------------------------------------------------------------------------------------
+
     private Point _startPoint;
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void GraphUserControl_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         _startPoint = e.GetPosition(null);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void GraphUserControl_MouseMove(object sender, MouseEventArgs e)
     {
         if (e.LeftButton == MouseButtonState.Pressed)

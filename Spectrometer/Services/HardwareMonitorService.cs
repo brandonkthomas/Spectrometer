@@ -5,22 +5,22 @@ using System.Management;
 
 namespace Spectrometer.Services;
 
-// ------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------
 /// <summary>
 /// Service that uses LibreHardwareMonitorLib to monitor the system's hardware.
 /// </summary>
 public class HardwareMonitorService : IDisposable
 {
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     // Singleton Support for HW Monitor Service (allows sharing of the same instance across the application)
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
 
     private static readonly Lazy<HardwareMonitorService> _instance = new(() => new HardwareMonitorService());
     public static HardwareMonitorService Instance => _instance.Value;
 
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     // Constructor + Events
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
 
     private readonly Computer _computer;
 
@@ -53,11 +53,11 @@ public class HardwareMonitorService : IDisposable
 
     public void Dispose() => _computer.Close();
 
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     // Public Sensor Value Retrieval
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
 
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     // Motherboard
 
     public string GetMotherboardName() => _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Motherboard)?.Name ?? "Unknown";
@@ -81,7 +81,7 @@ public class HardwareMonitorService : IDisposable
         return sensors;
     }
 
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     // CPU
 
     public string GetCpuName() => _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu)?.Name ?? "Unknown";
@@ -147,7 +147,7 @@ public class HardwareMonitorService : IDisposable
         return cpu.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Power)?.Max ?? float.NaN;
     }
 
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     // GPU
 
     private HardwareType _getGpuType()
@@ -242,7 +242,7 @@ public class HardwareMonitorService : IDisposable
         return gpu.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Power)?.Max ?? float.NaN;
     }
 
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     // Memory
 
     public ObservableCollection<HardwareSensor> GetMemorySensors()
@@ -299,7 +299,7 @@ public class HardwareMonitorService : IDisposable
         return mem.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Load)?.Value ?? float.NaN;
     }
 
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     // Storage
 
     public ObservableCollection<HardwareSensor> GetStorageSensors()
@@ -322,9 +322,9 @@ public class HardwareMonitorService : IDisposable
         return sensors;
     }
 
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     // Update Visitor (internal-only)
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
 
     private class UpdateVisitor : IVisitor
     {

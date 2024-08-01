@@ -13,9 +13,9 @@ namespace Spectrometer.ViewModels.UserControls;
 
 public partial class GraphViewModel : ObservableObject
 {
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     // Properties
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
 
     private readonly ObservableCollection<DateTimePoint> _values;
     private readonly DateTimeAxis _customAxis;
@@ -29,12 +29,12 @@ public partial class GraphViewModel : ObservableObject
     public bool IsReading { get; set; } = true;
     public string ChartTitle { get; set; } = string.Empty;
 
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     // Constructor + Init
     //   I tried removing mainWindowViewMoel from the constructor, but it's needed for the
     //   HardwareSensor change handlers - they dont fire from the HardwareSensor class for some reason.
     //   TBD at a later date. For now it's fine.
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
 
     /// <summary>
     /// 
@@ -47,7 +47,7 @@ public partial class GraphViewModel : ObservableObject
         _sensor = sensor;
         _values = new ObservableCollection<DateTimePoint>();
 
-        // ------------------------------------------------------------------------------------------------
+        // -------------------------------------------------------------------------------------------
         // Gradients
 
         var gradientFill = new LinearGradientPaint(
@@ -58,7 +58,7 @@ public partial class GraphViewModel : ObservableObject
             new SKColor(0, 151, 38, 0),
             new SKColor(0, 181, 157, 0));
 
-        // ------------------------------------------------------------------------------------------------
+        // -------------------------------------------------------------------------------------------
         // Graph Configuration
 
         Series = new ObservableCollection<ISeries>
@@ -95,13 +95,20 @@ public partial class GraphViewModel : ObservableObject
 
         ChartTitle = _sensor.Name;
 
+        // -------------------------------------------------------------------------------------------
+        // Bind PropertyChanged event to HwStatus list
+
         StartReadingData();
     }
 
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     // Chart
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
 
+    // -------------------------------------------------------------------------------------------
+    /// <summary>
+    /// 
+    /// </summary>
     private void StartReadingData()
     {
         if (_mainWindowViewModel?.HwStatus != null)
@@ -118,6 +125,12 @@ public partial class GraphViewModel : ObservableObject
         }
     }
 
+    // -------------------------------------------------------------------------------------------
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void HwStatus_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName is null || !e.PropertyName.Contains("Sensors"))
@@ -144,6 +157,12 @@ public partial class GraphViewModel : ObservableObject
         }
     }
 
+    // -------------------------------------------------------------------------------------------
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void Sensor_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(HardwareSensor.Value))
@@ -156,6 +175,11 @@ public partial class GraphViewModel : ObservableObject
         }
     }
 
+    // -------------------------------------------------------------------------------------------
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="cpuUsage"></param>
     private void UpdateChart(float cpuUsage)
     {
         lock (Sync)
@@ -165,6 +189,7 @@ public partial class GraphViewModel : ObservableObject
         }
     }
 
+    // -------------------------------------------------------------------------------------------
     /// <summary>
     /// 
     /// </summary>

@@ -6,7 +6,7 @@ namespace Spectrometer.ViewModels.Pages;
 
 public partial class SettingsViewModel : ObservableObject, INavigationAware
 {
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     // Fields
 
     private bool _isInitialized = false;
@@ -20,7 +20,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     [ObservableProperty]
     private bool _startWithWindows = false;
 
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     // Init
 
     public SettingsViewModel() { }
@@ -42,7 +42,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     public void OnNavigatedFrom() { }
 
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     // Theme change handler
 
     [RelayCommand]
@@ -70,7 +70,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         }
     }
 
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     // Startup with Windows handler
 
     [RelayCommand]

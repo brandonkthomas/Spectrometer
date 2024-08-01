@@ -26,6 +26,7 @@ namespace Spectrometer;
 /// </summary>
 public partial class App
 {
+    // -------------------------------------------------------------------------------------------
     // The.NET Generic Host provides dependency injection, configuration, logging, and other services.
     // https://docs.microsoft.com/dotnet/core/extensions/generic-host
     // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
@@ -77,6 +78,7 @@ public partial class App
             services.AddSingleton<SettingsViewModel>();
         }).Build();
 
+    // -------------------------------------------------------------------------------------------
     /// <summary>
     /// Gets registered service.
     /// </summary>
@@ -88,6 +90,7 @@ public partial class App
         return _host.Services.GetService(typeof(T)) as T ?? null;
     }
 
+    // -------------------------------------------------------------------------------------------
     /// <summary>
     /// Occurs when the application is loading.
     /// </summary>
@@ -101,16 +104,20 @@ public partial class App
         _host.Start();
     }
 
+    // -------------------------------------------------------------------------------------------
     /// <summary>
     /// Occurs when the application is closing.
     /// </summary>
     private async void OnExit(object sender, ExitEventArgs e)
     {
-        await _host.StopAsync();
+        GetService<HardwareMonitorService>()?.Dispose();
+        GetService<LoggingService>()?.Dispose();
 
+        await _host.StopAsync();
         _host.Dispose();
     }
 
+    // -------------------------------------------------------------------------------------------
     /// <summary>
     /// Occurs when an exception is thrown by an application but not handled.
     /// </summary>
@@ -119,6 +126,7 @@ public partial class App
         // For more info see https://docs.microsoft.com/en-us/dotnet/api/system.windows.application.dispatcherunhandledexception?view=windowsdesktop-6.0
     }
 
+    // -------------------------------------------------------------------------------------------
     /// <summary>
     /// 
     /// </summary>

@@ -13,7 +13,7 @@ public partial class GraphsPage : INavigableView<GraphsViewModel>
 {
     public GraphsViewModel ViewModel { get; }
 
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     // Constructor
 
     public GraphsPage(GraphsViewModel viewModel, MainWindowViewModel mainWindowViewModel)
@@ -25,7 +25,7 @@ public partial class GraphsPage : INavigableView<GraphsViewModel>
         LoadGraphControls(mainWindowViewModel);
     }
 
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     // Graph Building
 
     private void LoadGraphControls(MainWindowViewModel mainWindowViewModel)
@@ -113,7 +113,7 @@ public partial class GraphsPage : INavigableView<GraphsViewModel>
             .ToList();
     }
 
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     // Graph Drag and Drop Support
 
     private void Grid_DragOver(object sender, DragEventArgs e)

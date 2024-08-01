@@ -7,7 +7,7 @@ namespace Spectrometer.Helpers;
 
 public static class TransitionBehavior
 {
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     /// <summary>
     /// 
     /// </summary>
@@ -17,7 +17,7 @@ public static class TransitionBehavior
         typeof(TransitionBehavior),
         new PropertyMetadata(Transition.None, OnTransitionChanged));
 
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     /// <summary>
     /// 
     /// </summary>
@@ -25,7 +25,7 @@ public static class TransitionBehavior
     /// <returns></returns>
     public static Transition GetTransition(DependencyObject obj) => (Transition)obj.GetValue(TransitionProperty);
 
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     /// <summary>
     /// 
     /// </summary>
@@ -33,7 +33,7 @@ public static class TransitionBehavior
     /// <param name="value"></param>
     public static void SetTransition(DependencyObject obj, Transition value) => obj.SetValue(TransitionProperty, value);
 
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     /// <summary>
     /// 
     /// </summary>
@@ -57,7 +57,7 @@ public static class TransitionBehavior
         }
     }
 
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     /// <summary>
     /// 
     /// </summary>
@@ -91,7 +91,7 @@ public static class TransitionBehavior
         storyboard.Begin(element);
     }
 
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     /// <summary>
     /// 
     /// </summary>
@@ -110,7 +110,7 @@ public static class TransitionBehavior
         storyboard.Children.Add(animation);
     }
 
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     /// <summary>
     /// 
     /// </summary>
