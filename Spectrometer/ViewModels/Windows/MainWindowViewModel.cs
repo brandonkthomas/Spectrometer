@@ -87,10 +87,9 @@ public partial class MainWindowViewModel : ObservableObject
             HwMonSvc?.PollAllSensors();
             HwMonSvc?.PollSpecificSensors();
             GetProcesses();
+            UpdatePollRate();
         });
     }
-
-    private readonly int _defaultPollingInterval = 1750; // Default polling interval in milliseconds
 
     [ObservableProperty]
     private string _cpuImagePath = string.Empty;
@@ -135,9 +134,9 @@ public partial class MainWindowViewModel : ObservableObject
         var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
         var settings = configFile.AppSettings.Settings;
 
-        _defaultPollingInterval = int.Parse(settings["PollRate"].Value.ToString());
+        var interval = int.Parse(settings["PollRate"].Value.ToString());
 
-        _timer = new System.Timers.Timer(_defaultPollingInterval); // TODO: Make this a user setting
+        _timer = new System.Timers.Timer(interval); // TODO: Make this a user setting
         _timer.Elapsed += OnTimerElapsed;
 
         InitializeAsync();
@@ -203,6 +202,20 @@ public partial class MainWindowViewModel : ObservableObject
         {
             Logger.WriteExc(ex);
         }
+    }
+
+    // -------------------------------------------------------------------------------------------
+    /// <summary>
+    /// 
+    /// </summary>
+    private void UpdatePollRate()
+    {
+        var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+        var settings = configFile.AppSettings.Settings;
+        if (_timer.Interval != double.Parse(settings["PollRate"].Value.ToString()))
+            _timer.Interval = double.Parse(settings["PollRate"].Value.ToString());
+        else
+            return;
     }
 
     // -------------------------------------------------------------------------------------------
