@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using Spectrometer.Models;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 
@@ -29,7 +30,15 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     {
         CurrentTheme = ApplicationThemeManager.GetAppTheme();
         AppVersion = $"Spectrometer v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? String.Empty} (July 31, 2024)";
-        StartWithWindows = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true).GetValue("Spectrometer") != null ? true : false;
+
+        try
+        {
+            StartWithWindows = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true)?.GetValue("Spectrometer") != null;
+        }
+        catch (Exception ex)
+        {
+            Logger.WriteExc(ex);
+        }
 
         _isInitialized = true;
     }
@@ -76,15 +85,24 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     [RelayCommand]
     private void OnChangeStartWithWindows(bool parameter)
     {
-        RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-        switch (parameter)
+        try
         {
-            case true:
-                rk.SetValue("Spectrometer", System.Reflection.Assembly.GetEntryAssembly().Location);
-                break;
-            case false:
-                rk.DeleteValue("Spectrometer", false);
-                break;
+            RegistryKey? rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+            string exePath = System.Reflection.Assembly.GetEntryAssembly()?.Location ?? string.Empty; // todo: set a default location
+
+            switch (parameter)
+            {
+                case true:
+                    rk?.SetValue("Spectrometer", exePath);
+                    break;
+                case false:
+                    rk?.DeleteValue("Spectrometer", false);
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.WriteExc(ex);
         }
     }
 }
