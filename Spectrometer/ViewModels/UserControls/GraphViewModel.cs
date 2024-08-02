@@ -127,7 +127,7 @@ public partial class GraphViewModel : ObservableObject
 
     // -------------------------------------------------------------------------------------------
     /// <summary>
-    /// 
+    /// Update chart(s) on HwMonSvc property change
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>

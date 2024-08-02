@@ -10,6 +10,8 @@ public static class Logger
 
     public static void Write(string message) => _loggingService.Write(message);
 
+    public static void WriteWarn(string message) => _loggingService.WriteWarn(message);
+
     public static void WriteExc(Exception exception) => _loggingService.WriteExc(exception);
 
     public static void Dispose() => _loggingService.Dispose();

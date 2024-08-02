@@ -2,6 +2,7 @@
 using Spectrometer.Services;
 using System.Collections.ObjectModel;
 using System.Configuration;
+using System.Diagnostics;
 using System.Timers;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
@@ -81,15 +82,12 @@ public partial class MainWindowViewModel : ObservableObject
     private readonly System.Timers.Timer _timer;
     private void OnTimerElapsed(object? sender, ElapsedEventArgs e)
     {
-        Application.Current.Dispatcher.Invoke(() =>
-        {
-            _timer.Interval = App.SettingsMgr?.Settings?.PollingRate ?? 1750;
+        _timer.Interval = App.SettingsMgr?.Settings?.PollingRate ?? 1750; // reconfigure timer interval from AppSettings
 
-            HwMonSvc?.Update();
-            HwMonSvc?.PollAllSensors();
-            HwMonSvc?.PollSpecificSensors();
-            GetProcesses();
-        });
+        HwMonSvc?.Update();
+        HwMonSvc?.PollAllSensors();
+        HwMonSvc?.PollSpecificSensors();
+        GetProcesses();
     }
 
     [ObservableProperty]
@@ -157,6 +155,7 @@ public partial class MainWindowViewModel : ObservableObject
         {
             // This takes a sec to initialize; await it in a new thread so we don't block the UI
             // Will also poll all sensors initially in the ctor
+
             HwMonSvc = HardwareMonitorService.Instance;
 
             PrcssSvc = ProcessesService.Instance;
@@ -176,6 +175,10 @@ public partial class MainWindowViewModel : ObservableObject
     }
 
     public Task InitializationTask => _initializationTcs.Task;
+
+    // -------------------------------------------------------------------------------------------
+    // Process Service helpers
+    // -------------------------------------------------------------------------------------------
 
     // -------------------------------------------------------------------------------------------
     /// <summary>
@@ -206,18 +209,8 @@ public partial class MainWindowViewModel : ObservableObject
     }
 
     // -------------------------------------------------------------------------------------------
-    /// <summary>
-    /// 
-    /// </summary>
-    private void UpdatePollRate()
-    {
-        var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-        var settings = configFile.AppSettings.Settings;
-        if (_timer.Interval != double.Parse(settings["PollRate"].Value.ToString()))
-            _timer.Interval = double.Parse(settings["PollRate"].Value.ToString());
-        else
-            return;
-    }
+    // Image path calculations
+    // -------------------------------------------------------------------------------------------
 
     // -------------------------------------------------------------------------------------------
     /// <summary>
@@ -226,7 +219,7 @@ public partial class MainWindowViewModel : ObservableObject
     private void GetManufacturerImagePaths()
     {
         if (HwMonSvc is null)
-            return; // todo: default images
+            return; // todo: placeholder image (maybe? should we just leave invisible?)
 
         var isDarkMode = ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Dark;
 

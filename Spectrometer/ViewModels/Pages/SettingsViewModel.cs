@@ -1,8 +1,6 @@
 ﻿using Microsoft.Win32;
 using Spectrometer.Models;
-using System.Configuration;
 using System.IO;
-using System.Timers;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 
@@ -106,6 +104,10 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     public void OnNavigatedFrom() { }
 
     // -------------------------------------------------------------------------------------------
+    // Events + bound commands
+    // -------------------------------------------------------------------------------------------
+
+    // -------------------------------------------------------------------------------------------
     // Theme change handler
 
     [RelayCommand]
@@ -159,6 +161,4 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
             Logger.WriteExc(ex);
         }
     }
-
-
 }

@@ -1,9 +1,4 @@
-﻿global using CommunityToolkit.Mvvm.ComponentModel;
-global using CommunityToolkit.Mvvm.Input;
-global using System;
-global using System.Windows;
-
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Spectrometer.Helpers;
@@ -22,14 +17,25 @@ using Wpf.Ui;
 
 namespace Spectrometer;
 
+// -------------------------------------------------------------------------------------------
 /// <summary>
 /// Interaction logic for App.xaml
 /// </summary>
 public partial class App
 {
+    // ------------------------------------------------------------------------------------------------
+    // Global Fields
+    // ------------------------------------------------------------------------------------------------
+
+    public static AppSettingsManager? SettingsMgr { get; private set; }
+
+    // ------------------------------------------------------------------------------------------------
+    // Entry + Configuration
+    // ------------------------------------------------------------------------------------------------
+
     // -------------------------------------------------------------------------------------------
     /// <summary>
-    /// Application primary entry point
+    /// Application primary entry point.
     /// This should contain *only* crucial processes.
     /// </summary>
     static App()
@@ -89,8 +95,6 @@ public partial class App
             services.AddSingleton<SettingsPage>();
             services.AddSingleton<SettingsViewModel>();
         }).Build();
-
-    public static AppSettingsManager? SettingsMgr { get; private set; }
 
     // -------------------------------------------------------------------------------------------
     /// <summary>

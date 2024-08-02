@@ -34,7 +34,8 @@ public partial class DashboardViewModel : ObservableObject
     {
         _mainWindowViewModel = mainWindowViewModel;
         _mainWindowViewModel.PropertyChanged += MainWindowViewModel_PropertyChanged;
-        WaitForInitialization();
+        WaitForMainWindowInitialization();
+        Logger.Write("DashboardViewModel initialized");
     }
 
     /// <summary>
@@ -57,7 +58,7 @@ public partial class DashboardViewModel : ObservableObject
     /// <summary>
     /// We don't want to access these properties until the MainWindowViewModel has finished initializing.
     /// </summary>
-    private async void WaitForInitialization()
+    private async void WaitForMainWindowInitialization()
     {
         await _mainWindowViewModel.InitializationTask;
         OnPropertyChanged(nameof(HwMonSvc));

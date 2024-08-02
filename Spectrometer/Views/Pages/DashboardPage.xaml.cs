@@ -1,6 +1,5 @@
-﻿using Spectrometer.ViewModels.Pages;
-using System.Collections.ObjectModel;
-using System.Windows.Controls;
+﻿using Spectrometer.Models;
+using Spectrometer.ViewModels.Pages;
 using Wpf.Ui.Controls;
 
 namespace Spectrometer.Views.Pages;
@@ -15,5 +14,6 @@ public partial class DashboardPage : INavigableView<DashboardViewModel>
         DataContext = viewModel;
 
         InitializeComponent();
+        Logger.Write("DashboardPage initialized");
     }
 }

@@ -17,9 +17,8 @@ internal class ProgressToWidthConverter : IMultiValueConverter
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
         if (values[0] is double progress && values[1] is double actualWidth)
-        {
             return (progress / 100) * actualWidth;
-        }
+
         return 0;
     }
 

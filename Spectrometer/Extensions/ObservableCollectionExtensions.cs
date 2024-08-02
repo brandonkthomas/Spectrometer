@@ -1,6 +1,7 @@
 ﻿using LibreHardwareMonitor.Hardware;
 using Spectrometer.Models;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace Spectrometer.Extensions;
 

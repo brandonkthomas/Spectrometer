@@ -113,9 +113,13 @@ public class AppSettingsManager
             LoadSettings();
 
         if (Settings is null)
+        {
+            Logger.WriteWarn("Settings could not be loaded; Startup tab defaulting to Dashboard");
             return typeof(DashboardPage);
-        else
-            value = Settings.StartingTab;
+        }
+
+        value = Settings.StartingTab;
+        Logger.Write($"Starting tab: {value}");
 
         switch (value)
         {

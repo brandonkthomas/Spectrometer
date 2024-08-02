@@ -1,5 +1,6 @@
 ﻿using Spectrometer.Services;
 using Spectrometer.ViewModels.Windows;
+using System.Windows.Input;
 using Wpf.Ui.Controls;
 
 namespace Spectrometer.ViewModels.Pages;
@@ -24,7 +25,10 @@ public partial class GraphsViewModel : ObservableObject, INavigationAware
     /// 
     /// </summary>
     /// <param name="mainWindowViewModel"></param>
-    public GraphsViewModel(MainWindowViewModel mainWindowViewModel) => _mainWindowViewModel = mainWindowViewModel;
+    public GraphsViewModel(MainWindowViewModel mainWindowViewModel)
+    {
+        _mainWindowViewModel = mainWindowViewModel;
+    }
 
     // -------------------------------------------------------------------------------------------
     // Navigation
@@ -35,7 +39,7 @@ public partial class GraphsViewModel : ObservableObject, INavigationAware
     /// </summary>
     public void OnNavigatedTo()
     {
-
+        // TODO: refresh Graphs page contents on navigation change
     }
 
     /// <summary>

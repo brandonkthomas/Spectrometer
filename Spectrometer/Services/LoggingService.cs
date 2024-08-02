@@ -36,6 +36,8 @@ public class LoggingService : IDisposable
             {
                 AutoFlush = true
             };
+
+            this.Write("Logging service started");
         }
         catch (Exception ex)
         {
@@ -56,30 +58,38 @@ public class LoggingService : IDisposable
 
         if (File.Exists(logFilePath))
         {
+            int modifiedLogs = 0;
+
             for (int i = 0; ; i++)
             {
                 string newFilePath = Path.Combine(_logDirectory, $"Spectrometer_{DateTime.Now:yyyy-MM-dd}_{i:D3}.log");
                 if (!File.Exists(newFilePath))
                 {
                     File.Move(logFilePath, newFilePath);
+                    modifiedLogs += 1;
                     break;
                 }
             }
+
+            this.Write($"{modifiedLogs} existing log file(s) renamed");
         }
 
         // -------------------------------------------------------------------------------------------
         // Delete any log files older than 7 days
 
+        int deletedLogs = 0;
         string[] logFiles = Directory.GetFiles(_logDirectory, "Spectrometer_*.log");
 
         foreach (string logFile in logFiles)
         {
             FileInfo fileInfo = new FileInfo(logFile);
+
             if (fileInfo.LastWriteTime < DateTime.Now.AddDays(-7))
-            {
                 File.Delete(logFile);
-            }
         }
+
+        if (deletedLogs > 0)
+            this.Write($"{deletedLogs} log file(s) older than 7 days deleted");
     }
 
     // -------------------------------------------------------------------------------------------

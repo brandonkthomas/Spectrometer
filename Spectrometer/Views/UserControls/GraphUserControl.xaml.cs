@@ -24,7 +24,7 @@ public partial class GraphUserControl : UserControl
     }
 
     // -------------------------------------------------------------------------------------------
-    // Drag and Drop Support
+    // Drag/Drop Support
     // -------------------------------------------------------------------------------------------
 
     private Point _startPoint;

@@ -1,5 +1,4 @@
 ﻿using LibreHardwareMonitor.Hardware;
-using System.ComponentModel;
 
 namespace Spectrometer.Models;
 

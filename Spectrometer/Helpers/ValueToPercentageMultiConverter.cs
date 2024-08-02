@@ -24,9 +24,7 @@ public class ValueToPercentageMultiConverter : IMultiValueConverter
             double maxValue = convertibleMaxValue.ToDouble(CultureInfo.InvariantCulture);
 
             if (maxValue != 0)
-            {
                 return (value / maxValue) * 100;
-            }
         }
 
         return 0.0;

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Hosting;
-using Spectrometer.Models;
 using Spectrometer.Views.Pages;
 using Spectrometer.Views.Windows;
 using Wpf.Ui;
@@ -18,11 +17,12 @@ public class ApplicationHostService : IHostedService
     private Type _pageType;
 
     // -------------------------------------------------------------------------------------------
+    // Constructor + Start/Stop
+    // -------------------------------------------------------------------------------------------
 
     public ApplicationHostService(IServiceProvider serviceProvider)
     {
-        _pageType = App.SettingsMgr?.GetStartingTab() ?? typeof(DashboardPage);
-        Logger.Write($"Starting tab: {_pageType.Name}");
+        _pageType = App.SettingsMgr?.GetStartingTab() ?? typeof(DashboardPage); // get starting tab from AppSettings
 
         _serviceProvider = serviceProvider;
     }
@@ -44,6 +44,10 @@ public class ApplicationHostService : IHostedService
     {
         await Task.CompletedTask;
     }
+
+    // -------------------------------------------------------------------------------------------
+    // Activation
+    // -------------------------------------------------------------------------------------------
 
     /// <summary>
     /// Creates main window during activation.

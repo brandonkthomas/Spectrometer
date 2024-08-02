@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-using System.Windows.Data;
-using System.Windows.Media.Animation;
+﻿using System.Windows.Media.Animation;
 using Wpf.Ui.Animations;
 
 namespace Spectrometer.Helpers;

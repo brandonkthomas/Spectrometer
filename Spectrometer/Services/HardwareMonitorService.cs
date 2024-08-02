@@ -132,22 +132,18 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
         public void VisitComputer(IComputer computer)
         {
             foreach (var hardware in computer.Hardware)
-            {
                 hardware.Accept(this);
-            }
         }
 
         public void VisitHardware(IHardware hardware)
         {
             hardware.Update();
+
             foreach (var sensor in hardware.Sensors)
-            {
                 sensor.Accept(this);
-            }
+
             foreach (var subHardware in hardware.SubHardware)
-            {
                 subHardware.Accept(this);
-            }
         }
 
         public void VisitSensor(ISensor sensor) { }
@@ -181,6 +177,9 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
         {
             _computer.Open();
 
+            // -------------------------------------------------------------------------------------------
+            // Determine GPU Type
+
             if (_computer.Hardware.Any(h => h.HardwareType == HardwareType.GpuNvidia))
                 _gpuType = HardwareType.GpuNvidia;
             else if (_computer.Hardware.Any(h => h.HardwareType == HardwareType.GpuAmd))
@@ -188,7 +187,11 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
             else
                 _gpuType = HardwareType.GpuIntel;
 
-            // Run these once to get initial values
+            Logger.Write($"GPU Type: {_gpuType}");
+
+            // -------------------------------------------------------------------------------------------
+            // Poll sensors once before MainWindow timer to get initial values
+
             Stopwatch stopwatch = new();
             stopwatch.Start();
 
@@ -242,9 +245,25 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
             .Concat(FanSensors ?? [])
             .Concat(PsuSensors ?? []));
 
+        Logger.Write($"{AllSensors.Count} total system sensors");
+        Logger.Write($"{MbSensors?.Count.ToString() ?? "Error retrieving"} motherboard sensors");
+        Logger.Write($"{CpuSensors?.Count.ToString() ?? "Error retrieving"} CPU sensors");
+        Logger.Write($"{GpuSensors?.Count.ToString() ?? "Error retrieving"} GPU sensors");
+        Logger.Write($"{MemorySensors?.Count.ToString() ?? "Error retrieving"} memory sensors");
+        Logger.Write($"{StorageSensors?.Count.ToString() ?? "Error retrieving"} storage sensors");
+        Logger.Write($"{NetworkSensors?.Count.ToString() ?? "Error retrieving"} network sensors");
+        Logger.Write($"{FanSensors?.Count.ToString() ?? "Error retrieving"} fan sensors");
+        Logger.Write($"{PsuSensors?.Count.ToString() ?? "Error retrieving"} PSU sensors");
+
         _isInitialized = true;
     }
 
+    // -------------------------------------------------------------------------------------------
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="collection"></param>
+    /// <param name="sensors"></param>
     private void AddSensorsToCollection(ObservableCollection<HardwareSensor>? collection, IEnumerable<ISensor> sensors)
     {
         if (collection == null) return;

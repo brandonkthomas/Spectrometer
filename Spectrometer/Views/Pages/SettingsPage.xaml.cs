@@ -1,5 +1,5 @@
-﻿using Spectrometer.ViewModels.Pages;
-using System.Reflection.Metadata;
+﻿using Spectrometer.Models;
+using Spectrometer.ViewModels.Pages;
 using System.Windows.Controls;
 using Wpf.Ui.Controls;
 
@@ -7,6 +7,10 @@ namespace Spectrometer.Views.Pages;
 
 public partial class SettingsPage : INavigableView<SettingsViewModel>
 {
+    // ------------------------------------------------------------------------------------------------
+    // Fields
+    // ------------------------------------------------------------------------------------------------
+
     public SettingsViewModel ViewModel { get; }
 
     // ------------------------------------------------------------------------------------------------
@@ -19,6 +23,7 @@ public partial class SettingsPage : INavigableView<SettingsViewModel>
         DataContext = this;
 
         InitializeComponent();
+        Logger.Write("SettingsPage initialized");
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -59,6 +64,4 @@ public partial class SettingsPage : INavigableView<SettingsViewModel>
         App.SettingsMgr.Settings.StartingTab = parameter;
         App.SettingsMgr.SaveSettings();
     }
-
-
 }

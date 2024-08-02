@@ -15,6 +15,7 @@ public partial class GraphsPage : INavigableView<GraphsViewModel>
 
     // -------------------------------------------------------------------------------------------
     // Constructor
+    // -------------------------------------------------------------------------------------------
 
     public GraphsPage(GraphsViewModel viewModel, MainWindowViewModel mainWindowViewModel)
     {
@@ -23,19 +24,24 @@ public partial class GraphsPage : INavigableView<GraphsViewModel>
 
         InitializeComponent();
         LoadGraphControls(mainWindowViewModel);
+
+        Logger.Write("GraphsPage initialized");
     }
 
-    // --------------------------------------------5-----------------------------------------------
+    // -------------------------------------------------------------------------------------------
     // Graph Building
+    // -------------------------------------------------------------------------------------------
 
-    private void LoadGraphControls(MainWindowViewModel mainWindowViewModel)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="mainWindowViewModel"></param>
+    public void LoadGraphControls(MainWindowViewModel mainWindowViewModel)
     {
         List<HardwareSensor> sensors = GetEnabledGraphSensors(mainWindowViewModel);
 
-        // Clear existing controls (there shouldn't be any)
-        ContentGrid.Children.Clear();
-        ContentGrid.RowDefinitions.Clear();
-        ContentGrid.ColumnDefinitions.Clear();
+        // Clear existing controls (there wont be any on first launch)
+        ClearControls();
 
         if (sensors.Count == 0)
         {
@@ -96,7 +102,13 @@ public partial class GraphsPage : INavigableView<GraphsViewModel>
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="mainWindowViewModel"></param>
+    /// <returns></returns>
     private List<HardwareSensor> GetEnabledGraphSensors(MainWindowViewModel mainWindowViewModel)
+
     {
         if (mainWindowViewModel.HwMonSvc == null)
             return [];
@@ -110,8 +122,29 @@ public partial class GraphsPage : INavigableView<GraphsViewModel>
     }
 
     // -------------------------------------------------------------------------------------------
-    // Graph Drag and Drop Support
+    // XAML Management
+    // -------------------------------------------------------------------------------------------
 
+    /// <summary>
+    /// 
+    /// </summary>
+    public void ClearControls()
+    {
+        ContentGrid.Children.Clear();
+        ContentGrid.RowDefinitions.Clear();
+        ContentGrid.ColumnDefinitions.Clear();
+        Logger.Write("GraphsPage controls cleared");
+    }
+
+    // -------------------------------------------------------------------------------------------
+    // Graph Drag and Drop Support
+    // -------------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void Grid_DragOver(object sender, DragEventArgs e)
     {
         if (e.Data.GetDataPresent(typeof(GraphUserControl)))
@@ -119,7 +152,12 @@ public partial class GraphsPage : INavigableView<GraphsViewModel>
         else
             e.Effects = DragDropEffects.None;
     }
-
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void Grid_Drop(object sender, DragEventArgs e)
     {
         if (e.Data.GetDataPresent(typeof(GraphUserControl)))
@@ -151,6 +189,12 @@ public partial class GraphsPage : INavigableView<GraphsViewModel>
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="child"></param>
+    /// <returns></returns>
     private static T? FindParent<T>(DependencyObject child) where T : DependencyObject
     {
         DependencyObject parentObject = VisualTreeHelper.GetParent(child);

@@ -6,6 +6,10 @@ namespace Spectrometer.ViewModels.Pages;
 
 public partial class SensorsViewModel : ObservableObject
 {
+    // -------------------------------------------------------------------------------------------
+    // Fields
+    // -------------------------------------------------------------------------------------------
+
     private readonly MainWindowViewModel _mainWindowViewModel;
 
     public bool IsLoading => _mainWindowViewModel.IsLoading;
@@ -25,6 +29,10 @@ public partial class SensorsViewModel : ObservableObject
         }
     }
 
+    // -------------------------------------------------------------------------------------------
+    // Constructor
+    // -------------------------------------------------------------------------------------------
+
     /// <summary>
     /// Constructor -- wait for init before allowing properties to be accessed
     /// </summary>
@@ -35,6 +43,10 @@ public partial class SensorsViewModel : ObservableObject
         _mainWindowViewModel.PropertyChanged += MainWindowViewModel_PropertyChanged;
         WaitForInitialization();
     }
+
+    // -------------------------------------------------------------------------------------------
+    // Events
+    // -------------------------------------------------------------------------------------------
 
     /// <summary>
     /// Update derived properties when the parent changes

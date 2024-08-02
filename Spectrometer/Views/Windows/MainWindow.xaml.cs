@@ -7,13 +7,20 @@ namespace Spectrometer.Views.Windows;
 
 public partial class MainWindow : INavigationWindow
 {
+    // ------------------------------------------------------------------------------------------------
+    // Fields
+    // ------------------------------------------------------------------------------------------------
+
     public MainWindowViewModel ViewModel { get; }
+
+    // ------------------------------------------------------------------------------------------------
+    // Constructor
+    // ------------------------------------------------------------------------------------------------
 
     public MainWindow(
         MainWindowViewModel viewModel,
         IPageService pageService,
-        INavigationService navigationService
-    )
+        INavigationService navigationService)
     {
         ViewModel = viewModel;
         DataContext = this;
@@ -26,7 +33,9 @@ public partial class MainWindow : INavigationWindow
         navigationService.SetNavigationControl(RootNavigation);
     }
 
-    #region INavigationWindow methods
+    // ------------------------------------------------------------------------------------------------
+    // INavigationWindow methods
+    // ------------------------------------------------------------------------------------------------
 
     public INavigationView GetNavigation() => RootNavigation;
 
@@ -38,7 +47,9 @@ public partial class MainWindow : INavigationWindow
 
     public void CloseWindow() => Close();
 
-    #endregion INavigationWindow methods
+    // ------------------------------------------------------------------------------------------------
+    // Events
+    // ------------------------------------------------------------------------------------------------
 
     /// <summary>
     /// Raises the closed event.
