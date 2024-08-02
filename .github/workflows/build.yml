@@ -28,15 +28,11 @@ jobs:
     - name: Build and publish
       run: dotnet publish -p:PublishProfile=PackagedApplication -o ./publish
 
-    - name: Create zip archive
-      run: Compress-Archive -Path ./publish/Spectrometer.exe -DestinationPath ./Spectrometer.zip
-      shell: pwsh
-
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
         name: Spectrometer
-        path: ./Spectrometer.zip
+        path: ./publish/Spectrometer.exe
 
     - name: Fetch all tags
       run: git fetch --tags
@@ -73,8 +69,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./Spectrometer.zip
-        asset_name: Spectrometer.zip
+        asset_path: ./publish/Spectrometer.exe
+        asset_name: Spectrometer.exe
         asset_content_type: application/zip
 
     - name: Test
