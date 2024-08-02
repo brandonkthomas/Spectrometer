@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - action-test
   pull_request:
     branches:
       - master
@@ -25,52 +26,31 @@ jobs:
       run: dotnet restore
 
     - name: Build and publish
-      run: dotnet publish -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:IncludeAllContentForSelfExtract=true -o ./publish
-
-    - name: Create zip archive
-      run: Compress-Archive -Path ./publish/Spectrometer.exe -DestinationPath ./Spectrometer.zip
-      shell: pwsh
+      run: dotnet publish -p:PublishProfile=PackagedApplication -o ./publish
 
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
         name: Spectrometer
-        path: ./Spectrometer.zip
+        path: ./publish/Spectrometer.exe
 
     - name: Fetch all tags
       run: git fetch --tags
 
-    - name: Determine new tag
-      id: new_tag
-      run: |
-        # Get the latest tag
-        $latestTag = git describe --tags (git rev-list --tags --max-count=1) 2>$null
-        Write-Output "Latest tag: $latestTag"
+    - name: Get next version
+      uses: reecetech/version-increment@2024.4.3
+      id: version
+      with:
+        scheme: semver
+        increment: major
 
-        # Increment the tag
-        if (-not $latestTag) {
-          Write-Output "No tags found. Starting with v1.0.0"
-          $newTag = "v1.0.0"
-        } else {
-          Write-Output "Latest tag: $latestTag"
-          # Increment the tag
-          $parts = $latestTag.Substring(1).Split('.')
-          $major = [int]$parts[0]
-          $minor = [int]$parts[1]
-          $patch = [int]$parts[2]
-          $newTag = "v$major.$minor.$($patch + 1)"
-        }
-
-        Write-Output "New tag: $newTag"
-        echo "::set-output name=tag::$newTag"
-      shell: pwsh
 
     - name: Create Git tag
       run: |
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git config --global user.name "github-actions[bot]"
-        git tag ${{ steps.new_tag.outputs.tag }}
-        git push origin ${{ steps.new_tag.outputs.tag }}
+        git tag ${{ steps.version.outputs.version }}
+        git push origin ${{ steps.version.outputs.version }}
         
     - name: Create GitHub Release
       id: create_release
@@ -78,8 +58,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ steps.new_tag.outputs.tag }}
-        release_name: Release ${{ steps.new_tag.outputs.tag }}
+        tag_name: ${{ steps.version.outputs.version }}
+        release_name: Release ${{ steps.version.outputs.version }}
         draft: false
         prerelease: false
 
@@ -89,8 +69,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./Spectrometer.zip
-        asset_name: Spectrometer.zip
+        asset_path: ./publish/Spectrometer.exe
+        asset_name: Spectrometer.exe
         asset_content_type: application/zip
 
     - name: Test
