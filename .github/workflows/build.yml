@@ -46,7 +46,7 @@ jobs:
       run: |
         # Get the latest tag
         $latestTag = git describe --tags --abbrev=0 2>$null
-        if ($LASTEXITCODE -ne 0) {
+        if ($LASTEXITCODE -ne 0 -or -not $latestTag) {
           Write-Output "No tags found. Starting with v1.0.0"
           $newTag = "v1.0.0"
         } else {
@@ -60,7 +60,7 @@ jobs:
         }
 
         Write-Output "New tag: $newTag"
-        echo "::set-output name=tag::$newTag"
+        echo "tag=$newTag" >> $GITHUB_ENV
       shell: pwsh
 
     - name: Create Git tag
