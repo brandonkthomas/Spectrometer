@@ -44,11 +44,8 @@ jobs:
       id: new_tag
       run: |
         # Get the latest tag
-        $latestTag = git describe --tags (git rev-list --tags --max-count=1) 2>$null
-        Write-Output "Latest tag: $latestTag"
-
-        # Increment the tag
-        if (-not $latestTag) {
+        $latestTag = git describe --tags --abbrev=0 2>$null
+        if ($LASTEXITCODE -ne 0) {
           Write-Output "No tags found. Starting with v1.0.0"
           $newTag = "v1.0.0"
         } else {
