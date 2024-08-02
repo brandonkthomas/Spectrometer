@@ -94,12 +94,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         }
 
         // -------------------------------------------------------------------------------------------
-        // Configure Polling Rate field auto-save timer
-        // -------------------------------------------------------------------------------------------
-
-        _pollingRateChangeTimer = new System.Timers.Timer(1000); // 1000ms => 1s
-        _pollingRateChangeTimer.Elapsed += PollingRateChangeTimerElapsed;
-        _pollingRateChangeAction = () => OnPollingRateChange(PollingRate);
+        // Done
 
         _isInitialized = true;
     }
@@ -169,7 +164,6 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     // ------------------------------------------------------------------------------------------------
     // Polling Rate event handler
-    //   1 second after the user stops typing, update + save the polling rate automatically
 
     [RelayCommand]
     private void OnPollingRateChange(int parameter)
@@ -179,38 +173,14 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         App.SettingsMgr.SaveSettings();
     }
 
-    private void PollingRateChangeTimerElapsed(object? sender, ElapsedEventArgs e)
-    {
-        _pollingRateChangeTimer?.Stop();
-        App.Current.Dispatcher.Invoke(_pollingRateChangeAction);
-    }
-
-    public void StartPollingRateChangeTimer()
-    {
-        _pollingRateChangeTimer?.Stop();
-        _pollingRateChangeTimer?.Start();
-    }
-
     // ------------------------------------------------------------------------------------------------
     // Starting Tab event handler
 
+    [RelayCommand]
     private void OnStartingTabChange(string parameter)
     {
         if (App.SettingsMgr?.Settings is null) return;
         App.SettingsMgr.Settings.StartingTab = parameter;
         App.SettingsMgr.SaveSettings();
-    }
-
-    // ------------------------------------------------------------------------------------------------
-    // Starting Tab event handler
-
-    public void UpdateAppSettings(string parameter, string settingName)
-    {
-        var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-        var settings = configFile.AppSettings.Settings;
-        settings[settingName].Value = parameter;
-
-        configFile.Save(ConfigurationSaveMode.Modified);
-        ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);
     }
 }

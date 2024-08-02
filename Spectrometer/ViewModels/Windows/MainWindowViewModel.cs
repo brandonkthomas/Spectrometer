@@ -83,11 +83,12 @@ public partial class MainWindowViewModel : ObservableObject
     {
         Application.Current.Dispatcher.Invoke(() =>
         {
+            _timer.Interval = App.SettingsMgr?.Settings?.PollingRate ?? 1750;
+
             HwMonSvc?.Update();
             HwMonSvc?.PollAllSensors();
             HwMonSvc?.PollSpecificSensors();
             GetProcesses();
-            UpdatePollRate();
         });
     }
 

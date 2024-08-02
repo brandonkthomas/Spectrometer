@@ -23,16 +23,10 @@ public partial class SettingsPage : INavigableView<SettingsViewModel>
     // ------------------------------------------------------------------------------------------------
     // Event Handlers
 
-    private void comboBox1_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+    private void StartupTab_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
     {
         if (App.SettingsMgr?.Settings is null) return;
-        App.SettingsMgr.Settings.StartingTab = this.comboBox1.SelectedValue.ToString() ?? "Dashboard"; // default to Dashboard if somehow null
+        App.SettingsMgr.Settings.StartingTab = this.StartupTab.SelectedValue.ToString() ?? "Dashboard"; // default to Dashboard if somehow null
         App.SettingsMgr.SaveSettings();
-    }
-
-    private void SensorPollingRate_TextChanged(object sender, TextChangedEventArgs e)
-    {
-        var viewModel = DataContext as SettingsViewModel;
-        viewModel?.StartPollingRateChangeTimer();
     }
 }
