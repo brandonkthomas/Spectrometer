@@ -39,12 +39,14 @@ jobs:
 
     - name: Calculate number of additions
       id: calculate_additions
+      shell: bash
       run: |
         additions=$(git diff --shortstat HEAD^ HEAD | awk '{print $4}')
         echo "additions=$additions" >> $GITHUB_ENV
 
     - name: Determine version increment
       id: determine_increment
+      shell: bash
       run: |
         if [ "${{ env.additions }}" -gt 100 ]; then
           echo "increment=minor" >> $GITHUB_ENV
