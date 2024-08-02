@@ -41,7 +41,14 @@ jobs:
       id: calculate_additions
       shell: bash
       run: |
-        additions=$(git diff --shortstat HEAD^ HEAD | awk '{print $4}')
+        # Check if there is a previous commit
+        if git rev-parse HEAD^ >/dev/null 2>&1; then
+          # Calculate additions if there is a previous commit
+          additions=$(git diff --shortstat HEAD^ HEAD | awk '{print $4}')
+        else
+          # Default to 0 additions if no previous commit
+          additions=0
+        fi
         echo "additions=$additions" >> $GITHUB_ENV
 
     - name: Determine version increment
