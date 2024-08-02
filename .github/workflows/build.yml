@@ -37,12 +37,27 @@ jobs:
     - name: Fetch all tags
       run: git fetch --tags
 
+    - name: Calculate number of additions
+      id: calculate_additions
+      run: |
+        additions=$(git diff --shortstat HEAD^ HEAD | awk '{print $4}')
+        echo "additions=$additions" >> $GITHUB_ENV
+
+    - name: Determine version increment
+      id: determine_increment
+      run: |
+        if [ "${{ env.additions }}" -gt 100 ]; then
+          echo "increment=minor" >> $GITHUB_ENV
+        else
+          echo "increment=patch" >> $GITHUB_ENV
+        fi
+
     - name: Get next version
       uses: reecetech/version-increment@2024.4.3
       id: version
       with:
         scheme: semver
-        increment: patch
+        increment: ${{ env.increment }}
 
     - name: Create Git tag
       run: |
