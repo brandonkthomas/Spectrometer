@@ -1,0 +1,77 @@
+name: Build Application
+
+on:
+  push:
+    branches:
+      - master
+      - action-test
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: windows-latest  # Use Windows runner
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Install dependencies
+      run: dotnet restore
+
+    - name: Build and publish
+      run: dotnet publish -p:PublishProfile=PackagedApplication -o ./publish
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: Spectrometer
+        path: ./publish/Spectrometer.exe
+
+    - name: Fetch all tags
+      run: git fetch --tags
+
+    - name: Get next version
+      uses: reecetech/version-increment@2024.4.3
+      id: version
+      with:
+        scheme: semver
+        increment: major
+
+
+    - name: Create Git tag
+      run: |
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+        git tag ${{ steps.version.outputs.version }}
+        git push origin ${{ steps.version.outputs.version }}
+        
+    - name: Create GitHub Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.version.outputs.version }}
+        release_name: Release ${{ steps.version.outputs.version }}
+        draft: false
+        prerelease: false
+
+    - name: Upload release asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./publish/Spectrometer.exe
+        asset_name: Spectrometer.exe
+        asset_content_type: application/zip
+
+    - name: Test
+      run: dotnet test --no-restore --verbosity normal
