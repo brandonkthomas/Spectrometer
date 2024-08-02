@@ -130,12 +130,8 @@ public partial class MainWindowViewModel : ObservableObject
         IsLoading = true;
 
         PrcssInfoList = [];
-        var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-        var settings = configFile.AppSettings.Settings;
 
-        var interval = int.Parse(settings["PollRate"].Value.ToString());
-
-        _timer = new System.Timers.Timer(interval); // TODO: Make this a user setting
+        _timer = new System.Timers.Timer(App.SettingsMgr?.Settings?.PollingRate ?? 1750); // 1750 = default
         _timer.Elapsed += OnTimerElapsed;
 
         InitializeAsync();
@@ -234,7 +230,7 @@ public partial class MainWindowViewModel : ObservableObject
 
         foreach (var keyword in keywords)
             if (name.Contains(keyword, StringComparison.CurrentCultureIgnoreCase))
-                return $"pack://application:,,,/Assets/{keyword}-logo-{logoColor}.png";
+                return $"pack://application:,,,/Assets/Manufacturers/{keyword}-logo-{logoColor}.png";
 
         return string.Empty;
     }

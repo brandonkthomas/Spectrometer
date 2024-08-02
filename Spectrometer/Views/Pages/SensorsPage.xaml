@@ -150,7 +150,7 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <Image Source="pack://application:,,,/Assets/motherboard-32-white.png"
+                            <Image Source="pack://application:,,,/Assets/Icons/motherboard-32-white.png"
                                 Height="20" 
                                 Width="20"
                                 VerticalAlignment="Center"
@@ -263,7 +263,7 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <Image Source="pack://application:,,,/Assets/processor-30-white.png"
+                            <Image Source="pack://application:,,,/Assets/Icons/processor-30-white.png"
                                 Height="20" 
                                 Width="20"
                                 VerticalAlignment="Center"
@@ -379,7 +379,7 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <Image Source="pack://application:,,,/Assets/video-card-48-white.png"
+                            <Image Source="pack://application:,,,/Assets/Icons/video-card-48-white.png"
                                 Height="20" 
                                 Width="20"
                                 VerticalAlignment="Center"
@@ -474,7 +474,7 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <Image Source="pack://application:,,,/Assets/memory-30-white.png"
+                            <Image Source="pack://application:,,,/Assets/Icons/memory-30-white.png"
                                 Height="20" 
                                 Width="20"
                                 VerticalAlignment="Center"
@@ -570,7 +570,7 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <Image Source="pack://application:,,,/Assets/drive-30-white.png"
+                            <Image Source="pack://application:,,,/Assets/Icons/drive-30-white.png"
                                 Height="20" 
                                 Width="20"
                                 VerticalAlignment="Center"

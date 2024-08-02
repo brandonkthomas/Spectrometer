@@ -4,15 +4,15 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
+    <ApplicationIcon>Assets\Branding\icon.ico</ApplicationIcon>
     <UseWPF>true</UseWPF>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
-    <Resource Include="Assets\icon.png" />
-    <Resource Include="Assets\icon.ico" />
+    <Resource Include="Assets\Branding\icon.png" />
+    <Resource Include="Assets\Branding\icon.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,50 +25,86 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Assets\amd-logo-black.png" />
-    <None Remove="Assets\amd-logo-white.png" />
-    <None Remove="Assets\drive-30-black.png" />
-    <None Remove="Assets\drive-30-white.png" />
-    <None Remove="Assets\icon.png" />
-    <None Remove="Assets\intel-logo-black.png" />
-    <None Remove="Assets\intel-logo-white.png" />
-    <None Remove="Assets\memory-30-black.png" />
-    <None Remove="Assets\memory-30-white.png" />
-    <None Remove="Assets\motherboard-32-black.png" />
-    <None Remove="Assets\motherboard-32-white.png" />
-    <None Remove="Assets\msi-logo-black.png" />
-    <None Remove="Assets\msi-logo-white.png" />
-    <None Remove="Assets\nvidia-logo-black.png" />
-    <None Remove="Assets\nvidia-logo-white.png" />
-    <None Remove="Assets\pin-50-black.png" />
-    <None Remove="Assets\pin-50-white.png" />
-    <None Remove="Assets\processor-30-black.png" />
-    <None Remove="Assets\processor-30-white.png" />
-    <None Remove="Assets\video-card-48-black.png" />
-    <None Remove="Assets\video-card-48-white.png" />
+    <None Remove="Assets\Branding\icon.png" />
+    <None Remove="Assets\Icons\drive-30-black.png" />
+    <None Remove="Assets\Icons\drive-30-white.png" />
+    <None Remove="Assets\Icons\memory-30-black.png" />
+    <None Remove="Assets\Icons\memory-30-white.png" />
+    <None Remove="Assets\Icons\motherboard-32-black.png" />
+    <None Remove="Assets\Icons\motherboard-32-white.png" />
+    <None Remove="Assets\Icons\pin-50-black.png" />
+    <None Remove="Assets\Icons\pin-50-white.png" />
+    <None Remove="Assets\Icons\processor-30-black.png" />
+    <None Remove="Assets\Icons\processor-30-white.png" />
+    <None Remove="Assets\Icons\video-card-48-black.png" />
+    <None Remove="Assets\Icons\video-card-48-white.png" />
+    <None Remove="Assets\Manufacturers\amd-logo-black.png" />
+    <None Remove="Assets\Manufacturers\amd-logo-white.png" />
+    <None Remove="Assets\Manufacturers\asrock-logo-black.png" />
+    <None Remove="Assets\Manufacturers\asrock-logo-white.png" />
+    <None Remove="Assets\Manufacturers\asus-logo-black.png" />
+    <None Remove="Assets\Manufacturers\asus-logo-white.png" />
+    <None Remove="Assets\Manufacturers\biostar-logo-black.png" />
+    <None Remove="Assets\Manufacturers\biostar-logo-white.png" />
+    <None Remove="Assets\Manufacturers\evga-logo-black.png" />
+    <None Remove="Assets\Manufacturers\evga-logo-white.png" />
+    <None Remove="Assets\Manufacturers\foxconn-logo-black.png" />
+    <None Remove="Assets\Manufacturers\foxconn-logo-white.png" />
+    <None Remove="Assets\Manufacturers\gigabyte-logo-black.png" />
+    <None Remove="Assets\Manufacturers\gigabyte-logo-white.png" />
+    <None Remove="Assets\Manufacturers\intel-logo-black.png" />
+    <None Remove="Assets\Manufacturers\intel-logo-white.png" />
+    <None Remove="Assets\Manufacturers\msi-logo-black.png" />
+    <None Remove="Assets\Manufacturers\msi-logo-white.png" />
+    <None Remove="Assets\Manufacturers\nvidia-logo-black.png" />
+    <None Remove="Assets\Manufacturers\nvidia-logo-white.png" />
+    <None Remove="Assets\Manufacturers\supermicro-logo-black.png" />
+    <None Remove="Assets\Manufacturers\supermicro-logo-white.png" />
+    <None Remove="Assets\Manufacturers\tyan-logo-black.png" />
+    <None Remove="Assets\Manufacturers\tyan-logo-white.png" />
+    <None Remove="Assets\Manufacturers\zotac-logo-black.png" />
+    <None Remove="Assets\Manufacturers\zotac-logo-white.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Assets\amd-logo-black.png" />
-    <Resource Include="Assets\amd-logo-white.png" />
-    <Resource Include="Assets\drive-30-black.png" />
-    <Resource Include="Assets\drive-30-white.png" />
-    <Resource Include="Assets\intel-logo-black.png" />
-    <Resource Include="Assets\intel-logo-white.png" />
-    <Resource Include="Assets\memory-30-black.png" />
-    <Resource Include="Assets\memory-30-white.png" />
-    <Resource Include="Assets\motherboard-32-black.png" />
-    <Resource Include="Assets\motherboard-32-white.png" />
-    <Resource Include="Assets\msi-logo-black.png" />
-    <Resource Include="Assets\msi-logo-white.png" />
-    <Resource Include="Assets\nvidia-logo-black.png" />
-    <Resource Include="Assets\nvidia-logo-white.png" />
-    <Resource Include="Assets\pin-50-black.png" />
-    <Resource Include="Assets\pin-50-white.png" />
-    <Resource Include="Assets\processor-30-black.png" />
-    <Resource Include="Assets\processor-30-white.png" />
-    <Resource Include="Assets\video-card-48-black.png" />
-    <Resource Include="Assets\video-card-48-white.png" />
+    <Resource Include="Assets\Icons\drive-30-black.png" />
+    <Resource Include="Assets\Icons\drive-30-white.png" />
+    <Resource Include="Assets\Icons\memory-30-black.png" />
+    <Resource Include="Assets\Icons\memory-30-white.png" />
+    <Resource Include="Assets\Icons\motherboard-32-black.png" />
+    <Resource Include="Assets\Icons\motherboard-32-white.png" />
+    <Resource Include="Assets\Icons\pin-50-black.png" />
+    <Resource Include="Assets\Icons\pin-50-white.png" />
+    <Resource Include="Assets\Icons\processor-30-black.png" />
+    <Resource Include="Assets\Icons\processor-30-white.png" />
+    <Resource Include="Assets\Icons\video-card-48-black.png" />
+    <Resource Include="Assets\Icons\video-card-48-white.png" />
+    <Resource Include="Assets\Manufacturers\amd-logo-black.png" />
+    <Resource Include="Assets\Manufacturers\amd-logo-white.png" />
+    <Resource Include="Assets\Manufacturers\asrock-logo-black.png" />
+    <Resource Include="Assets\Manufacturers\asrock-logo-white.png" />
+    <Resource Include="Assets\Manufacturers\asus-logo-black.png" />
+    <Resource Include="Assets\Manufacturers\asus-logo-white.png" />
+    <Resource Include="Assets\Manufacturers\biostar-logo-black.png" />
+    <Resource Include="Assets\Manufacturers\biostar-logo-white.png" />
+    <Resource Include="Assets\Manufacturers\evga-logo-black.png" />
+    <Resource Include="Assets\Manufacturers\evga-logo-white.png" />
+    <Resource Include="Assets\Manufacturers\foxconn-logo-black.png" />
+    <Resource Include="Assets\Manufacturers\foxconn-logo-white.png" />
+    <Resource Include="Assets\Manufacturers\gigabyte-logo-black.png" />
+    <Resource Include="Assets\Manufacturers\gigabyte-logo-white.png" />
+    <Resource Include="Assets\Manufacturers\intel-logo-black.png" />
+    <Resource Include="Assets\Manufacturers\intel-logo-white.png" />
+    <Resource Include="Assets\Manufacturers\msi-logo-black.png" />
+    <Resource Include="Assets\Manufacturers\msi-logo-white.png" />
+    <Resource Include="Assets\Manufacturers\nvidia-logo-black.png" />
+    <Resource Include="Assets\Manufacturers\nvidia-logo-white.png" />
+    <Resource Include="Assets\Manufacturers\supermicro-logo-black.png" />
+    <Resource Include="Assets\Manufacturers\supermicro-logo-white.png" />
+    <Resource Include="Assets\Manufacturers\tyan-logo-black.png" />
+    <Resource Include="Assets\Manufacturers\tyan-logo-white.png" />
+    <Resource Include="Assets\Manufacturers\zotac-logo-black.png" />
+    <Resource Include="Assets\Manufacturers\zotac-logo-white.png" />
   </ItemGroup>
 
   <ItemGroup>
