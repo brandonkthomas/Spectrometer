@@ -126,7 +126,7 @@ public class AppSettingsManager
                 return typeof(GraphsPage);
 
             case "Sensors":
-                return typeof(GraphsPage);
+                return typeof(SensorsPage);
 
             case "Settings":
                 return typeof(SettingsPage);

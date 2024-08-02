@@ -69,17 +69,19 @@
 
             <TextBlock Margin="0,12,0,0" Text="Polling Rate" />
             <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
-                <TextBox Name="SensorPollingRate"
-                         MinWidth="60"
-                         Height="40"
-                         Text="{Binding ViewModel.PollingRate, UpdateSourceTrigger=PropertyChanged}"
-                         HorizontalAlignment="Left" />
-                <ui:Button Height="40" 
-                        Width="40" 
-                        Margin="8,0,0,0"
-                        Icon="{ui:SymbolIcon Save28}"
-                        Command="{Binding ViewModel.PollingRateChangeCommand}" 
-                        CommandParameter="{Binding ViewModel.PollingRate}" >
+                <ui:NumberBox Name="SensorPollingRateNumberBox"
+                              Width="160"
+                              Height="40"
+                              Value="{Binding ViewModel.PollingRate, UpdateSourceTrigger=PropertyChanged}"
+                              Minimum="250"
+                              Maximum="15000"
+                              HorizontalAlignment="Left" />
+                <ui:Button Name="SensorPollingRateSave"
+                           Height="40" 
+                           Width="40" 
+                           Margin="8,0,0,0"
+                           Icon="{ui:SymbolIcon Save28}"
+                           Click="SensorPollingRateSave_Click">
                 </ui:Button>
             </StackPanel>
 

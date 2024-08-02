@@ -41,12 +41,6 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     private bool _startWithWindows = false;
 
     // -------------------------------------------------------------------------------------------
-    // Saved Settings
-
-    private System.Timers.Timer? _pollingRateChangeTimer;
-    private Action? _pollingRateChangeAction;
-
-    // -------------------------------------------------------------------------------------------
     // Constructor + Initialization
     // -------------------------------------------------------------------------------------------
 
@@ -162,25 +156,5 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         }
     }
 
-    // ------------------------------------------------------------------------------------------------
-    // Polling Rate event handler
 
-    [RelayCommand]
-    private void OnPollingRateChange(int parameter)
-    {
-        if (App.SettingsMgr?.Settings is null) return;
-        App.SettingsMgr.Settings.PollingRate = parameter;
-        App.SettingsMgr.SaveSettings();
-    }
-
-    // ------------------------------------------------------------------------------------------------
-    // Starting Tab event handler
-
-    [RelayCommand]
-    private void OnStartingTabChange(string parameter)
-    {
-        if (App.SettingsMgr?.Settings is null) return;
-        App.SettingsMgr.Settings.StartingTab = parameter;
-        App.SettingsMgr.SaveSettings();
-    }
 }

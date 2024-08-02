@@ -39,15 +39,12 @@ public partial class GraphsPage : INavigableView<GraphsViewModel>
 
         if (sensors.Count == 0)
         {
-            // Display a TextBox in the center of the grid
-            var textBox = new Wpf.Ui.Controls.TextBox
+            var textBlock = new Wpf.Ui.Controls.TextBlock
             {
-                Text = "No sensors available for graphing.",
+                Text = "No sensors available for graphing.\nUse the Sensors tab to add graphs for available sensors.",
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
-                IsReadOnly = true,
-                BorderThickness = new Thickness(0),
-                FontSize = 16
+                FontSize = 16,
             };
 
             ContentGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
@@ -56,10 +53,12 @@ public partial class GraphsPage : INavigableView<GraphsViewModel>
             ContentGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             ContentGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
-            Grid.SetRow(textBox, 1);
-            Grid.SetColumn(textBox, 0);
+            Grid.SetRow(textBlock, 0);
+            //Grid.SetRowSpan(textBlock, 2);
+            Grid.SetColumn(textBlock, 0);
+            //Grid.SetColumnSpan(textBlock, 2);
 
-            ContentGrid.Children.Add(textBox);
+            ContentGrid.Children.Add(textBlock);
             return;
         }
 
