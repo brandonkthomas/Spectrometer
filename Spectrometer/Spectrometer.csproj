@@ -116,5 +116,13 @@
   <ItemGroup>
     <Folder Include="Resources\" />
   </ItemGroup>
+  
+  <Target Name="CustomPrePublish" BeforeTargets="BeforePublish">
+    <!-- Delete the obj folder -->
+    <RemoveDir Directories="$(IntermediateOutputPath)" />
+    
+    <!-- Rebuild the project -->
+    <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="Rebuild" />
+  </Target>
 
 </Project>
