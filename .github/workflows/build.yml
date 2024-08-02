@@ -46,7 +46,7 @@ jobs:
       id: version
       with:
         scheme: semver
-        increment: patch
+        increment: major
 
 
     - name: Create Git tag
