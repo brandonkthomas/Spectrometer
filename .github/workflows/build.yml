@@ -44,13 +44,16 @@ jobs:
       id: new_tag
       run: |
         # Get the latest tag
-        $latestTag = git describe --tags (git rev-list --tags --max-count=1)
+        $latestTag = git describe --tags (git rev-list --tags --max-count=1) 2>$null
         Write-Output "Latest tag: $latestTag"
 
         # Increment the tag
         if (-not $latestTag) {
+          Write-Output "No tags found. Starting with v1.0.0"
           $newTag = "v1.0.0"
         } else {
+          Write-Output "Latest tag: $latestTag"
+          # Increment the tag
           $parts = $latestTag.Substring(1).Split('.')
           $major = [int]$parts[0]
           $minor = [int]$parts[1]
