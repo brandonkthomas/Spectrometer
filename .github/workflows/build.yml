@@ -24,8 +24,70 @@ jobs:
     - name: Install dependencies
       run: dotnet restore
 
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
+    - name: Build and publish
+      run: dotnet publish -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:IncludeAllContentForSelfExtract=true -o ./publish
+
+    - name: Create zip archive
+      run: Compress-Archive -Path ./publish/Spectrometer.exe -DestinationPath ./Spectrometer.zip
+      shell: pwsh
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: Spectrometer
+        path: ./Spectrometer.zip
+
+    - name: Fetch all tags
+      run: git fetch --tags
+
+    - name: Determine new tag
+      id: new_tag
+      run: |
+        # Get the latest tag
+        latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
+        echo "Latest tag: $latest_tag"
+
+        # Increment the tag
+        if [[ "$latest_tag" == "" ]]; then
+          new_tag="v1.0.0"
+        else
+          IFS='.' read -r -a parts <<< "${latest_tag:1}"
+          major=${parts[0]}
+          minor=${parts[1]}
+          patch=${parts[2]}
+          new_tag="v$major.$minor.$((patch + 1))"
+        fi
+
+        echo "New tag: $new_tag"
+        echo "::set-output name=tag::$new_tag"
+
+    - name: Create Git tag
+      run: |
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+        git tag ${{ steps.new_tag.outputs.tag }}
+        git push origin ${{ steps.new_tag.outputs.tag }}
+        
+    - name: Create GitHub Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.new_tag.outputs.tag }}
+        release_name: Release ${{ steps.new_tag.outputs.tag }}
+        draft: false
+        prerelease: false
+
+    - name: Upload release asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./Spectrometer.zip
+        asset_name: Spectrometer.zip
+        asset_content_type: application/zip
 
     - name: Test
       run: dotnet test --no-restore --verbosity normal
