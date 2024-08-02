@@ -1,11 +1,13 @@
 <p align="center">
-  <img width="200" src="https://github.com/user-attachments/assets/6e29f9b7-7f5b-4796-85b4-f2ed5e55553e" />
+  <img width="200" alt="icon" src="https://github.com/user-attachments/assets/a9590279-6f08-4b8a-ba17-3ce26cbf9842">
   <br/>
   <b>Spectrometer</b>
 </p>
+
+
 
 ---
 
 Modern hardware monitor for Windows.
 
-Currently in active development.
+Currently under active development.
