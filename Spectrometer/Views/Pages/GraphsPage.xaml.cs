@@ -101,9 +101,6 @@ public partial class GraphsPage : INavigableView<GraphsViewModel>
         if (mainWindowViewModel.HwMonSvc == null)
             return [];
 
-        var test = mainWindowViewModel.HwMonSvc.CpuSensors?.Where(s => s.Name.Contains("Package")).FirstOrDefault();
-        if (test != null) test.IsGraphEnabled = true;
-
         return mainWindowViewModel.HwMonSvc.MbSensors?.Where(s => s.IsGraphEnabled)
             .Concat(mainWindowViewModel.HwMonSvc.CpuSensors?.Where(s => s.IsGraphEnabled) ?? [])
             .Concat(mainWindowViewModel.HwMonSvc.GpuSensors?.Where(s => s.IsGraphEnabled) ?? [])

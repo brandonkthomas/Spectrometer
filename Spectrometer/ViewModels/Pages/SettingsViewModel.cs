@@ -93,6 +93,10 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         _isInitialized = true;
     }
 
+    // -------------------------------------------------------------------------------------------
+    // Navigation
+    // -------------------------------------------------------------------------------------------
+
     public void OnNavigatedTo()
     {
         if (!_isInitialized)
