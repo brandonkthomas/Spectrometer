@@ -21,7 +21,7 @@ public class LoggingService : IDisposable
     {
         try
         {
-            _logDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Spectrometer");
+            _logDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Spectrometer\\Logs");
 
             if (!Directory.Exists(_logDirectory))
                 Directory.CreateDirectory(_logDirectory);
@@ -91,6 +91,17 @@ public class LoggingService : IDisposable
     {
         _streamWriter?.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} - {message}");
         Debug.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} - {message}");
+    }
+
+    // -------------------------------------------------------------------------------------------
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="message"></param>
+    public void WriteWarn(string message)
+    {
+        _streamWriter?.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} - WARN: {message}");
+        Debug.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} - WARN: {message}");
     }
 
     // -------------------------------------------------------------------------------------------

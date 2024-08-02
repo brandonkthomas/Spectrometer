@@ -1,55 +1,88 @@
 ﻿using Microsoft.Win32;
 using Spectrometer.Models;
 using System.Configuration;
+using System.IO;
+using System.Timers;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
-using System.IO;
-using Spectrometer.Helpers;
 
 namespace Spectrometer.ViewModels.Pages;
 
 public partial class SettingsViewModel : ObservableObject, INavigationAware
 {
     // -------------------------------------------------------------------------------------------
-    // Fields
+    // Local Fields
+    // -------------------------------------------------------------------------------------------
+
+    // -------------------------------------------------------------------------------------------
+    // Calculated Local Fields (not saved to AppSettings)
 
     private bool _isInitialized = false;
-
-    private KeyValueConfigurationCollection _configuration;
 
     [ObservableProperty]
     private string _appVersion = String.Empty;
 
     [ObservableProperty]
-    private ApplicationTheme _currentTheme = ApplicationTheme.Unknown;
+    private List<string> _listOfPages = [];
+
+    // -------------------------------------------------------------------------------------------
+    // Saved Settings
 
     [ObservableProperty]
-    private bool _startWithWindows = false;
+    private ApplicationTheme _currentTheme = ApplicationTheme.Unknown;
 
     [ObservableProperty]
     private int _pollingRate = 0;
 
     [ObservableProperty]
-    private List<string> listOfPages = new List<string>();
+    private string _selectedStartTab = string.Empty;
 
     [ObservableProperty]
-    private string selectedStartTab = string.Empty;
+    private bool _startWithWindows = false;
 
     // -------------------------------------------------------------------------------------------
-    // Init
+    // Saved Settings
+
+    private System.Timers.Timer? _pollingRateChangeTimer;
+    private Action? _pollingRateChangeAction;
+
+    // -------------------------------------------------------------------------------------------
+    // Constructor + Initialization
+    // -------------------------------------------------------------------------------------------
 
     public SettingsViewModel() { }
 
     private void InitializeViewModel()
     {
-        var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-        _configuration = configFile.AppSettings.Settings;
-        var startTabHelper = new StartingTabPageHelper();
-        CurrentTheme = ApplicationThemeManager.GetAppTheme();
+        // -------------------------------------------------------------------------------------------
+        // Calculate local cached values
+
         AppVersion = $"Spectrometer v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? String.Empty} (July 31, 2024)";
-        PollingRate = int.Parse(_configuration["PollRate"].Value.ToString());
-        ListOfPages = startTabHelper.GetAllPageNames();
-        SelectedStartTab = _configuration["StartingTab"].Value ?? "Dashboard";
+
+        ListOfPages =
+        [
+            "Dashboard",
+            "Graphs",
+            "Sensors",
+            "Settings"
+        ];
+
+        // -------------------------------------------------------------------------------------------
+        // Retrieve AppSettings
+
+        if (App.SettingsMgr is null || App.SettingsMgr.Settings is null)
+            return; // todo... this should never happen
+
+        var _config = App.SettingsMgr.Settings;
+
+        // -------------------------------------------------------------------------------------------
+        // Populate local values from AppSettings
+
+        CurrentTheme = ApplicationThemeManager.GetAppTheme(); // TODO
+
+        PollingRate = App.SettingsMgr.Settings.PollingRate;
+
+        SelectedStartTab = _config.StartingTab ?? "Dashboard";
 
         try
         {
@@ -59,6 +92,14 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         {
             Logger.WriteExc(ex);
         }
+
+        // -------------------------------------------------------------------------------------------
+        // Configure Polling Rate field auto-save timer
+        // -------------------------------------------------------------------------------------------
+
+        _pollingRateChangeTimer = new System.Timers.Timer(1000); // 1000ms => 1s
+        _pollingRateChangeTimer.Elapsed += PollingRateChangeTimerElapsed;
+        _pollingRateChangeAction = () => OnPollingRateChange(PollingRate);
 
         _isInitialized = true;
     }
@@ -128,11 +169,26 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     // ------------------------------------------------------------------------------------------------
     // Polling Rate event handler
+    //   1 second after the user stops typing, update + save the polling rate automatically
 
     [RelayCommand]
     private void OnPollingRateChange(int parameter)
     {
-        UpdateAppSettings(parameter.ToString(), "PollRate");
+        if (App.SettingsMgr?.Settings is null) return;
+        App.SettingsMgr.Settings.PollingRate = parameter;
+        App.SettingsMgr.SaveSettings();
+    }
+
+    private void PollingRateChangeTimerElapsed(object? sender, ElapsedEventArgs e)
+    {
+        _pollingRateChangeTimer?.Stop();
+        App.Current.Dispatcher.Invoke(_pollingRateChangeAction);
+    }
+
+    public void StartPollingRateChangeTimer()
+    {
+        _pollingRateChangeTimer?.Stop();
+        _pollingRateChangeTimer?.Start();
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -140,8 +196,13 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     private void OnStartingTabChange(string parameter)
     {
-        UpdateAppSettings(parameter, "StartingTab");
+        if (App.SettingsMgr?.Settings is null) return;
+        App.SettingsMgr.Settings.StartingTab = parameter;
+        App.SettingsMgr.SaveSettings();
     }
+
+    // ------------------------------------------------------------------------------------------------
+    // Starting Tab event handler
 
     public void UpdateAppSettings(string parameter, string settingName)
     {

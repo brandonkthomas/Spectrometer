@@ -22,76 +22,65 @@
 
     <Grid>
         <StackPanel HorizontalAlignment="Left" Width="400">
-            <TextBlock
-        FontSize="20"
-        FontWeight="Medium"
-        Text="Personalization" />
+            <TextBlock FontSize="20"
+                       FontWeight="Medium"
+                       Text="Personalization" />
             <TextBlock Margin="0,12,0,0" Text="Theme" />
-            <RadioButton
-        Margin="0,12,0,0"
-        Command="{Binding ViewModel.ChangeThemeCommand, Mode=OneWay}"
-        CommandParameter="theme_light"
-        Content="Light"
-        GroupName="themeSelect"
-        IsChecked="{Binding ViewModel.CurrentTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Light, Mode=OneWay}" />
-            <RadioButton
-        Margin="0,8,0,0"
-        Command="{Binding ViewModel.ChangeThemeCommand, Mode=OneWay}"
-        CommandParameter="theme_dark"
-        Content="Dark"
-        GroupName="themeSelect"
-        IsChecked="{Binding ViewModel.CurrentTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark, Mode=OneWay}" />
+            <RadioButton Margin="0,12,0,0"
+                         Command="{Binding ViewModel.ChangeThemeCommand, Mode=OneWay}"
+                         CommandParameter="theme_light"
+                         Content="Light"
+                         GroupName="themeSelect"
+                         IsChecked="{Binding ViewModel.CurrentTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Light, Mode=OneWay}" />
+            <RadioButton Margin="0,8,0,0"
+                         Command="{Binding ViewModel.ChangeThemeCommand, Mode=OneWay}"
+                         CommandParameter="theme_dark"
+                         Content="Dark"
+                         GroupName="themeSelect"
+                         IsChecked="{Binding ViewModel.CurrentTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark, Mode=OneWay}" />
 
-            <TextBlock
-        Margin="0,24,0,0"
-        FontSize="20"
-        FontWeight="Medium"
-        Text="About Spectrometer" />
-            <TextBlock Margin="0,12,0,0" Text="{Binding ViewModel.AppVersion, Mode=OneWay}" />
-
-            <TextBlock
-        Margin="0,24,0,0"
-        FontSize="20"
-        FontWeight="Medium"
-        Text="Startup" />
-            <CheckBox
-        Margin="0,12,0,0"
-        Command="{Binding ViewModel.ChangeStartWithWindowsCommand, Mode=OneWay}"
-        CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
-        IsEnabled="True"
-        IsChecked="{Binding ViewModel.StartWithWindows, Mode=OneWay}">
-                Startup with Windows
+            <TextBlock Margin="0,24,0,0"
+                       FontSize="20"
+                       FontWeight="Medium"
+                       Text="Startup" />
+            <CheckBox Margin="0,12,0,0"
+                      Command="{Binding ViewModel.ChangeStartWithWindowsCommand, Mode=OneWay}"
+                      CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"
+                      IsEnabled="True"
+                      IsChecked="{Binding ViewModel.StartWithWindows, Mode=OneWay}">
+                Open on System Startup
             </CheckBox>
 
-            <TextBlock
-        Margin="0,24,0,0"
-        FontSize="20"
-        FontWeight="Medium"
-        Text="Polling" />
-            <Grid HorizontalAlignment="Left" Width="301">
-                <TextBox
-        Margin="0,24,141,0"
-        Text="{Binding ViewModel.PollingRate}" HorizontalContentAlignment="Stretch"/>
-
-                <Button Margin="199,24,0,0" VerticalAlignment="Top" Height="37" Width="95" Command="{Binding ViewModel.PollingRateChangeCommand}" CommandParameter="{Binding ViewModel.PollingRate}">
-                    Save
-                </Button>
-            </Grid>
+            <TextBlock Margin="0,12,0,0" Text="Open to Tab" />
+            <ComboBox Name="comboBox1"
+                      Margin="0,12,0,0"
+                      ItemsSource="{Binding ViewModel.ListOfPages}"
+                      Text="Select your Starting Tab"
+                      IsEditable="false"
+                      IsReadOnly="true"
+                      SelectionChanged="comboBox1_SelectionChanged"
+                      SelectedItem="{Binding ViewModel.SelectedStartTab}"/>
         </StackPanel>
 
         <StackPanel HorizontalAlignment="Right" Width="400">
-            <TextBlock
-                FontSize="20"
-                FontWeight="Medium"
-                Text="Starting Tab" />
-            <ComboBox 
-                Name="comboBox1"
-                ItemsSource="{Binding ViewModel.ListOfPages}"
-                Text="Select your Starting Tab"
-                IsEditable="false"
-                IsReadOnly="true"
-                SelectionChanged="comboBox1_SelectionChanged"
-                SelectedItem="{Binding ViewModel.SelectedStartTab}"/>
+            <TextBlock FontSize="20"
+                       FontWeight="Medium"
+                       Text="Sensors" />
+
+            <TextBlock Margin="0,12,0,0" Text="Polling Rate" />
+            <TextBox Name="SensorPollingRate"
+                     Margin="0,12,0,0"
+                     Width="120"
+                     Height="40"
+                     Text="{Binding ViewModel.PollingRate, UpdateSourceTrigger=PropertyChanged}"
+                     HorizontalAlignment="Left"
+                     TextChanged="SensorPollingRate_TextChanged"/>
+
+            <TextBlock Margin="0,24,0,0"
+                       FontSize="20"
+                       FontWeight="Medium"
+                       Text="About" />
+            <TextBlock Margin="0,12,0,0" Text="{Binding ViewModel.AppVersion, Mode=OneWay}" />
         </StackPanel>
     </Grid>
 </Page>

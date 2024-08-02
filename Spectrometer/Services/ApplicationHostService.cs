@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
-using Spectrometer.Helpers;
+using Spectrometer.Views.Pages;
 using Spectrometer.Views.Windows;
-using System.Configuration;
 using Wpf.Ui;
 
 namespace Spectrometer.Services;
@@ -15,14 +14,14 @@ public class ApplicationHostService : IHostedService
 
     private INavigationWindow? _navigationWindow;
 
-    private StartingTabPageHelper _startingTabHelper;
-
     private Type _pageType;
+
+    // -------------------------------------------------------------------------------------------
 
     public ApplicationHostService(IServiceProvider serviceProvider)
     {
-        _startingTabHelper = new StartingTabPageHelper();
-        _pageType = _startingTabHelper.GetStartingTabPageFromAppSettings();
+        _pageType = App.SettingsMgr?.GetStartingTab() ?? typeof(DashboardPage);
+
         _serviceProvider = serviceProvider;
     }
 

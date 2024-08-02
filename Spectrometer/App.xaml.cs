@@ -6,6 +6,7 @@ global using System.Windows;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Spectrometer.Helpers;
 using Spectrometer.Models;
 using Spectrometer.Services;
 using Spectrometer.ViewModels.Pages;
@@ -78,6 +79,8 @@ public partial class App
             services.AddSingleton<SettingsViewModel>();
         }).Build();
 
+    public static AppSettingsManager? SettingsMgr { get; private set; }
+
     // -------------------------------------------------------------------------------------------
     /// <summary>
     /// Gets registered service.
@@ -102,6 +105,8 @@ public partial class App
         };
 
         _host.Start();
+
+        SettingsMgr = new();
     }
 
     // -------------------------------------------------------------------------------------------
