@@ -15,7 +15,7 @@ public class LoggingService : IDisposable
 
     // -------------------------------------------------------------------------------------------
     /// <summary>
-    /// Opens Roaming\Spectrograph, handles existing log files, creates a new log file & opens a StreamWriter.
+    /// Opens Roaming\Spectrometer, handles existing log files, creates a new log file & opens a StreamWriter.
     /// </summary>
     public LoggingService()
     {

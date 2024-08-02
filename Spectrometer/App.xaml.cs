@@ -28,6 +28,17 @@ namespace Spectrometer;
 public partial class App
 {
     // -------------------------------------------------------------------------------------------
+    /// <summary>
+    /// Application primary entry point
+    /// This should contain *only* crucial processes.
+    /// </summary>
+    static App()
+    {
+        Logger.Write("Spectrometer starting...");
+        App.SettingsMgr = new(); // load AppSettings first before any other code fires
+    }
+
+    // -------------------------------------------------------------------------------------------
     // The.NET Generic Host provides dependency injection, configuration, logging, and other services.
     // https://docs.microsoft.com/dotnet/core/extensions/generic-host
     // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
@@ -105,8 +116,6 @@ public partial class App
         };
 
         _host.Start();
-
-        SettingsMgr = new();
     }
 
     // -------------------------------------------------------------------------------------------

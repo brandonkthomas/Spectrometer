@@ -1,4 +1,5 @@
-﻿using Spectrometer.Views.Pages;
+﻿using Spectrometer.Models;
+using Spectrometer.Views.Pages;
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
@@ -62,6 +63,8 @@ public class AppSettingsManager
         {
             string json = File.ReadAllText(_settingsFilePath);
             Settings = JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
+
+            Logger.Write($"Settings loaded from {_settingsFilePath}");
         }
 
         // -------------------------------------------------------------------------------------------
@@ -77,6 +80,8 @@ public class AppSettingsManager
             };
 
             SaveSettings();
+
+            Logger.Write($"New settings file created at {_settingsFilePath}");
         }
     }
 
@@ -88,6 +93,7 @@ public class AppSettingsManager
     {
         string json = JsonSerializer.Serialize(Settings, new JsonSerializerOptions { WriteIndented = true });
         File.WriteAllText(_settingsFilePath, json);
+        Logger.Write($"Settings saved to {_settingsFilePath}");
     }
 
     // -------------------------------------------------------------------------------------------
