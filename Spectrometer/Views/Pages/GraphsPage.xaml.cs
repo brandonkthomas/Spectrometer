@@ -47,7 +47,7 @@ public partial class GraphsPage : INavigableView<GraphsViewModel>
         {
             var textBlock = new Wpf.Ui.Controls.TextBlock
             {
-                Text = "No sensors available for graphing.\nUse the Sensors tab to add graphs for available sensors.",
+                Text = "No sensors available for graphing.\nUse the Sensors tab to enable individual graphs.",
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
                 FontSize = 16,
