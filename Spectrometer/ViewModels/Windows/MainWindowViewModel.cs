@@ -1,8 +1,6 @@
 ﻿using Spectrometer.Models;
 using Spectrometer.Services;
 using System.Collections.ObjectModel;
-using System.Configuration;
-using System.Diagnostics;
 using System.Timers;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;

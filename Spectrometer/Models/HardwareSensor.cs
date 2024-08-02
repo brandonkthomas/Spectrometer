@@ -1,4 +1,5 @@
 ﻿using LibreHardwareMonitor.Hardware;
+using System.ComponentModel;
 
 namespace Spectrometer.Models;
 
@@ -12,6 +13,9 @@ namespace Spectrometer.Models;
 /// </summary>
 public partial class HardwareSensor : ObservableObject, ISensor
 {
+    // -------------------------------------------------------------------------------------------
+    // ISensor => HardwareSensor constructor
+
     public HardwareSensor(ISensor sensor)
     {
         Control = sensor.Control;
@@ -28,7 +32,10 @@ public partial class HardwareSensor : ObservableObject, ISensor
         Values = sensor.Values;
         ValuesTimeWindow = sensor.ValuesTimeWindow;
     }
-    
+
+    // -------------------------------------------------------------------------------------------
+    // ISensor Properties
+
     public IControl Control { get; }
     public IHardware Hardware { get; }
     public Identifier Identifier { get; set; }
@@ -50,9 +57,29 @@ public partial class HardwareSensor : ObservableObject, ISensor
     public void Accept(IVisitor visitor) => visitor.VisitSensor(this);
     public void Traverse(IVisitor visitor) => visitor.VisitSensor(this);
 
+    // -------------------------------------------------------------------------------------------
+    // Computed Properties
+
     public override int GetHashCode() => HashCode.Combine(Identifier, Name);
 
+    /// <summary>
+    /// Allows for distinguishing multiple hardware items of the same type (i.e. 3 SSDs)
+    /// </summary>
+    public string GroupKey
+    {
+        get
+        {
+            var parts = Identifier.ToString().Split('/');
+            if (parts.Length >= 3)
+                return $"/{parts[1]}/{parts[2]}"; // nvme/0, nvme/1...
+
+            return "Unknown";
+        }
+    }
+
+    // -------------------------------------------------------------------------------------------
     // App-specific custom properties
+
     public bool IsPinned { get; set; }
     public bool IsGraphEnabled { get; set; }
 }

@@ -103,10 +103,19 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
     private string _memoryUsageDetails = string.Empty;
 
     [ObservableProperty]
+    private int _memoryModuleCount;
+
+    [ObservableProperty]
     private double _memoryUsageGb;
 
     [ObservableProperty]
     private double _memoryTotalGb;
+
+    // -------------------------------------------------------------------------------------------
+    // Storage
+
+    [ObservableProperty]
+    private int _storageDeviceCount;
 
     // -------------------------------------------------------------------------------------------
     // Private Fields (for use by the service only)
@@ -226,14 +235,23 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
     {
         if (_isInitialized) return;
 
-        AddSensorsToCollection(MbSensors, _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Motherboard)?.Sensors ?? []);
-        AddSensorsToCollection(CpuSensors, _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu)?.Sensors ?? []);
-        AddSensorsToCollection(GpuSensors, _computer.Hardware.FirstOrDefault(h => h.HardwareType == _gpuType)?.Sensors ?? []);
-        AddSensorsToCollection(MemorySensors, _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Memory)?.Sensors ?? []);
-        AddSensorsToCollection(StorageSensors, _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Storage)?.Sensors ?? []);
-        AddSensorsToCollection(NetworkSensors, _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Network)?.Sensors ?? []);
-        AddSensorsToCollection(FanSensors, _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cooler)?.Sensors ?? []);
-        AddSensorsToCollection(PsuSensors, _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Psu)?.Sensors ?? []);
+        //AddSensorsToCollection(MbSensors, _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Motherboard)?.Sensors ?? []);
+        //AddSensorsToCollection(CpuSensors, _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu)?.Sensors ?? []);
+        //AddSensorsToCollection(GpuSensors, _computer.Hardware.FirstOrDefault(h => h.HardwareType == _gpuType)?.Sensors ?? []);
+        //AddSensorsToCollection(MemorySensors, _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Memory)?.Sensors ?? []);
+        //AddSensorsToCollection(StorageSensors, _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Storage)?.Sensors ?? []);
+        //AddSensorsToCollection(NetworkSensors, _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Network)?.Sensors ?? []);
+        //AddSensorsToCollection(FanSensors, _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cooler)?.Sensors ?? []);
+        //AddSensorsToCollection(PsuSensors, _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Psu)?.Sensors ?? []);
+
+        AddSensorsToCollection(MbSensors, GetSensorsByHardwareType(HardwareType.Motherboard));
+        AddSensorsToCollection(CpuSensors, GetSensorsByHardwareType(HardwareType.Cpu));
+        AddSensorsToCollection(GpuSensors, GetSensorsByHardwareType(_gpuType));
+        AddSensorsToCollection(MemorySensors, GetSensorsByHardwareType(HardwareType.Memory));
+        AddSensorsToCollection(StorageSensors, GetSensorsByHardwareType(HardwareType.Storage));
+        AddSensorsToCollection(NetworkSensors, GetSensorsByHardwareType(HardwareType.Network));
+        AddSensorsToCollection(FanSensors, GetSensorsByHardwareType(HardwareType.Cooler));
+        AddSensorsToCollection(PsuSensors, GetSensorsByHardwareType(HardwareType.Psu));
 
         // Combine all sensors into AllSensors
         AllSensors = new ObservableCollection<HardwareSensor>(MbSensors ?? new ObservableCollection<HardwareSensor>()
@@ -256,6 +274,18 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
         Logger.Write($"{PsuSensors?.Count.ToString() ?? "Error retrieving"} PSU sensors");
 
         _isInitialized = true;
+    }
+    
+    /// <summary>
+    /// Helper method to get sensors for a specific hardware type
+    /// </summary>
+    /// <param name="hardwareType"></param>
+    /// <returns></returns>
+    private IEnumerable<ISensor> GetSensorsByHardwareType(HardwareType hardwareType)
+    {
+        return _computer.Hardware
+            .Where(h => h.HardwareType == hardwareType)
+            .SelectMany(h => h.Sensors ?? []);
     }
 
     // -------------------------------------------------------------------------------------------
@@ -340,9 +370,12 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
             GpuPower = GetGpuPowerCurrent();
             GpuPowerMax = GetGpuPowerMax();
 
+            MemoryModuleCount = GetMemoryModuleCount();
             MemoryUsageGb = GetMemoryUsageGb();
             MemoryTotalGb = GetMemoryTotalGb();
             MemoryUsageDetails = $"{GetMemoryUsagePercent():F0}% ({MemoryUsageGb:F1} GB / {MemoryTotalGb:F1} GB)";
+
+            StorageDeviceCount = GetStorageDeviceCount();
         }
         catch (Exception ex)
         {
@@ -357,13 +390,25 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
     // -------------------------------------------------------------------------------------------
     // Motherboard
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public string GetMotherboardName() => _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Motherboard)?.Name ?? "Unknown";
 
     // -------------------------------------------------------------------------------------------
     // CPU
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public string GetCpuName() => _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu)?.Name ?? "Unknown";
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public float GetCpuTemp()
     {
         var cpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
@@ -375,6 +420,10 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
         return cpuTempSensors.FirstOrDefault(s => s.Name.Contains("Package") || s.Name.Contains("Core (Tctl/Tdie)"))?.Value ?? float.NaN;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public float GetCpuUsage()
     {
         var cpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
@@ -384,6 +433,10 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
         return cpu.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Load && (s.Name.Contains("Total") || s.Name.Contains("Package")))?.Value ?? float.NaN;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public float GetCpuPowerCurrent()
     {
         var cpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
@@ -393,6 +446,10 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
         return cpu.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Power)?.Value ?? float.NaN;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public float GetCpuPowerMax()
     {
         var cpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
@@ -405,8 +462,16 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
     // -------------------------------------------------------------------------------------------
     // GPU
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public string GetGpuName() => _computer.Hardware.FirstOrDefault(h => h.HardwareType == _gpuType)?.Name ?? "Unknown";
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public float GetGpuTemp()
     {
         var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == _gpuType);
@@ -415,7 +480,11 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
 
         return gpu.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Temperature)?.Value ?? float.NaN;
     }
-
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public float GetGpuUsage()
     {
         var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == _gpuType);
@@ -425,6 +494,10 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
         return gpu.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Load)?.Value ?? float.NaN;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public float GetGpuMemoryTotal()
     {
         var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == _gpuType);
@@ -436,6 +509,10 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
         return gpuMemSensors.FirstOrDefault(s => s.Name.Contains("Total"))?.Value ?? float.NaN;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public float GetGpuMemoryUsage()
     {
         var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == _gpuType);
@@ -447,6 +524,10 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
         return gpuMemSensors.FirstOrDefault(s => s.Name.Contains("Used") && s.Name.Contains("GPU"))?.Value ?? float.NaN;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public float GetGpuPowerCurrent()
     {
         var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == _gpuType);
@@ -456,6 +537,10 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
         return gpu.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Power)?.Value ?? float.NaN;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public float GetGpuPowerMax()
     {
         var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == _gpuType);
@@ -468,18 +553,53 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
     // -------------------------------------------------------------------------------------------
     // Memory
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public static int GetMemoryModuleCount()
+    {
+        int count = 0;
+        try
+        {
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_PhysicalMemory");
+
+            foreach (ManagementObject memoryModule in searcher.Get())
+                count++;
+        }
+        catch (Exception ex)
+        {
+            Logger.WriteExc(ex);
+        }
+        return count;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public double GetMemoryTotalGb()
     {
         float totalMemory = 0;
-        using (var searcher = new ManagementObjectSearcher("SELECT Capacity FROM Win32_PhysicalMemory"))
+        try
         {
-            foreach (var item in searcher.Get())
-                totalMemory += Convert.ToSingle(item["Capacity"]);
+            using (var searcher = new ManagementObjectSearcher("SELECT Capacity FROM Win32_PhysicalMemory"))
+            {
+                foreach (var item in searcher.Get())
+                    totalMemory += Convert.ToSingle(item["Capacity"]);
+            }
         }
-
+        catch (Exception ex)
+        {
+            Logger.WriteExc(ex);
+        }
         return totalMemory / (1024 * 1024 * 1024); // bytes to GB
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public double GetMemoryUsageGb()
     {
         var mem = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Memory);
@@ -493,6 +613,10 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
         return usedMemorySensor.Value.GetValueOrDefault(); // GB
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public float GetMemoryUsagePercent() // percentage
     {
         var mem = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Memory);
@@ -505,5 +629,25 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
     // -------------------------------------------------------------------------------------------
     // Storage
 
-    // TODO (do we even need any of these for Dashboard/UI (other than sensor dropdowns)? probably not)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public int GetStorageDeviceCount()
+    {
+        int count = 0;
+        try
+        {
+            using (var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_DiskDrive"))
+            {
+                foreach (var diskDrive in searcher.Get())
+                    count++;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.WriteExc(ex);
+        }
+        return count;
+    }
 }
