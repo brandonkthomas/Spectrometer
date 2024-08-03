@@ -1,5 +1,4 @@
-﻿using LibreHardwareMonitor.Hardware;
-using LiveChartsCore;
+﻿using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
@@ -19,9 +18,7 @@ public partial class GraphViewModel : ObservableObject
     // -------------------------------------------------------------------------------------------
 
     private readonly ObservableCollection<DateTimePoint> _values;
-    private readonly DateTimeAxis _customAxis;
     private readonly MainWindowViewModel _mainWindowViewModel;
-    //private readonly HardwareSensor _sensor;
 
     public ObservableCollection<ISeries> Series { get; set; }
     public Axis[] XAxes { get; set; }
@@ -53,13 +50,13 @@ public partial class GraphViewModel : ObservableObject
         // -------------------------------------------------------------------------------------------
         // Gradients
 
-        var gradientFill = new LinearGradientPaint(
-            new SKColor(0, 151, 38, 90),
-            new SKColor(0, 181, 157, 90));
+        LinearGradientPaint gradientFill = new(
+            new SKColor(0, 151, 38, 200),
+            new SKColor(0, 181, 157, 200));
 
-        var gradientStroke = new LinearGradientPaint(
-            new SKColor(0, 151, 38, 0),
-            new SKColor(0, 181, 157, 0));
+        LinearGradientPaint gradientStroke = new(
+            new SKColor(0, 151, 38),
+            new SKColor(0, 181, 157));
 
         // -------------------------------------------------------------------------------------------
         // Graph Configuration
@@ -77,15 +74,24 @@ public partial class GraphViewModel : ObservableObject
             }
         };
 
-        _customAxis = new DateTimeAxis(TimeSpan.FromSeconds(1), Formatter)
-        {
-            ShowSeparatorLines = false,
-            AnimationsSpeed = TimeSpan.FromMilliseconds(0),
-            SeparatorsPaint = new SolidColorPaint(SKColors.Black.WithAlpha(100)),
-            LabelsPaint = new SolidColorPaint(SKColors.Transparent) // Hide bottom labels
-        };
+        XAxes = 
+        [ 
+            new DateTimeAxis(TimeSpan.FromSeconds(1), Formatter)
+            {
+                CustomSeparators = [
+                    DateTime.Now.AddSeconds(-25).Ticks,
+                    DateTime.Now.AddSeconds(-20).Ticks,
+                    DateTime.Now.AddSeconds(-15).Ticks,
+                    DateTime.Now.AddSeconds(-10).Ticks,
+                    DateTime.Now.AddSeconds(-5).Ticks,
+                    DateTime.Now.Ticks
+                ],
+                ShowSeparatorLines = false,
+                AnimationsSpeed = TimeSpan.FromMilliseconds(0),
+                LabelsPaint = new SolidColorPaint(SKColors.Transparent) // Hide bottom labels
+            }
+        ];
 
-        XAxes = [ _customAxis ];
         YAxes =
         [
             new Axis
@@ -117,13 +123,19 @@ public partial class GraphViewModel : ObservableObject
         if (_mainWindowViewModel?.HwMonSvc?.AllSensors != null) // HwMonSvc and AllSensors are ObservableObjects
         {
             _mainWindowViewModel.HwMonSvc.PropertyChanged += HwMonSvc_PropertyChanged;
-            foreach (var sensor in _mainWindowViewModel.HwMonSvc.AllSensors)
+
+            try
             {
-                if (sensor.Name == Sensor.Name)
-                {
-                    sensor.PropertyChanged += Sensor_PropertyChanged;
-                    break;
-                }
+                foreach (var sensor in _mainWindowViewModel.HwMonSvc.AllSensors)
+                    if (sensor.Name == Sensor.Name)
+                    {
+                        sensor.PropertyChanged += Sensor_PropertyChanged;
+                        break;
+                    }
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteExc(ex);
             }
         }
     }
@@ -151,7 +163,7 @@ public partial class GraphViewModel : ObservableObject
 
         if (sensors != null)
         {
-            var sensor = sensors.FirstOrDefault(s => s.Name == Sensor.Name);
+            HardwareSensor? sensor = sensors.FirstOrDefault(s => s.Name == Sensor.Name);
             if (sensor != null)
             {
                 sensor.PropertyChanged += Sensor_PropertyChanged;
@@ -170,11 +182,9 @@ public partial class GraphViewModel : ObservableObject
     {
         if (e.PropertyName == nameof(HardwareSensor.Value))
         {
-            var sensor = sender as HardwareSensor;
+            HardwareSensor? sensor = sender as HardwareSensor;
             if (sensor != null)
-            {
                 UpdateChart(sensor.Value ?? float.NaN);
-            }
         }
     }
 
@@ -182,12 +192,12 @@ public partial class GraphViewModel : ObservableObject
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="cpuUsage"></param>
-    private void UpdateChart(float cpuUsage)
+    /// <param name="value"></param>
+    private void UpdateChart(float value)
     {
         lock (Sync)
         {
-            _values.Add(new DateTimePoint(DateTime.Now, cpuUsage));
+            _values.Add(new DateTimePoint(DateTime.Now, value));
             if (_values.Count > 250) _values.RemoveAt(0);
         }
     }
@@ -200,10 +210,7 @@ public partial class GraphViewModel : ObservableObject
     /// <returns></returns>
     private static string Formatter(DateTime date)
     {
-        var secsAgo = (DateTime.Now - date).TotalSeconds;
-
-        return secsAgo < 1
-            ? "now"
-            : $"{secsAgo:N0}s ago";
+        double secsAgo = (DateTime.Now - date).TotalSeconds;
+        return secsAgo < 1 ? "now" : $"{secsAgo:N0}s ago";
     }
 }
