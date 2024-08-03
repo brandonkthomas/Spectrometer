@@ -40,8 +40,8 @@ public partial class App
     /// </summary>
     static App()
     {
-        Logger.Write("Spectrometer starting...");
         App.SettingsMgr = new(); // load AppSettings first before any other code fires
+        Logger.Write("Spectrometer starting...");
     }
 
     // -------------------------------------------------------------------------------------------
@@ -60,14 +60,17 @@ public partial class App
             // Page resolver service
             services.AddSingleton<IPageService, PageService>();
 
-            // Hardware monitor service (singleton so that only one instance is active across the application)
-            services.AddSingleton<IDisposable, HardwareMonitorService>();
-
             // Theme manipulation
             services.AddSingleton<IThemeService, ThemeService>();
 
             // TaskBar manipulation
             services.AddSingleton<ITaskBarService, TaskBarService>();
+
+            // Hardware monitor service (singleton so that only one instance is active across the application)
+            services.AddSingleton<HardwareMonitorService>();
+
+            // Process info service
+            services.AddSingleton<ProcessesService>();
 
             // Logging service
             services.AddSingleton<LoggingService>();
@@ -114,10 +117,7 @@ public partial class App
     /// </summary>
     private void OnStartup(object sender, StartupEventArgs e)
     {
-        AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
-        {
-            LogUnhandledException(args.ExceptionObject as Exception);
-        };
+        AppDomain.CurrentDomain.UnhandledException += (sender, args) => LogUnhandledException(args.ExceptionObject as Exception);
 
         _host.Start();
     }
@@ -130,6 +130,7 @@ public partial class App
     {
         GetService<HardwareMonitorService>()?.Dispose();
         GetService<LoggingService>()?.Dispose();
+        //_host.Services.GetService<LoggingService>()?.Dispose();
 
         await _host.StopAsync();
         _host.Dispose();

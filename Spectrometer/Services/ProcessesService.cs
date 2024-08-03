@@ -86,8 +86,9 @@ public class ProcessesService
 
     public void Dispose()
     {
-        foreach (var counter in cpuCounters.Values)
-            counter.Dispose();
+        if (cpuCounters.Count > 0 && cpuCounters.Values.Count > 0)
+            foreach (var counter in cpuCounters.Values)
+                counter.Dispose();
 
         this.Dispose();
     }

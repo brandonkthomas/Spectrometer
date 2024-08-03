@@ -11,7 +11,7 @@ namespace Spectrometer.Services;
 /// <summary>
 /// Service that uses LibreHardwareMonitorLib to monitor the system's hardware.
 /// </summary>
-public partial class HardwareMonitorService : ObservableObject, IDisposable
+public partial class HardwareMonitorService : ObservableObject
 {
     // -------------------------------------------------------------------------------------------
     // Sensor Collections
@@ -227,7 +227,14 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
 
     public void Update() => _computer.Accept(new UpdateVisitor());
 
-    public void Dispose() => _computer.Close();
+    /// <summary>
+    /// Release the lock on LibreHardwareMonitorLib's WinRing0 sys driver
+    /// </summary>
+    public void Dispose()
+    {
+        Logger.Write("HardwareMonitorService disposing...");
+        _computer.Close();
+    }
 
     // -------------------------------------------------------------------------------------------
     // Sensor Collections
@@ -240,15 +247,6 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
     public void InitializeAllSensors()
     {
         if (_isInitialized) return;
-
-        //AddSensorsToCollection(MbSensors, _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Motherboard)?.Sensors ?? []);
-        //AddSensorsToCollection(CpuSensors, _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu)?.Sensors ?? []);
-        //AddSensorsToCollection(GpuSensors, _computer.Hardware.FirstOrDefault(h => h.HardwareType == _gpuType)?.Sensors ?? []);
-        //AddSensorsToCollection(MemorySensors, _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Memory)?.Sensors ?? []);
-        //AddSensorsToCollection(StorageSensors, _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Storage)?.Sensors ?? []);
-        //AddSensorsToCollection(NetworkSensors, _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Network)?.Sensors ?? []);
-        //AddSensorsToCollection(FanSensors, _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cooler)?.Sensors ?? []);
-        //AddSensorsToCollection(PsuSensors, _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Psu)?.Sensors ?? []);
 
         AddSensorsToCollection(MbSensors, GetSensorsByHardwareType(HardwareType.Motherboard));
         AddSensorsToCollection(CpuSensors, GetSensorsByHardwareType(HardwareType.Cpu));
