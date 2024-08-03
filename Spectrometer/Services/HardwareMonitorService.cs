@@ -72,6 +72,12 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
     [ObservableProperty]
     private float _cpuPowerMax;
 
+    [ObservableProperty]
+    private float _cpuHighestClockSpeed;
+
+    [ObservableProperty]
+    private float _cpuMaxClockSpeed;
+
     // -------------------------------------------------------------------------------------------
     // GPU
 
@@ -360,7 +366,9 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
             CpuTemp = GetCpuTemp();
             CpuUsage = GetCpuUsage();
             CpuPower = GetCpuPowerCurrent();
-            CpuPowerMax = GetCpuPowerMax();
+            CpuPowerMax = 125; // temporarily hardcoded; LHWL does not expose max supported TDP
+            CpuHighestClockSpeed = GetCpuHighestClockSpeed();
+            CpuMaxClockSpeed = 5500; // temporarily hardcoded; LHWL does not expose max supported clock speed
 
             GpuName = GetGpuName();
             GpuTemp = GetGpuTemp();
@@ -368,7 +376,7 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
             GpuMemoryTotal = GetGpuMemoryTotal();
             GpuMemoryUsage = GetGpuMemoryUsage();
             GpuPower = GetGpuPowerCurrent();
-            GpuPowerMax = GetGpuPowerMax();
+            GpuPowerMax = 450; // temporarily hardcoded; LHWL does not expose max TDP
 
             MemoryModuleCount = GetMemoryModuleCount();
             MemoryUsageGb = GetMemoryUsageGb();
@@ -450,13 +458,15 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
     /// 
     /// </summary>
     /// <returns></returns>
-    public float GetCpuPowerMax()
+    public float GetCpuHighestClockSpeed()
     {
         var cpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
         if (cpu == null)
             return float.NaN;
 
-        return cpu.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Power)?.Max ?? float.NaN;
+        var cpuTempSensors = cpu.Sensors.Where(s => s.SensorType == SensorType.Clock);
+
+        return cpuTempSensors.Where(s => s.Name.Contains("Core")).Max(s => s.Value) ?? float.NaN;
     }
 
     // -------------------------------------------------------------------------------------------
@@ -535,19 +545,6 @@ public partial class HardwareMonitorService : ObservableObject, IDisposable
             return float.NaN;
 
         return gpu.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Power)?.Value ?? float.NaN;
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    public float GetGpuPowerMax()
-    {
-        var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == _gpuType);
-        if (gpu == null)
-            return float.NaN;
-
-        return gpu.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Power)?.Max ?? float.NaN;
     }
 
     // -------------------------------------------------------------------------------------------

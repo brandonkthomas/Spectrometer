@@ -3,9 +3,9 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:Spectrometer.Views.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:local="clr-namespace:Spectrometer.Views.Pages"
     xmlns:helpers="clr-namespace:Spectrometer.Helpers"
     Title="DashboardPage"
     d:DataContext="{d:DesignInstance local:DashboardPage, IsDesignTimeCreatable=False}"
@@ -163,6 +163,31 @@
                                       FontSize="12" 
                                       Opacity="0.65" />
                         <ui:TextBlock Text="{Binding HwMonSvc.CpuPower, StringFormat={}{0:F0} W}" 
+                                      Grid.Column="1" 
+                                      FontSize="12" 
+                                      HorizontalAlignment="Right" />
+                    </Grid>
+
+                    <ProgressBar Style="{StaticResource CustomProgressBar}" 
+                                 Maximum="100" 
+                                 Height="20">
+                        <ProgressBar.Value>
+                            <MultiBinding Converter="{StaticResource ValueToPercentageMultiConverter}">
+                                <Binding Path="HwMonSvc.CpuHighestClockSpeed" />
+                                <Binding Path="HwMonSvc.CpuMaxClockSpeed" />
+                            </MultiBinding>
+                        </ProgressBar.Value>
+                    </ProgressBar>
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <ui:TextBlock Text="Clock" 
+                                      Grid.Column="0"
+                                      FontSize="12" 
+                                      Opacity="0.65" />
+                        <ui:TextBlock Text="{Binding HwMonSvc.CpuHighestClockSpeed, StringFormat={}{0:F0} MHz}" 
                                       Grid.Column="1" 
                                       FontSize="12" 
                                       HorizontalAlignment="Right" />
@@ -342,10 +367,16 @@
             <ui:CardAction Grid.Column="0" Grid.Row="1" Height="130px" Margin="2,12,2,0" IsChevronVisible="False" VerticalAlignment="Top">
                 <StackPanel>
                     <ProgressBar Style="{StaticResource CustomProgressBar}" 
-                                 Value="{Binding HwMonSvc.MemoryUsageGb}" 
-                                 Maximum="{Binding HwMonSvc.MemoryTotalGb}" 
+                                 Maximum="100" 
                                  Height="20" 
-                                 Margin="0,10,0,0"/>
+                                 Margin="0,10,0,0">
+                        <ProgressBar.Value>
+                            <MultiBinding Converter="{StaticResource ValueToPercentageMultiConverter}">
+                                <Binding Path="HwMonSvc.MemoryUsageGb" />
+                                <Binding Path="HwMonSvc.MemoryTotalGb" />
+                            </MultiBinding>
+                        </ProgressBar.Value>
+                    </ProgressBar>
                     <Grid Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
