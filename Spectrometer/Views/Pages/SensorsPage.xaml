@@ -25,7 +25,7 @@
     <Page.Resources>
         <helpers:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <helpers:StringToImageSourceConverter x:Key="StringToImageSourceConverter" />
-        <helpers:ValueWithSuffixConverter x:Key="ValueWithSuffixConverter" />
+        <helpers:SensorTypeToFormattedValueConverter x:Key="SensorTypeToFormattedValueConverter" />
 
         <!-- Group storage sensors by unique hardware ID -->
         <CollectionViewSource x:Key="GroupedStorageSensors" Source="{Binding HwMonSvc.StorageSensors}">
@@ -119,7 +119,7 @@
                                             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                             FontSize="12"
                                             Margin="15,0,0,0"/>
-                                <ui:TextBlock Text="{Binding ., Converter={StaticResource ValueWithSuffixConverter}}" 
+                                <ui:TextBlock Text="{Binding ., Converter={StaticResource SensorTypeToFormattedValueConverter}}" 
                                             VerticalAlignment="Center" 
                                             HorizontalAlignment="Right"
                                             Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
@@ -229,7 +229,7 @@
 
                                 <ui:TextBlock Grid.Column="2"
                                               Margin="0,0,10,0"
-                                              Text="{Binding ., Converter={StaticResource ValueWithSuffixConverter}}" 
+                                              Text="{Binding ., Converter={StaticResource SensorTypeToFormattedValueConverter}}" 
                                               VerticalAlignment="Center" 
                                               HorizontalAlignment="Right"
                                               Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
@@ -345,7 +345,7 @@
 
                                 <ui:TextBlock Grid.Column="2"
                                               Margin="0,0,10,0"
-                                              Text="{Binding ., Converter={StaticResource ValueWithSuffixConverter}}" 
+                                              Text="{Binding ., Converter={StaticResource SensorTypeToFormattedValueConverter}}" 
                                               VerticalAlignment="Center" 
                                               HorizontalAlignment="Right"
                                               Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
@@ -461,7 +461,7 @@
 
                                 <ui:TextBlock Grid.Column="2"
                                               Margin="0,0,10,0"
-                                              Text="{Binding ., Converter={StaticResource ValueWithSuffixConverter}}" 
+                                              Text="{Binding ., Converter={StaticResource SensorTypeToFormattedValueConverter}}" 
                                               VerticalAlignment="Center" 
                                               HorizontalAlignment="Right"
                                               Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
@@ -578,7 +578,7 @@
 
                                 <ui:TextBlock Grid.Column="2"
                                               Margin="0,0,10,0"
-                                              Text="{Binding ., Converter={StaticResource ValueWithSuffixConverter}}" 
+                                              Text="{Binding ., Converter={StaticResource SensorTypeToFormattedValueConverter}}" 
                                               VerticalAlignment="Center" 
                                               HorizontalAlignment="Right"
                                               Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
@@ -708,7 +708,7 @@
 
                                 <ui:TextBlock Grid.Column="2"
                                               Margin="0,0,10,0"
-                                              Text="{Binding ., Converter={StaticResource ValueWithSuffixConverter}}" 
+                                              Text="{Binding ., Converter={StaticResource SensorTypeToFormattedValueConverter}}" 
                                               VerticalAlignment="Center" 
                                               HorizontalAlignment="Right"
                                               Foreground="{DynamicResource TextFillColorPrimaryBrush}" 

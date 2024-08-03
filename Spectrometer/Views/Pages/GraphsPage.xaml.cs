@@ -108,7 +108,6 @@ public partial class GraphsPage : INavigableView<GraphsViewModel>
     /// <param name="mainWindowViewModel"></param>
     /// <returns></returns>
     private List<HardwareSensor> GetEnabledGraphSensors(MainWindowViewModel mainWindowViewModel)
-
     {
         if (mainWindowViewModel.HwMonSvc == null)
             return [];

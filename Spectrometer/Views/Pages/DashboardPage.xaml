@@ -24,7 +24,7 @@
         <helpers:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <helpers:StringToImageSourceConverter x:Key="StringToImageSourceConverter" />
         <helpers:ValueToPercentageMultiConverter x:Key="ValueToPercentageMultiConverter" />
-        <helpers:ValueWithSuffixConverter x:Key="ValueWithSuffixConverter" />
+        <helpers:SensorTypeToFormattedValueConverter x:Key="SensorTypeToFormattedValueConverter" />
 
         <Style x:Key="CustomProgressBar" TargetType="ProgressBar">
             <Setter Property="Template">
@@ -137,7 +137,7 @@
                                       Grid.Column="0" 
                                       FontSize="12" 
                                       Opacity="0.65" />
-                        <ui:TextBlock Text="{Binding HwMonSvc.CpuTemp, StringFormat={}{0:F0} °C}" 
+                        <ui:TextBlock Text="{Binding HwMonSvc.CpuTemp, StringFormat={}{0:F0}°C}" 
                                       Grid.Column="1" 
                                       FontSize="12" 
                                       HorizontalAlignment="Right" />
@@ -268,7 +268,7 @@
                                       Grid.Column="0" 
                                       FontSize="12" 
                                       Opacity="0.65" />
-                        <ui:TextBlock Text="{Binding HwMonSvc.GpuTemp, StringFormat={}{0:F0} °C}" 
+                        <ui:TextBlock Text="{Binding HwMonSvc.GpuTemp, StringFormat={}{0:F0}°C}" 
                                       Grid.Column="1" 
                                       FontSize="12"
                                       HorizontalAlignment="Right" />

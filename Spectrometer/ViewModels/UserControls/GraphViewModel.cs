@@ -1,4 +1,5 @@
-﻿using LiveChartsCore;
+﻿using LibreHardwareMonitor.Hardware;
+using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
@@ -20,7 +21,7 @@ public partial class GraphViewModel : ObservableObject
     private readonly ObservableCollection<DateTimePoint> _values;
     private readonly DateTimeAxis _customAxis;
     private readonly MainWindowViewModel _mainWindowViewModel;
-    private readonly HardwareSensor _sensor;
+    //private readonly HardwareSensor _sensor;
 
     public ObservableCollection<ISeries> Series { get; set; }
     public Axis[] XAxes { get; set; }
@@ -28,6 +29,7 @@ public partial class GraphViewModel : ObservableObject
     public object Sync { get; } = new object();
     public bool IsReading { get; set; } = true;
     public string ChartTitle { get; set; } = string.Empty;
+    public HardwareSensor Sensor { get; set; }
 
     // -------------------------------------------------------------------------------------------
     // Constructor + Init
@@ -44,8 +46,9 @@ public partial class GraphViewModel : ObservableObject
     public GraphViewModel(MainWindowViewModel mainWindowViewModel, HardwareSensor sensor)
     {
         _mainWindowViewModel = mainWindowViewModel;
-        _sensor = sensor;
         _values = new ObservableCollection<DateTimePoint>();
+
+        Sensor = sensor;
 
         // -------------------------------------------------------------------------------------------
         // Gradients
@@ -70,7 +73,7 @@ public partial class GraphViewModel : ObservableObject
                 Stroke = gradientStroke,
                 GeometryFill = null,
                 GeometryStroke = null,
-                Name = _sensor.Name,
+                Name = Sensor.Name,
             }
         };
 
@@ -93,7 +96,7 @@ public partial class GraphViewModel : ObservableObject
             }
         ];
 
-        ChartTitle = _sensor.Name;
+        ChartTitle = Sensor.Name;
 
         // -------------------------------------------------------------------------------------------
         // Bind PropertyChanged event to HwStatus list
@@ -116,7 +119,7 @@ public partial class GraphViewModel : ObservableObject
             _mainWindowViewModel.HwMonSvc.PropertyChanged += HwMonSvc_PropertyChanged;
             foreach (var sensor in _mainWindowViewModel.HwMonSvc.AllSensors)
             {
-                if (sensor.Name == _sensor.Name)
+                if (sensor.Name == Sensor.Name)
                 {
                     sensor.PropertyChanged += Sensor_PropertyChanged;
                     break;
@@ -148,7 +151,7 @@ public partial class GraphViewModel : ObservableObject
 
         if (sensors != null)
         {
-            var sensor = sensors.FirstOrDefault(s => s.Name == _sensor.Name);
+            var sensor = sensors.FirstOrDefault(s => s.Name == Sensor.Name);
             if (sensor != null)
             {
                 sensor.PropertyChanged += Sensor_PropertyChanged;
