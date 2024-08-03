@@ -457,7 +457,7 @@
                     <DataGridTextColumn Header="GPU" 
                                             HeaderStyle="{StaticResource DataGridHeaderStyle}"
                                             CellStyle="{StaticResource DataGridCellStyle}"
-                                            Binding="{Binding GpuUsage, StringFormat=\{0:P0\}}" 
+                                            Binding="{Binding GpuUsage, StringFormat={}{0:0}%}" 
                                             Width="50" 
                                             SortMemberPath="GpuUsage"/>
                     <DataGridTextColumn Header="RAM" 

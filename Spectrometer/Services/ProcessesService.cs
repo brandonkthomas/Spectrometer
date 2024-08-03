@@ -11,12 +11,16 @@ public class ProcessesService
     private readonly Dictionary<int, DateTime> lastCheckTimes;
     private static readonly Lazy<ProcessesService> _instance = new(() => new ProcessesService());
     public static ProcessesService Instance => _instance.Value;
+    private Dictionary<int, List<PerformanceCounter>> processGpuCounters;
+
 
     public ProcessesService() 
     {
         cpuCounters = new Dictionary<int, PerformanceCounter>();
         lastCpuTimes = new Dictionary<int, TimeSpan>();
         lastCheckTimes = new Dictionary<int, DateTime>();
+
+        InitializeGpuCounters();
     }
 
     public ObservableCollection<ProcessInfo> LoadProcesses()
@@ -40,9 +44,36 @@ public class ProcessesService
         return collection;
     }
 
+    private void InitializeGpuCounters()
+    {
+        processGpuCounters = new Dictionary<int, List<PerformanceCounter>>();
+        var category = new PerformanceCounterCategory("GPU Engine");
+        var instanceNames = category.GetInstanceNames();
+
+        foreach (var instanceName in instanceNames)
+        {
+            try
+            {
+                var parts = instanceName.Split('_');
+                if (parts.Length >= 2 && int.TryParse(parts[1], out int processId))
+                {
+                    if (!processGpuCounters.ContainsKey(processId))
+                    {
+                        processGpuCounters[processId] = new List<PerformanceCounter>();
+                    }
+                    processGpuCounters[processId].Add(new PerformanceCounter("GPU Engine", "Utilization Percentage", instanceName, true));
+                }
+            }
+            catch
+            {
+                // Handle exceptions if necessary (e.g., invalid instance names)
+            }
+        }
+    }
+
     private double GetCpuUsage(Process process)
     {
-        if (!cpuCounters.TryGetValue(process.Id, out var cpuCounter))
+        if (!cpuCounters.TryGetValue(process.Id, out var cpuCounter) && !process.HasExited)
         {
             cpuCounter = new PerformanceCounter("Process", "% Processor Time", process.ProcessName, true);
             cpuCounters[process.Id] = cpuCounter;
@@ -68,8 +99,18 @@ public class ProcessesService
 
     private double GetGpuUsage(Process process)
     {
-        // Implement a method to get the GPU usage for the process
-        return 0.42; // Example value
+        var processId = process.Id;
+        var usage = 0.0;
+
+        if (processGpuCounters.Keys.Contains(process.Id))
+        {
+            foreach (var counter in processGpuCounters[processId])
+            {
+                usage += counter.NextValue();
+            }
+        }
+
+        return usage;
     }
 
     private double GetNetworkDownload(Process process)
