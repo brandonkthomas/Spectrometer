@@ -116,8 +116,8 @@ public partial class MainWindowViewModel : ObservableObject
     /// <summary>
     /// Process info collection
     /// </summary>
-    [ObservableProperty]
-    private ObservableCollection<ProcessInfo?> _prcssInfoList;
+    //[ObservableProperty]
+    //private ObservableCollection<ProcessInfo?> _prcssInfoList;
 
     // -------------------------------------------------------------------------------------------
     // Constructor + Events
@@ -127,7 +127,7 @@ public partial class MainWindowViewModel : ObservableObject
     {
         IsLoading = true;
 
-        PrcssInfoList = [];
+        //PrcssInfoList = [];
 
         _timer = new System.Timers.Timer(App.SettingsMgr?.Settings?.PollingRate ?? 1750); // 1750 = default
         _timer.Elapsed += OnTimerElapsed;
@@ -157,7 +157,7 @@ public partial class MainWindowViewModel : ObservableObject
             GetManufacturerImagePaths();
 
             //GetProcesses();
-            Logger.Write($"{PrcssInfoList.Count} processes found");
+            //Logger.Write($"{PrcssInfoList.Count} processes found");
         });
 
         IsLoading = false;

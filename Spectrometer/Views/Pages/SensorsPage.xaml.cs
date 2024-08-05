@@ -18,6 +18,7 @@ public partial class SensorsPage : INavigableView<SensorsViewModel>
 
     public SensorsPage(SensorsViewModel viewModel)
     {
+        Logger.Write("SensorsPage initializing...");
         ViewModel = viewModel;
         DataContext = viewModel;
 

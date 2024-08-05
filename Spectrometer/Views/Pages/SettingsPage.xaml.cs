@@ -19,6 +19,7 @@ public partial class SettingsPage : INavigableView<SettingsViewModel>
 
     public SettingsPage(SettingsViewModel viewModel)
     {
+        Logger.Write("SettingsPage initializing...");
         ViewModel = viewModel;
         DataContext = this;
 

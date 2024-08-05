@@ -10,6 +10,7 @@ public partial class DashboardPage : INavigableView<DashboardViewModel>
 
     public DashboardPage(DashboardViewModel viewModel)
     {
+        Logger.Write("DashboardPage initializing...");
         ViewModel = viewModel;
         DataContext = viewModel;
 

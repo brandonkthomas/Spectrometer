@@ -19,6 +19,7 @@ public partial class GraphsPage : INavigableView<GraphsViewModel>
 
     public GraphsPage(GraphsViewModel viewModel, MainWindowViewModel mainWindowViewModel)
     {
+        Logger.Write("GraphsPage initializing...");
         ViewModel = viewModel;
         DataContext = viewModel;
 

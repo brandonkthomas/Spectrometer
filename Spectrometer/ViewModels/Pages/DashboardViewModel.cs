@@ -14,7 +14,7 @@ public partial class DashboardViewModel : ObservableObject
     public string CpuImagePath => _mainWindowViewModel.CpuImagePath;
     public string GpuImagePath => _mainWindowViewModel.GpuImagePath;
 
-    public ObservableCollection<ProcessInfo?> ProcessesList => _mainWindowViewModel.PrcssInfoList;
+    //public ObservableCollection<ProcessInfo?> ProcessesList => _mainWindowViewModel.PrcssInfoList;
 
     public HardwareMonitorService? HwMonSvc
     {
@@ -62,6 +62,6 @@ public partial class DashboardViewModel : ObservableObject
     {
         await _mainWindowViewModel.InitializationTask;
         OnPropertyChanged(nameof(HwMonSvc));
-        OnPropertyChanged(nameof(ProcessesList));
+        //OnPropertyChanged(nameof(ProcessesList));
     }
 }
