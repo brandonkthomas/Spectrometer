@@ -26,6 +26,7 @@
         <helpers:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <helpers:StringToImageSourceConverter x:Key="StringToImageSourceConverter" />
         <helpers:SensorTypeToFormattedValueConverter x:Key="SensorTypeToFormattedValueConverter" />
+        <helpers:ThemeToBrushConverter x:Key="ThemeToBrushConverter" />
 
         <!-- Group storage sensors by unique hardware ID -->
         <CollectionViewSource x:Key="GroupedStorageSensors" Source="{Binding HwMonSvc.StorageSensors}">
@@ -742,7 +743,7 @@
               Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=False}"
               helpers:TransitionBehavior.Transition="FadeInWithSlide">
             <ui:ProgressRing IsIndeterminate="True" 
-                             Foreground="White"
+                             Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
                              Opacity="0.65"/>
         </Grid>
 

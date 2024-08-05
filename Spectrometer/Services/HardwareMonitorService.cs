@@ -4,6 +4,7 @@ using Spectrometer.Models;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Management;
+using System.Net.NetworkInformation;
 
 namespace Spectrometer.Services;
 
@@ -127,10 +128,10 @@ public partial class HardwareMonitorService : ObservableObject
     // Network
 
     [ObservableProperty]
-    private string _networkDownloadUsage;
+    private float _networkDownloadUsage;
 
     [ObservableProperty]
-    private string _networkUploadUsage;
+    private float _networkUploadUsage;
 
     // -------------------------------------------------------------------------------------------
     // Private Fields (for use by the service only)
@@ -139,6 +140,7 @@ public partial class HardwareMonitorService : ObservableObject
     private readonly Computer _computer; // required for LibreHardwareMonitorLib
 
     private HardwareType _gpuType;
+    private string _activeNetworkDeviceName = string.Empty;
 
     private bool _isInitialized = false;
 
@@ -155,19 +157,33 @@ public partial class HardwareMonitorService : ObservableObject
     {
         public void VisitComputer(IComputer computer)
         {
-            foreach (var hardware in computer.Hardware)
-                hardware.Accept(this);
+            try
+            {
+                foreach (IHardware? hardware in computer.Hardware)
+                    hardware.Accept(this);
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteExc(ex);
+            }
         }
 
         public void VisitHardware(IHardware hardware)
         {
-            hardware.Update();
+            try
+            {
+                hardware.Update();
 
-            foreach (var sensor in hardware.Sensors)
-                sensor.Accept(this);
+                foreach (ISensor? sensor in hardware.Sensors)
+                    sensor.Accept(this);
 
-            foreach (var subHardware in hardware.SubHardware)
-                subHardware.Accept(this);
+                foreach (IHardware? subHardware in hardware.SubHardware)
+                    subHardware.Accept(this);
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteExc(ex);
+            }
         }
 
         public void VisitSensor(ISensor sensor) { }
@@ -212,6 +228,13 @@ public partial class HardwareMonitorService : ObservableObject
                 _gpuType = HardwareType.GpuIntel;
 
             Logger.Write($"GPU Type: {_gpuType}");
+
+            // -------------------------------------------------------------------------------------------
+            // Determine Active Network Device Name
+
+            _activeNetworkDeviceName = GetActiveNetworkDeviceName();
+
+            Logger.Write($"Active Network Device Name: {_gpuType}");
 
             // -------------------------------------------------------------------------------------------
             // Poll sensors once before MainWindow timer to get initial values
@@ -311,11 +334,11 @@ public partial class HardwareMonitorService : ObservableObject
     {
         if (collection == null) return;
 
-        var existingIdentifiers = new HashSet<Identifier>();
+        HashSet<Identifier>? existingIdentifiers = [];
 
-        foreach (var sensor in sensors)
+        foreach (ISensor? sensor in sensors)
         {
-            var modifiedSensor = new HardwareSensor(sensor);
+            HardwareSensor? modifiedSensor = new(sensor);
 
             // Fix identifier if it isn't unique (no clue why this happens... probably LibreHardwareMonitorLib's fault)
             if (existingIdentifiers.Contains(modifiedSensor.Identifier))
@@ -339,24 +362,25 @@ public partial class HardwareMonitorService : ObservableObject
         // every time (but keeping the app-specific properties like IsPinned and IsGraphEnabled).
         // It's 12am and I'm tired. This will never get fixed.
 
-        var mbSensors = MbSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Motherboard)?.Sensors ?? []);
-        var cpuSensors = CpuSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu)?.Sensors ?? []);
-        var gpuSensors = GpuSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == _gpuType)?.Sensors ?? []);
-        var memorySensors = MemorySensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Memory)?.Sensors ?? []);
-        var storageSensors = StorageSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Storage)?.Sensors ?? []);
-        var networkSensors = NetworkSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Network)?.Sensors ?? []);
-        var fanSensors = FanSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cooler)?.Sensors ?? []);
-        var psuSensors = PsuSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Psu)?.Sensors ?? []);
+        ObservableCollection<HardwareSensor>? mbSensors = MbSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Motherboard)?.Sensors ?? []);
+        ObservableCollection<HardwareSensor>? cpuSensors = CpuSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu)?.Sensors ?? []);
+        ObservableCollection<HardwareSensor>? gpuSensors = GpuSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == _gpuType)?.Sensors ?? []);
+        ObservableCollection<HardwareSensor>? memorySensors = MemorySensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Memory)?.Sensors ?? []);
+        ObservableCollection<HardwareSensor>? storageSensors = StorageSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Storage)?.Sensors ?? []);
+        ObservableCollection<HardwareSensor>? networkSensors = NetworkSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Network)?.Sensors ?? []);
+        ObservableCollection<HardwareSensor>? fanSensors = FanSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cooler)?.Sensors ?? []);
+        ObservableCollection<HardwareSensor>? psuSensors = PsuSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Psu)?.Sensors ?? []);
+
         // maybe need to add allsensors too? idk
 
-        MbSensors = new ObservableCollection<HardwareSensor>(mbSensors ?? []);
-        CpuSensors = new ObservableCollection<HardwareSensor>(cpuSensors ?? []);
-        GpuSensors = new ObservableCollection<HardwareSensor>(gpuSensors ?? []);
-        MemorySensors = new ObservableCollection<HardwareSensor>(memorySensors ?? []);
-        StorageSensors = new ObservableCollection<HardwareSensor>(storageSensors ?? []);
-        NetworkSensors = new ObservableCollection<HardwareSensor>(networkSensors ?? []);
-        FanSensors = new ObservableCollection<HardwareSensor>(fanSensors ?? []);
-        PsuSensors = new ObservableCollection<HardwareSensor>(psuSensors ?? []);
+        MbSensors = new(mbSensors ?? []);
+        CpuSensors = new(cpuSensors ?? []);
+        GpuSensors = new(gpuSensors ?? []);
+        MemorySensors = new(memorySensors ?? []);
+        StorageSensors = new(storageSensors ?? []);
+        NetworkSensors = new(networkSensors ?? []);
+        FanSensors = new(fanSensors ?? []);
+        PsuSensors = new(psuSensors ?? []);
     }
 
     // -------------------------------------------------------------------------------------------
@@ -429,7 +453,7 @@ public partial class HardwareMonitorService : ObservableObject
     /// <returns></returns>
     public float GetCpuTemp()
     {
-        var cpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
+        IHardware? cpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
         if (cpu == null)
             return float.NaN;
 
@@ -444,7 +468,7 @@ public partial class HardwareMonitorService : ObservableObject
     /// <returns></returns>
     public float GetCpuUsage()
     {
-        var cpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
+        IHardware? cpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
         if (cpu == null)
             return float.NaN;
 
@@ -457,7 +481,7 @@ public partial class HardwareMonitorService : ObservableObject
     /// <returns></returns>
     public float GetCpuPowerCurrent()
     {
-        var cpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
+        IHardware? cpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
         if (cpu == null)
             return float.NaN;
 
@@ -470,7 +494,7 @@ public partial class HardwareMonitorService : ObservableObject
     /// <returns></returns>
     public float GetCpuHighestClockSpeed()
     {
-        var cpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
+        IHardware? cpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
         if (cpu == null)
             return float.NaN;
 
@@ -494,7 +518,7 @@ public partial class HardwareMonitorService : ObservableObject
     /// <returns></returns>
     public float GetGpuTemp()
     {
-        var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == _gpuType);
+        IHardware? gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == _gpuType);
         if (gpu == null)
             return float.NaN;
 
@@ -507,7 +531,7 @@ public partial class HardwareMonitorService : ObservableObject
     /// <returns></returns>
     public float GetGpuUsage()
     {
-        var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == _gpuType);
+        IHardware? gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == _gpuType);
         if (gpu == null)
             return float.NaN;
 
@@ -520,7 +544,7 @@ public partial class HardwareMonitorService : ObservableObject
     /// <returns></returns>
     public float GetGpuMemoryTotal()
     {
-        var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == _gpuType);
+        IHardware? gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == _gpuType);
         if (gpu == null)
             return float.NaN;
 
@@ -535,7 +559,7 @@ public partial class HardwareMonitorService : ObservableObject
     /// <returns></returns>
     public float GetGpuMemoryUsage()
     {
-        var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == _gpuType);
+        IHardware? gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == _gpuType);
         if (gpu == null)
             return float.NaN;
 
@@ -550,7 +574,7 @@ public partial class HardwareMonitorService : ObservableObject
     /// <returns></returns>
     public float GetGpuPowerCurrent()
     {
-        var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == _gpuType);
+        IHardware? gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == _gpuType);
         if (gpu == null)
             return float.NaN;
 
@@ -609,11 +633,11 @@ public partial class HardwareMonitorService : ObservableObject
     /// <returns></returns>
     public double GetMemoryUsageGb()
     {
-        var mem = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Memory);
+        IHardware? mem = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Memory);
         if (mem == null)
             return double.NaN;
 
-        var usedMemorySensor = mem.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Data && s.Name.Contains("Used") && !s.Name.Contains("Virtual"));
+        ISensor? usedMemorySensor = mem.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Data && s.Name.Contains("Used") && !s.Name.Contains("Virtual"));
         if (usedMemorySensor == null)
             return double.NaN;
 
@@ -626,7 +650,7 @@ public partial class HardwareMonitorService : ObservableObject
     /// <returns></returns>
     public float GetMemoryUsagePercent() // percentage
     {
-        var mem = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Memory);
+        IHardware? mem = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Memory);
         if (mem == null)
             return float.NaN;
 
@@ -665,31 +689,68 @@ public partial class HardwareMonitorService : ObservableObject
     /// 
     /// </summary>
     /// <returns></returns>
-    public string GetNetworkDownloadUsage()
+    public float GetNetworkDownloadUsage()
     {
-        var net = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Network);
+        IHardware? net = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Network && h.Name.Contains(_activeNetworkDeviceName))
+            ?? _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Network && !h.Name.Contains("Bluetooth") && !h.Name.Contains("Local Area"));
+
         if (net == null)
-            return string.Empty;
+            return float.NaN;
 
-        //divide the byte value by 1000 to get the corresponding kb value
-        var value = (net.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Throughput && s.Name.Contains("Download Speed"))?.Value) / 1000;
+        Debug.WriteLine($"net down @ {net.Name}: {(net.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Throughput && s.Name.Contains("Download Speed"))?.Value) / 1000 ?? float.NaN}");
 
-        return Math.Round(double.Parse(value.ToString()), 0, MidpointRounding.AwayFromZero).ToString() ?? string.Empty;
+        // Divide bytes/sec by 1000 to get KB/sec
+        return (net.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Throughput && s.Name.Contains("Download Speed"))?.Value) / 1000 ?? float.NaN;
     }
 
     /// <summary>
     /// 
     /// </summary>
     /// <returns></returns>
-    public string GetNetworkUploadUsage()
+    public float GetNetworkUploadUsage()
     {
-        var net = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Network);
+        IHardware? net = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Network && h.Name.Contains(_activeNetworkDeviceName))
+            ?? _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Network && !h.Name.Contains("Bluetooth") && !h.Name.Contains("Local Area"));
+
         if (net == null)
-            return string.Empty;
+            return float.NaN;
 
-        //divide the byte value by 1000 to get the corresponding kb value
-        var value = (net.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Throughput && s.Name.Contains("Upload Speed"))?.Value) / 1000;
+        Debug.WriteLine($"net up @ {net.Name}: {(net.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Throughput && s.Name.Contains("Upload Speed"))?.Value) / 1000 ?? float.NaN}");
 
-        return Math.Round(double.Parse(value.ToString()), 0, MidpointRounding.AwayFromZero).ToString() ?? string.Empty;
+        // Divide bytes/sec by 1000 to get KB/sec
+        return (net.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Throughput && s.Name.Contains("Upload Speed"))?.Value) / 1000 ?? float.NaN;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    private static string GetActiveNetworkDeviceName()
+    {
+        try
+        {
+            NetworkInterface[]? interfaces = NetworkInterface.GetAllNetworkInterfaces();
+
+            foreach (NetworkInterface? networkInterface in interfaces)
+            {
+                if (networkInterface.OperationalStatus == OperationalStatus.Up &&
+                    networkInterface.NetworkInterfaceType != NetworkInterfaceType.Loopback &&
+                    networkInterface.NetworkInterfaceType != NetworkInterfaceType.Tunnel)
+                {
+                    // Check if this interface has a gateway assigned (means it has an internet connection, more than likely)
+                    IPInterfaceProperties? ipProperties = networkInterface.GetIPProperties();
+
+                    if (ipProperties.GatewayAddresses.Any(g => g.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork))
+                        return networkInterface.Name;
+                }
+            }
+
+            return "";
+        }
+        catch (Exception ex)
+        {
+            Logger.WriteExc(ex);
+            return "";
+        }
     }
 }
