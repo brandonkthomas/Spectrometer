@@ -25,6 +25,7 @@
     <Page.Resources>
         <helpers:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <helpers:StringToImageSourceConverter x:Key="StringToImageSourceConverter" />
+        <helpers:StringToThemedImageSourceConverter x:Key="StringToThemedImageSourceConverter" />
         <helpers:SensorTypeToFormattedValueConverter x:Key="SensorTypeToFormattedValueConverter" />
         <helpers:ThemeToBrushConverter x:Key="ThemeToBrushConverter" />
 
@@ -158,12 +159,21 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <Image Source="pack://application:,,,/Assets/Icons/motherboard-32-white.png"
-                                Height="20" 
-                                Width="20"
-                                VerticalAlignment="Center"
-                                HorizontalAlignment="Left"
-                                Grid.Column="0" />
+                            <Image Height="20" 
+                               Width="20"
+                               Opacity="0.65"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Left"
+                               Grid.Column="0">
+                                <Image.Source>
+                                    <Binding Converter="{StaticResource StringToThemedImageSourceConverter}">
+                                        <Binding.Source>
+                                            pack://application:,,,/Assets/Icons/motherboard-32
+                                        </Binding.Source>
+                                    </Binding>
+                                </Image.Source>
+                            </Image>
+
                             <StackPanel Grid.Column="1" Margin="8,0,0,0">
                                 <ui:TextBlock Text="Motherboard"
                                             FontSize="12"
@@ -276,12 +286,21 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <Image Source="pack://application:,,,/Assets/Icons/processor-30-white.png"
-                                Height="20" 
-                                Width="20"
-                                VerticalAlignment="Center"
-                                HorizontalAlignment="Left"
-                                Grid.Column="0" />
+                            <Image Height="20" 
+                               Width="20"
+                               Opacity="0.65"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Left"
+                               Grid.Column="0">
+                                <Image.Source>
+                                    <Binding Converter="{StaticResource StringToThemedImageSourceConverter}">
+                                        <Binding.Source>
+                                            pack://application:,,,/Assets/Icons/processor-30
+                                        </Binding.Source>
+                                    </Binding>
+                                </Image.Source>
+                            </Image>
+                            
                             <StackPanel Grid.Column="1" Margin="8,0,0,0">
                                 <ui:TextBlock Text="Processor"
                                             FontSize="12"
@@ -392,12 +411,21 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <Image Source="pack://application:,,,/Assets/Icons/video-card-48-white.png"
-                                Height="20" 
-                                Width="20"
-                                VerticalAlignment="Center"
-                                HorizontalAlignment="Left"
-                                Grid.Column="0" />
+                            <Image Height="20" 
+                               Width="20"
+                               Opacity="0.65"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Left"
+                               Grid.Column="0">
+                                <Image.Source>
+                                    <Binding Converter="{StaticResource StringToThemedImageSourceConverter}">
+                                        <Binding.Source>
+                                            pack://application:,,,/Assets/Icons/video-card-48
+                                        </Binding.Source>
+                                    </Binding>
+                                </Image.Source>
+                            </Image>
+                            
                             <StackPanel Grid.Column="1" Margin="8,0,0,0">
                                 <ui:TextBlock Text="Graphics Card"
                                             FontSize="12"
@@ -508,12 +536,21 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <Image Source="pack://application:,,,/Assets/Icons/memory-30-white.png"
-                                   Height="20" 
-                                   Width="20"
-                                   VerticalAlignment="Center"
-                                   HorizontalAlignment="Left"
-                                   Grid.Column="0" />
+                            <Image Height="20" 
+                               Width="20"
+                               Opacity="0.65"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Left"
+                               Grid.Column="0">
+                                <Image.Source>
+                                    <Binding Converter="{StaticResource StringToThemedImageSourceConverter}">
+                                        <Binding.Source>
+                                            pack://application:,,,/Assets/Icons/memory-30
+                                        </Binding.Source>
+                                    </Binding>
+                                </Image.Source>
+                            </Image>
+                            
                             <StackPanel Grid.Column="1" Margin="8,0,0,0">
                                 <ui:TextBlock Text="Memory"
                                               FontSize="12"
@@ -625,12 +662,21 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <Image Source="pack://application:,,,/Assets/Icons/drive-30-white.png"
-                                Height="20" 
-                                Width="20"
-                                VerticalAlignment="Center"
-                                HorizontalAlignment="Left"
-                                Grid.Column="0" />
+                            <Image Height="20" 
+                               Width="20"
+                               Opacity="0.65"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Left"
+                               Grid.Column="0">
+                                <Image.Source>
+                                    <Binding Converter="{StaticResource StringToThemedImageSourceConverter}">
+                                        <Binding.Source>
+                                            pack://application:,,,/Assets/Icons/drive-30
+                                        </Binding.Source>
+                                    </Binding>
+                                </Image.Source>
+                            </Image>
+                            
                             <StackPanel Grid.Column="1" Margin="8,0,0,0">
                                 <ui:TextBlock Text="Storage"
                                             FontSize="12"

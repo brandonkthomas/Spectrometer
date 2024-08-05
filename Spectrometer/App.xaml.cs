@@ -12,8 +12,10 @@ using Spectrometer.Views.UserControls;
 using Spectrometer.Views.Windows;
 using System.IO;
 using System.Reflection;
+using System.Windows.Media;
 using System.Windows.Threading;
 using Wpf.Ui;
+using Wpf.Ui.Appearance;
 
 namespace Spectrometer;
 
@@ -42,6 +44,9 @@ public partial class App
     {
         App.SettingsMgr = new(); // load AppSettings first before any other code fires
         Logger.Write("Spectrometer starting...");
+
+        // Set custom accent color (Not working currently!)
+        //ApplicationAccentColorManager.Apply(Color.FromArgb(0, 27, 170, 76));
     }
 
     // -------------------------------------------------------------------------------------------

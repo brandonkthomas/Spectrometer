@@ -20,12 +20,14 @@
     <!-- Resources -->
 
     <Page.Resources>
-        <helpers:ProgressToWidthConverter x:Key="ProgressToWidthConverter" />
         <helpers:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-        <helpers:StringToImageSourceConverter x:Key="StringToImageSourceConverter" />
-        <helpers:ValueToPercentageMultiConverter x:Key="ValueToPercentageMultiConverter" />
+        <helpers:NetworkUsageToStringConverter x:Key="NetworkUsageToStringConverter" />
+        <helpers:ProgressToWidthConverter x:Key="ProgressToWidthConverter" />
         <helpers:SensorTypeToFormattedValueConverter x:Key="SensorTypeToFormattedValueConverter" />
+        <helpers:StringToImageSourceConverter x:Key="StringToImageSourceConverter" />
+        <helpers:StringToThemedImageSourceConverter x:Key="StringToThemedImageSourceConverter" />
         <helpers:ThemeToBrushConverter x:Key="ThemeToBrushConverter" />
+        <helpers:ValueToPercentageMultiConverter x:Key="ValueToPercentageMultiConverter" />
 
         <Style x:Key="CustomProgressBar" TargetType="ProgressBar">
             <Setter Property="Template">
@@ -201,12 +203,20 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <Image Source="pack://application:,,,/Assets/Icons/processor-30-white.png"
-                               Height="20" 
+                        <Image Height="20" 
                                Width="20"
+                               Opacity="0.65"
                                VerticalAlignment="Center"
                                HorizontalAlignment="Left"
-                               Grid.Column="0" />
+                               Grid.Column="0">
+                            <Image.Source>
+                                <Binding Converter="{StaticResource StringToThemedImageSourceConverter}">
+                                    <Binding.Source>
+                                        pack://application:,,,/Assets/Icons/processor-30
+                                    </Binding.Source>
+                                </Binding>
+                            </Image.Source>
+                        </Image>
 
                         <StackPanel Grid.Column="1" Margin="8,0,0,0">
                             <ui:TextBlock Text="Processor"
@@ -332,12 +342,20 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <Image Source="pack://application:,,,/Assets/Icons/video-card-48-white.png"
-                               Height="20" 
+                        <Image Height="20" 
                                Width="20"
+                               Opacity="0.65"
                                VerticalAlignment="Center"
                                HorizontalAlignment="Left"
-                               Grid.Column="0" />
+                               Grid.Column="0">
+                            <Image.Source>
+                                <Binding Converter="{StaticResource StringToThemedImageSourceConverter}">
+                                    <Binding.Source>
+                                        pack://application:,,,/Assets/Icons/video-card-48
+                                    </Binding.Source>
+                                </Binding>
+                            </Image.Source>
+                        </Image>
 
                         <StackPanel Grid.Column="1" Margin="8,0,0,0">
                             <ui:TextBlock Text="Graphics Card"
@@ -399,12 +417,20 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <Image Source="pack://application:,,,/Assets/Icons/memory-30-white.png"
-                               Height="20" 
+                        <Image Height="20" 
                                Width="20"
+                               Opacity="0.65"
                                VerticalAlignment="Center"
                                HorizontalAlignment="Left"
-                               Grid.Column="0" />
+                               Grid.Column="0">
+                            <Image.Source>
+                                <Binding Converter="{StaticResource StringToThemedImageSourceConverter}">
+                                    <Binding.Source>
+                                        pack://application:,,,/Assets/Icons/memory-30
+                                    </Binding.Source>
+                                </Binding>
+                            </Image.Source>
+                        </Image>
 
                         <StackPanel Grid.Column="1" Margin="8,0,0,0">
                             <ui:TextBlock Text="Memory"
@@ -437,7 +463,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    
+
                     <Grid Margin="0,5,0,10"
                           Grid.Row="0">
                         <Grid.ColumnDefinitions>
@@ -446,23 +472,37 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <Image Source="pack://application:,,,/Assets/Icons/memory-30-white.png"
-                               Height="20" 
+                        <Image Height="20" 
                                Width="20"
+                               Opacity="0.65"
                                VerticalAlignment="Center"
                                HorizontalAlignment="Left"
-                               Grid.Column="0" />
+                               Grid.Column="0">
+                            <Image.Source>
+                                <Binding Converter="{StaticResource StringToThemedImageSourceConverter}">
+                                    <Binding.Source>
+                                        pack://application:,,,/Assets/Icons/network-50
+                                    </Binding.Source>
+                                </Binding>
+                            </Image.Source>
+                        </Image>
 
                         <StackPanel Grid.Column="1" Margin="8,0,0,0">
                             <ui:TextBlock Text="Network Usage"
                                           FontSize="12"
                                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
                                           Opacity="0.65"/>
-                            <ui:TextBlock Text="{Binding HwMonSvc.NetworkDownloadUsage, StringFormat={}{0:F0} Kb/s down}" 
-                                          VerticalAlignment="Center" 
+                            <ui:TextBlock VerticalAlignment="Center" 
                                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
                                           FontSize="14" 
-                                          FontWeight="Bold"/>
+                                          FontWeight="Bold">
+                                <TextBlock.Text>
+                                    <MultiBinding Converter="{StaticResource NetworkUsageToStringConverter}">
+                                        <Binding Path="HwMonSvc.NetworkDownloadUsage" />
+                                        <Binding Path="HwMonSvc.NetworkUploadUsage" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </ui:TextBlock>
                         </StackPanel>
                     </Grid>
 
@@ -474,12 +514,20 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <Image Source="pack://application:,,,/Assets/Icons/memory-30-white.png"
-                               Height="20" 
+                        <Image Height="20" 
                                Width="20"
+                               Opacity="0.65"
                                VerticalAlignment="Center"
                                HorizontalAlignment="Left"
-                               Grid.Column="0" />
+                               Grid.Column="0">
+                            <Image.Source>
+                                <Binding Converter="{StaticResource StringToThemedImageSourceConverter}">
+                                    <Binding.Source>
+                                        pack://application:,,,/Assets/Icons/drive-30
+                                    </Binding.Source>
+                                </Binding>
+                            </Image.Source>
+                        </Image>
 
                         <StackPanel Grid.Column="1" Margin="8,0,0,0">
                             <ui:TextBlock Text="Disk Usage"
@@ -494,55 +542,7 @@
                         </StackPanel>
                     </Grid>
                 </Grid>
-                
-                <!--<Grid Width="198" 
-                      Height="110" 
-                      HorizontalAlignment="Left">
-                    
-                    <TextBlock Grid.Row="0" 
-                               Grid.Column="0" 
-                               Text="Network" 
-                               FontSize="16"
-                               FontWeight="Bold" 
-                               Margin="0,-2,0,11"/>
 
-                    <Grid Grid.Row="1" 
-                          Grid.Column="0" 
-                          VerticalAlignment="Center" 
-                          Height="80">
-
-                        <TextBlock Grid.Column="0" 
-                                   Text="{Binding HwMonSvc.NetworkUploadUsage, StringFormat={}{0:F0} Kb/s}" 
-                                   FontSize="28" 
-                                   VerticalAlignment="Top" 
-                                   HorizontalAlignment="Right" 
-                                   Margin="0,0,71,0" 
-                                   Width="127" 
-                                   Height="40" 
-                                   Grid.ColumnSpan="3"/>
-                        <TextBlock Text="{Binding HwMonSvc.NetworkDownloadUsage, StringFormat={}{0:F0} Kb/s}" 
-                                   FontSize="28" 
-                                   VerticalAlignment="Top" 
-                                   HorizontalAlignment="Left" 
-                                   Margin="0,40,0,0"
-                                   Width="127"
-                                   Height="40"/>
-                        <Path Data="M 0 0 L 5 10 L 10 0 Z" 
-                              Fill="Gray" 
-                              Stretch="Fill" 
-                              Margin="132,51,0,11" 
-                              HorizontalAlignment="Left"
-                              Width="18"
-                              Height="18"/>
-                        <Path Data="M 0 10 L 5 0 L 10 10 Z" 
-                              Fill="LightGray" 
-                              Margin="127,11,44,51" 
-                              Stretch="Fill" 
-                              Width="18" 
-                              Height="18"/>
-                    </Grid>
-                </Grid>-->
-                
             </ui:CardAction>
 
             <!-- Close: Primary Content Grid -->

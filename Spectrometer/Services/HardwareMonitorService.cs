@@ -697,8 +697,6 @@ public partial class HardwareMonitorService : ObservableObject
         if (net == null)
             return float.NaN;
 
-        Debug.WriteLine($"net down @ {net.Name}: {(net.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Throughput && s.Name.Contains("Download Speed"))?.Value) / 1000 ?? float.NaN}");
-
         // Divide bytes/sec by 1000 to get KB/sec
         return (net.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Throughput && s.Name.Contains("Download Speed"))?.Value) / 1000 ?? float.NaN;
     }
@@ -714,8 +712,6 @@ public partial class HardwareMonitorService : ObservableObject
 
         if (net == null)
             return float.NaN;
-
-        Debug.WriteLine($"net up @ {net.Name}: {(net.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Throughput && s.Name.Contains("Upload Speed"))?.Value) / 1000 ?? float.NaN}");
 
         // Divide bytes/sec by 1000 to get KB/sec
         return (net.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Throughput && s.Name.Contains("Upload Speed"))?.Value) / 1000 ?? float.NaN;

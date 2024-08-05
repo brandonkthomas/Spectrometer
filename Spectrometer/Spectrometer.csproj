@@ -32,6 +32,8 @@
     <None Remove="Assets\Icons\memory-30-white.png" />
     <None Remove="Assets\Icons\motherboard-32-black.png" />
     <None Remove="Assets\Icons\motherboard-32-white.png" />
+    <None Remove="Assets\Icons\network-50-black.png" />
+    <None Remove="Assets\Icons\network-50-white.png" />
     <None Remove="Assets\Icons\pin-50-black.png" />
     <None Remove="Assets\Icons\pin-50-white.png" />
     <None Remove="Assets\Icons\processor-30-black.png" />
@@ -73,6 +75,8 @@
     <Resource Include="Assets\Icons\memory-30-white.png" />
     <Resource Include="Assets\Icons\motherboard-32-black.png" />
     <Resource Include="Assets\Icons\motherboard-32-white.png" />
+    <Resource Include="Assets\Icons\network-50-black.png" />
+    <Resource Include="Assets\Icons\network-50-white.png" />
     <Resource Include="Assets\Icons\pin-50-black.png" />
     <Resource Include="Assets\Icons\pin-50-white.png" />
     <Resource Include="Assets\Icons\processor-30-black.png" />
