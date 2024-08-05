@@ -85,7 +85,7 @@ public partial class MainWindowViewModel : ObservableObject
         HwMonSvc?.Update();
         HwMonSvc?.PollAllSensors();
         HwMonSvc?.PollSpecificSensors();
-        GetProcesses();
+        //GetProcesses();
     }
 
     [ObservableProperty]
@@ -110,8 +110,8 @@ public partial class MainWindowViewModel : ObservableObject
     /// <summary>
     /// Process service
     /// </summary>
-    [ObservableProperty]
-    private ProcessesService? _prcssSvc;
+    //[ObservableProperty]
+    //private ProcessesService? _prcssSvc;
 
     /// <summary>
     /// Process info collection
@@ -152,11 +152,11 @@ public partial class MainWindowViewModel : ObservableObject
 
             HwMonSvc = HardwareMonitorService.Instance;
 
-            PrcssSvc = ProcessesService.Instance;
+            //PrcssSvc = ProcessesService.Instance;
 
             GetManufacturerImagePaths();
 
-            GetProcesses();
+            //GetProcesses();
             Logger.Write($"{PrcssInfoList.Count} processes found");
         });
 
@@ -178,29 +178,29 @@ public partial class MainWindowViewModel : ObservableObject
     /// <summary>
     /// 
     /// </summary>
-    private void GetProcesses()
-    {
-        if (PrcssSvc is null)
-            return;
+    //private void GetProcesses()
+    //{
+    //    if (PrcssSvc is null)
+    //        return;
 
-        var processes = PrcssSvc.LoadProcesses();
+    //    var processes = PrcssSvc.LoadProcesses();
 
-        try
-        {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                PrcssInfoList.Clear();
-                foreach (var proc in processes)
-                {
-                    PrcssInfoList.Add(proc);
-                }
-            });
-        }
-        catch (Exception ex)
-        {
-            Logger.WriteExc(ex);
-        }
-    }
+    //    try
+    //    {
+    //        Application.Current.Dispatcher.Invoke(() =>
+    //        {
+    //            PrcssInfoList.Clear();
+    //            foreach (var proc in processes)
+    //            {
+    //                PrcssInfoList.Add(proc);
+    //            }
+    //        });
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        Logger.WriteExc(ex);
+    //    }
+    //}
 
     // -------------------------------------------------------------------------------------------
     // Image path calculations

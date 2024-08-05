@@ -124,6 +124,15 @@ public partial class HardwareMonitorService : ObservableObject
     private int _storageDeviceCount;
 
     // -------------------------------------------------------------------------------------------
+    // Network
+
+    [ObservableProperty]
+    private string _networkDownloadUsage;
+
+    [ObservableProperty]
+    private string _networkUploadUsage;
+
+    // -------------------------------------------------------------------------------------------
     // Private Fields (for use by the service only)
     // -------------------------------------------------------------------------------------------
 
@@ -380,6 +389,9 @@ public partial class HardwareMonitorService : ObservableObject
             MemoryUsageGb = GetMemoryUsageGb();
             MemoryTotalGb = GetMemoryTotalGb();
             MemoryUsageDetails = $"{GetMemoryUsagePercent():F0}% ({MemoryUsageGb:F1} GB / {MemoryTotalGb:F1} GB)";
+
+            NetworkDownloadUsage = GetNetworkDownloadUsage();
+            NetworkUploadUsage = GetNetworkUploadUsage();
 
             StorageDeviceCount = GetStorageDeviceCount();
         }
@@ -644,5 +656,40 @@ public partial class HardwareMonitorService : ObservableObject
             Logger.WriteExc(ex);
         }
         return count;
+    }
+
+    // -------------------------------------------------------------------------------------------
+    // Network
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public string GetNetworkDownloadUsage()
+    {
+        var net = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Network);
+        if (net == null)
+            return string.Empty;
+
+        //divide the byte value by 1000 to get the corresponding kb value
+        var value = (net.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Throughput && s.Name.Contains("Download Speed"))?.Value) / 1000;
+
+        return Math.Round(double.Parse(value.ToString()), 0, MidpointRounding.AwayFromZero).ToString() ?? string.Empty;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public string GetNetworkUploadUsage()
+    {
+        var net = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Network);
+        if (net == null)
+            return string.Empty;
+
+        //divide the byte value by 1000 to get the corresponding kb value
+        var value = (net.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Throughput && s.Name.Contains("Upload Speed"))?.Value) / 1000;
+
+        return Math.Round(double.Parse(value.ToString()), 0, MidpointRounding.AwayFromZero).ToString() ?? string.Empty;
     }
 }

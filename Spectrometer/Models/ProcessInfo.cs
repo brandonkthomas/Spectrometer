@@ -19,4 +19,7 @@ public partial class ProcessInfo : ObservableObject
 
     [ObservableProperty]
     private double _uploadUsage = 0;
+
+    [ObservableProperty]
+    private string _processId = "";
 }

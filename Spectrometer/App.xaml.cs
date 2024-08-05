@@ -70,7 +70,7 @@ public partial class App
             services.AddSingleton<HardwareMonitorService>();
 
             // Process info service
-            services.AddSingleton<ProcessesService>();
+            //services.AddSingleton<ProcessesService>();
 
             // Logging service
             services.AddSingleton<LoggingService>();
