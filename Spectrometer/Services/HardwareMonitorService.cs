@@ -124,6 +124,12 @@ public partial class HardwareMonitorService : ObservableObject
     [ObservableProperty]
     private int _storageDeviceCount;
 
+    [ObservableProperty]
+    private float _storageReadRate;
+
+    [ObservableProperty]
+    private float _storageWriteRate;
+
     // -------------------------------------------------------------------------------------------
     // Network
 
@@ -418,6 +424,8 @@ public partial class HardwareMonitorService : ObservableObject
             NetworkUploadUsage = GetNetworkUploadUsage();
 
             StorageDeviceCount = GetStorageDeviceCount();
+            StorageReadRate = GetStorageReadRate();
+            StorageWriteRate = GetStorageWriteRate();
         }
         catch (Exception ex)
         {
@@ -680,6 +688,32 @@ public partial class HardwareMonitorService : ObservableObject
             Logger.WriteExc(ex);
         }
         return count;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public float GetStorageReadRate()
+    {
+        IHardware? storage = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Storage);
+        if (storage == null)
+            return float.NaN;
+
+        return storage.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Load && s.Name.Contains("Read Activity"))?.Value ?? float.NaN;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public float GetStorageWriteRate()
+    {
+        IHardware? storage = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Storage);
+        if (storage == null)
+            return float.NaN;
+
+        return storage.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Load && s.Name.Contains("Write Activity"))?.Value ?? float.NaN;
     }
 
     // -------------------------------------------------------------------------------------------

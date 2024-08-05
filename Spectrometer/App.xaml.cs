@@ -12,10 +12,8 @@ using Spectrometer.Views.UserControls;
 using Spectrometer.Views.Windows;
 using System.IO;
 using System.Reflection;
-using System.Windows.Media;
 using System.Windows.Threading;
 using Wpf.Ui;
-using Wpf.Ui.Appearance;
 
 namespace Spectrometer;
 

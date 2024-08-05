@@ -3,7 +3,7 @@ using System.Windows.Data;
 
 namespace Spectrometer.Helpers;
 
-public class NetworkUsageToStringConverter : IMultiValueConverter
+public class DiskUsageToStringConverter : IMultiValueConverter
 {
     // -------------------------------------------------------------------------------------------
     /// <summary>
@@ -16,8 +16,8 @@ public class NetworkUsageToStringConverter : IMultiValueConverter
     /// <returns></returns>
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
-        if (values[0] is float download && values[1] is float upload)
-            return $"{download:F0} KB/s ⮟    \u2022    {upload:F0} KB/s ⮝";
+        if (values[0] is float write && values[1] is float read)
+            return $"{read:F0} MB/s R    \u2022    {write:F0} MB/s W";
 
         return "--";
     }

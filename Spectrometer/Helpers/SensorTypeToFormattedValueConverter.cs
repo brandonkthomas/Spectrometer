@@ -15,11 +15,14 @@ public class SensorTypeToFormattedValueConverter : IValueConverter
         if (value is HardwareSensor hwSensorData && hwSensorData.Value is not null)
             return _formatSensorValue(hwSensorData.SensorType, hwSensorData.Value.Value);
 
-        return string.Empty;
+        return "--";
     }
 
     private string _formatSensorValue(SensorType sensorType, float sensorValue)
     {
+        if (sensorValue == float.NaN)
+            return "--";
+
         return sensorType switch
         {
             SensorType.Clock => $"{sensorValue:F0} MHz",
