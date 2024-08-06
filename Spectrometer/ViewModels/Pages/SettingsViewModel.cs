@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using Spectrometer.Models;
 using System.IO;
+using System.Reflection;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 
@@ -38,6 +39,9 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     [ObservableProperty]
     private bool _startWithWindows = false;
 
+    [ObservableProperty]
+    private bool _automaticallyCheckForUpdates = false;
+
     // -------------------------------------------------------------------------------------------
     // Constructor + Initialization
     // -------------------------------------------------------------------------------------------
@@ -49,7 +53,16 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         // -------------------------------------------------------------------------------------------
         // Calculate local cached values
 
-        AppVersion = $"Spectrometer v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? String.Empty} (July 31, 2024)";
+        string? currentVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "0.0.0";
+
+        string[]? versionParts = currentVersion.Split('.');
+        while (versionParts.Length > 0 && versionParts[^1] == "0")
+            versionParts = versionParts.Take(versionParts.Length - 1).ToArray();
+
+        string exePath = Assembly.GetExecutingAssembly().Location;
+        DateTime lastModifiedDateTime = File.GetLastWriteTime(exePath);
+
+        AppVersion = $"Spectrometer v{string.Join(".", versionParts)} (released {lastModifiedDateTime:MMMM d, yyyy})";
 
         ListOfPages =
         [
@@ -72,7 +85,9 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
         CurrentTheme = ApplicationThemeManager.GetAppTheme(); // TODO
 
-        PollingRate = App.SettingsMgr.Settings.PollingRate;
+        PollingRate = _config.PollingRate;
+
+        AutomaticallyCheckForUpdates = _config.AutomaticallyCheckForUpdates;
 
         SelectedStartTab = _config.StartingTab ?? "Dashboard";
 
@@ -144,7 +159,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         try
         {
             RegistryKey? rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-            string exePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Spectrometer.exe") ?? string.Empty; // todo: set a default location
+            string exePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Spectrometer.exe") ?? string.Empty;
 
             switch (parameter)
             {

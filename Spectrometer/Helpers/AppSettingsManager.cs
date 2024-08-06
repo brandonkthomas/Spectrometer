@@ -15,6 +15,7 @@ public class AppSettings
     public string StartingTab { get; set; } = string.Empty;
     public int PollingRate { get; set; }
     public bool StartWithWindows { get; set; }
+    public bool AutomaticallyCheckForUpdates { get; set; }
 }
 
 // -------------------------------------------------------------------------------------------
@@ -76,7 +77,8 @@ public class AppSettingsManager
             {
                 StartingTab = "Dashboard",
                 PollingRate = 1750,
-                StartWithWindows = false
+                StartWithWindows = false,
+                AutomaticallyCheckForUpdates = true
             };
 
             SaveSettings();
