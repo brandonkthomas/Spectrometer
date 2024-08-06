@@ -1,7 +1,7 @@
 <p align="center">
-  <img width="200" alt="icon" src="https://github.com/user-attachments/assets/a9590279-6f08-4b8a-ba17-3ce26cbf9842">
+  <img width="1000" alt="icon" src="https://github.com/user-attachments/assets/f88b6cdc-8cfd-445f-8f0c-f0b611e00f70">
   <br/>
-  <b>Spectrometer</b>
+  <img width="200" alt="icon" src="https://github.com/user-attachments/assets/e4d3bcd5-b3f7-4000-b4f2-6b4d8e0d06d0">
 </p>
 
 
