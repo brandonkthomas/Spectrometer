@@ -5,13 +5,15 @@ on:
     branches:
       - master
       - action-test
+    paths-ignore:  # Ignore pushes that contain the "[skip ci]" in the commit message
+      - '**.csproj'
   pull_request:
     branches:
       - master
 
 jobs:
   build:
-    runs-on: windows-latest  # Use Windows runner
+    runs-on: windows-latest  # Windows runner
 
     steps:
     - name: Checkout code
@@ -24,15 +26,6 @@ jobs:
 
     - name: Install dependencies
       run: dotnet restore
-
-    - name: Build and publish
-      run: dotnet publish -p:PublishProfile=PackagedApplication -o ./publish
-
-    - name: Upload artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: Spectrometer
-        path: ./publish/Spectrometer.exe
 
     - name: Fetch all tags
       run: git fetch --tags
@@ -68,10 +61,29 @@ jobs:
         scheme: semver
         increment: ${{ env.increment }}
 
+    - name: Update Assembly Version
+      shell: bash
+      run: |
+        new_version="${{ steps.version.outputs.version }}"
+        echo "Updating version to $new_version"
+        sed -i "s/<Version>.*<\/Version>/<Version>${new_version}<\/Version>/" Spectrometer/Spectrometer.csproj
+        # Verify if changes were made
+        git diff --exit-code --quiet || (git config --global user.email "github-actions[bot]@users.noreply.github.com" &&
+                                         git config --global user.name "github-actions[bot]" &&
+                                         git commit -am "Update version to $new_version [skip ci]" &&
+                                         git push)
+
+    - name: Build and publish
+      run: dotnet publish -p:PublishProfile=PackagedApplication -o ./publish
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: Spectrometer
+        path: ./publish/Spectrometer.exe
+
     - name: Create Git tag
       run: |
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git config --global user.name "github-actions[bot]"
         git tag ${{ steps.version.outputs.version }}
         git push origin ${{ steps.version.outputs.version }}
         
