@@ -61,17 +61,19 @@ jobs:
         scheme: semver
         increment: ${{ env.increment }}
 
-    - name: Update Assembly Version
+    - name: Update assembly version & re-commit
       shell: bash
       run: |
         new_version="${{ steps.version.outputs.version }}"
         echo "Updating version to $new_version"
         sed -i "s/<Version>.*<\/Version>/<Version>${new_version}<\/Version>/" Spectrometer/Spectrometer.csproj
-        # Verify if changes were made
-        git diff --exit-code --quiet || (git config --global user.email "github-actions[bot]@users.noreply.github.com" &&
-                                         git config --global user.name "github-actions[bot]" &&
-                                         git commit -am "Update version to $new_version [skip ci]" &&
-                                         git push)
+        last_commit_message=$(git log -1 --pretty=%B)
+        original_committer_name=$(git log -1 --pretty=format:'%an')
+        original_committer_email=$(git log -1 --pretty=format:'%ae')
+        combined_message="Updated to $new_version\n[skip ci]\n\n${last_commit_message}"
+        git config --global user.name "$original_committer_name"
+        git config --global user.email "$original_committer_email"
+        git diff --exit-code --quiet || (git commit -am "$combined_message" && git push)
 
     - name: Build and publish
       run: dotnet publish -p:PublishProfile=PackagedApplication -o ./publish
