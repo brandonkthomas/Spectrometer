@@ -1,5 +1,6 @@
 ﻿using Spectrometer.Models;
 using Spectrometer.ViewModels.Pages;
+using System.Reflection.Metadata;
 using System.Windows.Controls;
 using Wpf.Ui.Controls;
 
@@ -63,6 +64,30 @@ public partial class SettingsPage : INavigableView<SettingsViewModel>
     {
         if (App.SettingsMgr?.Settings is null) return;
         App.SettingsMgr.Settings.StartingTab = parameter;
+        App.SettingsMgr.SaveSettings();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void AutomaticallyCheckForUpdatesCheckbox_Checked(object sender, RoutedEventArgs e)
+    {
+        if (App.SettingsMgr?.Settings is null) return;
+        App.SettingsMgr.Settings.AutomaticallyCheckForUpdates = true;
+        App.SettingsMgr.SaveSettings();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void AutomaticallyCheckForUpdatesCheckbox_Unchecked(object sender, RoutedEventArgs e)
+    {
+        if (App.SettingsMgr?.Settings is null) return;
+        App.SettingsMgr.Settings.AutomaticallyCheckForUpdates = false;
         App.SettingsMgr.SaveSettings();
     }
 }

@@ -90,7 +90,10 @@
                        FontWeight="Medium"
                        Text="About" />
             <TextBlock Margin="0,12,0,0" Text="{Binding ViewModel.AppVersion, Mode=OneWay}" />
-            <CheckBox Margin="0,12,0,0"
+            <CheckBox Name="AutomaticallyCheckForUpdatesCheckbox"
+                      Margin="0,12,0,0"
+                      Checked="AutomaticallyCheckForUpdatesCheckbox_Checked"
+                      Unchecked="AutomaticallyCheckForUpdatesCheckbox_Unchecked"
                       IsEnabled="True"
                       IsChecked="{Binding ViewModel.AutomaticallyCheckForUpdates, Mode=OneWay}">
                 Automatically Check for Updates
