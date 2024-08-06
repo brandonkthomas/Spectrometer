@@ -70,10 +70,13 @@ jobs:
         last_commit_message=$(git log -1 --pretty=%B)
         original_committer_name=$(git log -1 --pretty=format:'%an')
         original_committer_email=$(git log -1 --pretty=format:'%ae')
-        combined_message="Updated to $new_version\n[skip ci]\n\n${last_commit_message}"
         git config --global user.name "$original_committer_name"
         git config --global user.email "$original_committer_email"
-        git diff --exit-code --quiet || (git commit -am "$combined_message" && git push)
+        git diff --exit-code --quiet || (
+          echo -e "Updated to $new_version\n[skip ci]\n\n${last_commit_message}" > commit_message.txt &&
+          git commit -F commit_message.txt &&
+          git push
+        )
 
     - name: Build and publish
       run: dotnet publish -p:PublishProfile=PackagedApplication -o ./publish
