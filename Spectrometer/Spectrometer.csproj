@@ -8,6 +8,7 @@
     <UseWPF>true</UseWPF>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Version>1.0.13</Version>
   </PropertyGroup>
 
   <ItemGroup>
