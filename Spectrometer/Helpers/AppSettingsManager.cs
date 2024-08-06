@@ -15,7 +15,7 @@ public class AppSettings
     public string StartingTab { get; set; } = string.Empty;
     public int PollingRate { get; set; }
     public bool StartWithWindows { get; set; }
-    public bool AutomaticallyCheckForUpdates { get; set; }
+    public bool AutomaticallyCheckForUpdates { get; set; } = true;
 }
 
 // -------------------------------------------------------------------------------------------
