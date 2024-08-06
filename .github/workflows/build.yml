@@ -70,7 +70,7 @@ jobs:
         last_commit_message=$(git log -1 --pretty=%B)
         original_committer_name=$(git log -1 --pretty=format:'%an')
         original_committer_email=$(git log -1 --pretty=format:'%ae')
-        combined_message="Updated to $new_version | ${last_commit_message} [skip ci]"
+        combined_message="v$new_version: ${last_commit_message} [skip ci]"
         git config --global user.name "$original_committer_name"
         git config --global user.email "$original_committer_email"
         git diff --exit-code --quiet || (git commit -am "$combined_message" && git push)
