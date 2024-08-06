@@ -1,6 +1,5 @@
 ﻿using Spectrometer.Models;
 using Spectrometer.ViewModels.Pages;
-using System.Reflection.Metadata;
 using System.Windows.Controls;
 using Wpf.Ui.Controls;
 
@@ -32,6 +31,7 @@ public partial class SettingsPage : INavigableView<SettingsViewModel>
     // Event Handlers
     // ------------------------------------------------------------------------------------------------
 
+    // ------------------------------------------------------------------------------------------------
     /// <summary>
     /// 
     /// </summary>
@@ -44,6 +44,7 @@ public partial class SettingsPage : INavigableView<SettingsViewModel>
         App.SettingsMgr.SaveSettings();
     }
 
+    // ------------------------------------------------------------------------------------------------
     /// <summary>
     /// 
     /// </summary>
@@ -56,17 +57,7 @@ public partial class SettingsPage : INavigableView<SettingsViewModel>
         App.SettingsMgr.SaveSettings();
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="parameter"></param>
-    private void OnStartingTabChange(string parameter)
-    {
-        if (App.SettingsMgr?.Settings is null) return;
-        App.SettingsMgr.Settings.StartingTab = parameter;
-        App.SettingsMgr.SaveSettings();
-    }
-
+    // ------------------------------------------------------------------------------------------------
     /// <summary>
     /// 
     /// </summary>
