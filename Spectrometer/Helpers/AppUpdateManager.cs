@@ -130,10 +130,14 @@ public class AppUpdateManager
     /// Replaces the current executable with the downloaded one and restarts the application.
     /// </summary>
     /// <param name="newExePath">The path to the downloaded executable.</param>
-    private static void ReplaceAndRestart(string newExePath)
+    private static void ReplaceAndRestart(string tempPath)
     {
-        string currentExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Spectrometer.exe") ?? string.Empty;
+        string currentExePath = Process.GetCurrentProcess().MainModule?.FileName ?? string.Empty;
         string backupPath = currentExePath + ".bak";
+
+        Logger.Write($"Current EXE path: {currentExePath}");
+        Logger.Write($"Backup path: {backupPath}");
+        Logger.Write($"Downloaded EXE temp path: {tempPath}");
 
         try
         {
@@ -148,10 +152,12 @@ public class AppUpdateManager
             // -------------------------------------------------------------------------------------------
             // Move new executable to current location
 
-            File.Move(newExePath, currentExePath);
+            File.Move(tempPath, currentExePath);
 
             // -------------------------------------------------------------------------------------------
             // Start the new executable
+
+            Logger.Write("Current EXE replaced with new EXE; closing this instance & opening new instance...");
 
             Process.Start(new ProcessStartInfo(currentExePath)
             {
@@ -161,6 +167,9 @@ public class AppUpdateManager
 
             // -------------------------------------------------------------------------------------------
             // Exit the current application
+
+            //if (File.Exists(backupPath))
+            //    File.Delete(backupPath); // 2024-08-07: This doesn't seem to work ("permission denied"). TBD
 
             Environment.Exit(0);
         }
