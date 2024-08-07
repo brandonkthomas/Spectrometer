@@ -41,7 +41,7 @@ public partial class GraphsPage : INavigableView<GraphsViewModel>
     {
         List<HardwareSensor> sensors = GetEnabledGraphSensors(mainWindowViewModel);
 
-        // Clear existing controls (there wont be any on first launch)
+        // Clear existing controls (there shouldnt be any on first launch)
         ClearControls();
 
         if (sensors.Count == 0)
@@ -61,9 +61,7 @@ public partial class GraphsPage : INavigableView<GraphsViewModel>
             ContentGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
             Grid.SetRow(textBlock, 0);
-            //Grid.SetRowSpan(textBlock, 2);
             Grid.SetColumn(textBlock, 0);
-            //Grid.SetColumnSpan(textBlock, 2);
 
             ContentGrid.Children.Add(textBlock);
             return;

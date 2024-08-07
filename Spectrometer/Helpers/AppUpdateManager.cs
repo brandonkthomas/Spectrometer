@@ -4,7 +4,6 @@ using System.IO;
 using System.Net.Http;
 using System.Reflection;
 using System.Text.Json.Nodes;
-using System.Windows.Shell;
 
 namespace Spectrometer.Helpers;
 
@@ -14,14 +13,14 @@ namespace Spectrometer.Helpers;
 /// </summary>
 public class AppUpdateManager
 {
-    private static readonly HttpClient client = new HttpClient();
+    private static readonly HttpClient client = new();
 
     // -------------------------------------------------------------------------------------------
     /// <summary>
     /// 
     /// </summary>
     /// <returns></returns>
-    public async Task CheckForUpdates()
+    public async Task<bool> IsUpdateAvailable()
     {
         Logger.Write("Polling GitHub for available app updates...");
 
@@ -37,7 +36,7 @@ public class AppUpdateManager
             if (latestVersion == null)
             {
                 Logger.WriteWarn("An unknown error occurred retrieving the latest application version.");
-                return;
+                return false;
             }
 
             var currentVersion = Assembly.GetExecutingAssembly()
@@ -47,23 +46,18 @@ public class AppUpdateManager
             if (latestVersion != currentVersion)
             {
                 Logger.Write($"A new version is available: {latestVersion}");
-
-                MessageBoxResult dialogResult = MessageBox.Show($"A new version is available: {latestVersion}\n\nWould you like to install the update now?",
-                    "Update Available",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Information);
-
-                if (dialogResult == MessageBoxResult.Yes)
-                    await DownloadAndInstallLatestVersion();
+                return true;
             }
             else
             {
                 Logger.Write("The application is up to date.");
+                return false;
             }
         }
         catch (Exception ex)
         {
             Logger.WriteExc(ex);
+            return false;
         }
     }
 
@@ -71,7 +65,7 @@ public class AppUpdateManager
     /// <summary>
     /// Downloads the latest version executable from GitHub releases.
     /// </summary>
-    private async Task DownloadAndInstallLatestVersion()
+    public async Task DownloadAndInstallLatestVersion()
     {
         try
         {
@@ -122,17 +116,13 @@ public class AppUpdateManager
     /// <param name="url">The URL of the file to download.</param>
     /// <param name="localPath">The local path where the file should be saved.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    private async Task DownloadFileAsync(string url, string localPath)
+    private static async Task DownloadFileAsync(string url, string localPath)
     {
-        using (HttpResponseMessage response = await client.GetAsync(url))
-        {
-            response.EnsureSuccessStatusCode();
+        using HttpResponseMessage response = await client.GetAsync(url);
+        response.EnsureSuccessStatusCode();
 
-            using (FileStream fs = new FileStream(localPath, FileMode.Create, FileAccess.Write, FileShare.None))
-            {
-                await response.Content.CopyToAsync(fs);
-            }
-        }
+        using FileStream fs = new(localPath, FileMode.Create, FileAccess.Write, FileShare.None);
+        await response.Content.CopyToAsync(fs);
     }
 
     // -------------------------------------------------------------------------------------------
@@ -140,7 +130,7 @@ public class AppUpdateManager
     /// Replaces the current executable with the downloaded one and restarts the application.
     /// </summary>
     /// <param name="newExePath">The path to the downloaded executable.</param>
-    private void ReplaceAndRestart(string newExePath)
+    private static void ReplaceAndRestart(string newExePath)
     {
         string currentExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Spectrometer.exe") ?? string.Empty;
         string backupPath = currentExePath + ".bak";
@@ -178,6 +168,7 @@ public class AppUpdateManager
         {
             Logger.WriteExc(ex);
             Logger.WriteWarn("Update failed, restoring backup...");
+
             if (File.Exists(backupPath))
                 File.Move(backupPath, currentExePath);
         }

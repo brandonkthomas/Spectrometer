@@ -1,5 +1,4 @@
-﻿using Spectrometer.Helpers;
-using Spectrometer.Models;
+﻿using Spectrometer.Models;
 using Spectrometer.Services;
 using System.Collections.ObjectModel;
 using System.Timers;
@@ -147,26 +146,12 @@ public partial class MainWindowViewModel : ObservableObject
         IsLoading = true;
 
         // -------------------------------------------------------------------------------------------
-        // Check for App Updates
-
-        if (App.SettingsMgr?.Settings?.AutomaticallyCheckForUpdates ?? true)
-        {
-            AppUpdateManager updateManager = new();
-            await updateManager.CheckForUpdates();
-        }
-
-        // -------------------------------------------------------------------------------------------
         // This takes a sec to initialize; await it in a new thread so we don't block the UI
         // Will also poll all sensors initially in the ctor
 
         await Task.Run(() =>
         {
             HwMonSvc = HardwareMonitorService.Instance;
-
-            //PrcssSvc = ProcessesService.Instance;
-
-            //GetProcesses();
-            //Logger.Write($"{PrcssInfoList.Count} processes found");
         });
 
         GetManufacturerImagePaths();

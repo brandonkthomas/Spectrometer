@@ -16,6 +16,7 @@ public class AppSettings
     public int PollingRate { get; set; }
     public bool StartWithWindows { get; set; }
     public bool AutomaticallyCheckForUpdates { get; set; } = true;
+    public DateTime? LastUpdateDefer { get; set; }
 }
 
 // -------------------------------------------------------------------------------------------
@@ -123,22 +124,13 @@ public class AppSettingsManager
         value = Settings.StartingTab;
         Logger.Write($"Starting tab: {value}");
 
-        switch (value)
+        return value switch
         {
-            case "Dashboard":
-                return typeof(DashboardPage);
-
-            case "Graphs":
-                return typeof(GraphsPage);
-
-            case "Sensors":
-                return typeof(SensorsPage);
-
-            case "Settings":
-                return typeof(SettingsPage);
-
-            default:
-                return typeof(DashboardPage);
-        }
+            "Dashboard" => typeof(DashboardPage),
+            "Graphs" => typeof(GraphsPage),
+            "Sensors" => typeof(SensorsPage),
+            "Settings" => typeof(SettingsPage),
+            _ => typeof(DashboardPage),
+        };
     }
 }

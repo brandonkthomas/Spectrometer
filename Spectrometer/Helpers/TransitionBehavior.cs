@@ -91,11 +91,11 @@ public static class TransitionBehavior
 
     // -------------------------------------------------------------------------------------------
     /// <summary>
-    /// 
+    /// Fade In for Storyboards
     /// </summary>
     /// <param name="storyboard"></param>
     /// <param name="isVisible"></param>
-    private static void AddFadeAnimation(Storyboard storyboard, bool isVisible)
+    public static void AddFadeAnimation(Storyboard storyboard, bool isVisible)
     {
         var animation = new DoubleAnimation
         {
@@ -110,7 +110,51 @@ public static class TransitionBehavior
 
     // -------------------------------------------------------------------------------------------
     /// <summary>
-    /// 
+    /// Fade In for UIElements
+    /// </summary>
+    /// <param name="element"></param>
+    public static void ApplyFadeInTransition(UIElement element)
+    {
+        DoubleAnimation fadeInAnimation = new()
+        {
+            From = 0,
+            To = 1,
+            Duration = new Duration(TimeSpan.FromSeconds(0.2))
+        };
+
+        Storyboard.SetTarget(fadeInAnimation, element);
+        Storyboard.SetTargetProperty(fadeInAnimation, new PropertyPath(UIElement.OpacityProperty));
+
+        Storyboard storyboard = new();
+        storyboard.Children.Add(fadeInAnimation);
+        storyboard.Begin();
+    }
+
+    // -------------------------------------------------------------------------------------------
+    /// <summary>
+    /// Fade In for UIElements
+    /// </summary>
+    /// <param name="element"></param>
+    public static void ApplyFadeOutTransition(UIElement element)
+    {
+        DoubleAnimation fadeInAnimation = new()
+        {
+            From = 1,
+            To = 0,
+            Duration = new Duration(TimeSpan.FromSeconds(0.2))
+        };
+
+        Storyboard.SetTarget(fadeInAnimation, element);
+        Storyboard.SetTargetProperty(fadeInAnimation, new PropertyPath(UIElement.OpacityProperty));
+
+        Storyboard storyboard = new();
+        storyboard.Children.Add(fadeInAnimation);
+        storyboard.Begin();
+    }
+
+    // -------------------------------------------------------------------------------------------
+    /// <summary>
+    /// Slide for Storyboards
     /// </summary>
     /// <param name="storyboard"></param>
     /// <param name="isVisible"></param>
