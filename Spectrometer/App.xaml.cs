@@ -10,12 +10,42 @@ using Spectrometer.ViewModels.Windows;
 using Spectrometer.Views.Pages;
 using Spectrometer.Views.UserControls;
 using Spectrometer.Views.Windows;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Windows.Threading;
 using Wpf.Ui;
 
 namespace Spectrometer;
+
+// -------------------------------------------------------------------------------------------
+/// <summary>
+/// User32 native APIs
+/// </summary>
+internal static class NativeMethods
+{
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    private static extern bool IsIconic(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+    private const int SW_RESTORE = 9;
+
+    public static void FocusWindow(IntPtr hWnd)
+    {
+        if (IsIconic(hWnd))
+        {
+            ShowWindow(hWnd, SW_RESTORE);
+        }
+        SetForegroundWindow(hWnd);
+    }
+}
 
 // -------------------------------------------------------------------------------------------
 /// <summary>
@@ -40,11 +70,25 @@ public partial class App
     /// </summary>
     static App()
     {
+        // -------------------------------------------------------------------------------------------
+        // If an existing process exists, focus that one and shut this one down
+        // We want to do this first so that we don't interfere with other instances' log files / settings
+
+        Process currentProcess = Process.GetCurrentProcess();
+        Process? existingProcess = Process.GetProcessesByName(currentProcess.ProcessName).FirstOrDefault(p => p.Id != currentProcess.Id);
+
+        if (existingProcess != null)
+        {
+            NativeMethods.FocusWindow(existingProcess.MainWindowHandle);
+            Environment.Exit(0);
+            return;
+        }
+
+        // -------------------------------------------------------------------------------------------
+        // Start up as normal
+
         App.SettingsMgr = new(); // load AppSettings first before any other code fires
         Logger.Write("Spectrometer starting...");
-
-        // Set custom accent color (Not working currently!)
-        //ApplicationAccentColorManager.Apply(Color.FromArgb(0, 27, 170, 76));
     }
 
     // -------------------------------------------------------------------------------------------
