@@ -7,13 +7,21 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:helpers="clr-namespace:Spectrometer.Helpers"
+    
     Title="{Binding ViewModel.ApplicationTitle, Mode=OneWay}"
+    
     Width="1000"
+    MinWidth="200"
+    MaxWidth="2560"
     Height="600"
+    MinHeight="580"
+    MaxHeight="2560"
+    
     d:DataContext="{d:DesignInstance local:MainWindow,
                                      IsDesignTimeCreatable=True}"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    
     ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     ExtendsContentIntoTitleBar="True"
@@ -58,7 +66,8 @@
         <ui:TitleBar x:Name="TitleBar"
                      Title="{Binding ViewModel.ApplicationTitle}"
                      Grid.Row="0"
-                     CloseWindowByDoubleClickOnIcon="True">
+                     CloseWindowByDoubleClickOnIcon="True"
+                     ShowMaximize="False">
                      <ui:TitleBar.Icon>
                          <ui:ImageIcon Source="pack://application:,,,/Assets/Branding/icon.png" />
                      </ui:TitleBar.Icon>

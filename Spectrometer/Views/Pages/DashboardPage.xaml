@@ -506,7 +506,7 @@
                             <Image.Source>
                                 <Binding Converter="{StaticResource StringToThemedImageSourceConverter}">
                                     <Binding.Source>
-                                        pack://application:,,,/Assets/Icons/network-50
+                                        pack://application:,,,/Assets/Icons/network-48
                                     </Binding.Source>
                                 </Binding>
                             </Image.Source>
