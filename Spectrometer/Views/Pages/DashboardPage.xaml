@@ -22,6 +22,7 @@
     <Page.Resources>
         <helpers:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <helpers:DiskUsageToStringConverter x:Key="DiskUsageToStringConverter" />
+        <helpers:ManufacturerImagePathConverter x:Key="ManufacturerImagePathConverter" />
         <helpers:NetworkUsageToStringConverter x:Key="NetworkUsageToStringConverter" />
         <helpers:ProgressToWidthConverter x:Key="ProgressToWidthConverter" />
         <helpers:SensorTypeToFormattedValueConverter x:Key="SensorTypeToFormattedValueConverter" />
@@ -112,7 +113,7 @@
                            Height="270px" 
                            Margin="0,0,5,0" 
                            IsChevronVisible="False"
-                           Click="CpuCard_Click">
+                           Click="DashboardCard_Click">
                 <StackPanel>
                     <ProgressBar Style="{StaticResource CustomProgressBar}" 
                                  Value="{Binding HwMonSvc.CpuUsage}" 
@@ -239,12 +240,12 @@
                                           FontWeight="Bold"/>
                         </StackPanel>
 
-                        <Image Source="{Binding CpuImagePath, Converter={StaticResource StringToImageSourceConverter}}"
-                                   Height="24" 
-                                   VerticalAlignment="Center" 
-                                   Grid.Column="2" 
-                                   Opacity="0.65" 
-                                   MaxHeight="16" />
+                        <Image Source="{Binding HwMonSvc.CpuName, Converter={StaticResource ManufacturerImagePathConverter}, ConverterParameter='intel,amd,qualcomm'}"
+                               Height="24" 
+                               VerticalAlignment="Center" 
+                               Grid.Column="2" 
+                               Opacity="0.65" 
+                               MaxHeight="16" />
                     </Grid>
 
                 </StackPanel>
@@ -258,7 +259,8 @@
                            Grid.Row="0" 
                            Height="270px" 
                            Margin="5,0,0,0" 
-                           IsChevronVisible="False">
+                           IsChevronVisible="False"
+                           Click="DashboardCard_Click">
                 <StackPanel>
                     <ProgressBar Style="{StaticResource CustomProgressBar}" 
                                  Value="{Binding HwMonSvc.GpuUsage}" 
@@ -383,7 +385,7 @@
                                           FontWeight="Bold"/>
                         </StackPanel>
 
-                        <Image Source="{Binding GpuImagePath, Converter={StaticResource StringToImageSourceConverter}}"
+                        <Image Source="{Binding HwMonSvc.GpuName, Converter={StaticResource ManufacturerImagePathConverter}, ConverterParameter='nvidia,amd,intel'}"
                                    Height="24" 
                                    VerticalAlignment="Center" 
                                    Grid.Column="2" 
@@ -403,7 +405,8 @@
                            Height="130px" 
                            Margin="2,12,5,0" 
                            IsChevronVisible="False" 
-                           VerticalAlignment="Top">
+                           VerticalAlignment="Top"
+                           Click="DashboardCard_Click">
                 <StackPanel>
                     <ProgressBar Style="{StaticResource CustomProgressBar}" 
                                  Maximum="100" 
@@ -477,7 +480,8 @@
                            Height="130" 
                            VerticalAlignment="Top" 
                            IsChevronVisible="False" 
-                           Margin="5,12,0,0">
+                           Margin="5,12,0,0"
+                           Click="DashboardCard_Click">
 
                 <Grid>
                     <Grid.RowDefinitions>

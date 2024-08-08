@@ -24,6 +24,7 @@
 
     <Page.Resources>
         <helpers:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <helpers:ManufacturerImagePathConverter x:Key="ManufacturerImagePathConverter" />
         <helpers:StringToImageSourceConverter x:Key="StringToImageSourceConverter" />
         <helpers:StringToThemedImageSourceConverter x:Key="StringToThemedImageSourceConverter" />
         <helpers:SensorTypeToFormattedValueConverter x:Key="SensorTypeToFormattedValueConverter" />
@@ -191,13 +192,13 @@
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <Image Source="{Binding MbImagePath, Converter={StaticResource StringToImageSourceConverter}}"
-                                   Height="18" 
-                                   Width="Auto"
-                                   VerticalAlignment="Center" 
-                                   Grid.Column="0"
-                                   Opacity="0.65" 
-                                   Margin="0,0,10,0"/>
+                                <Image Source="{Binding HwMonSvc.MbName, Converter={StaticResource ManufacturerImagePathConverter}, ConverterParameter='asrock,asus,biostar,evga,foxconn,gigabyte,intel,msi,supermicro,tyan,zotac'}"
+                                       Height="18" 
+                                       Width="Auto"
+                                       VerticalAlignment="Center" 
+                                       Grid.Column="0"
+                                       Opacity="0.65" 
+                                       Margin="0,0,10,0"/>
                                 <ui:InfoBadge Padding="5"
                                           Severity="Success"
                                           Value="{Binding HwMonSvc.MbSensors.Count}" 
@@ -318,7 +319,7 @@
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <Image Source="{Binding CpuImagePath, Converter={StaticResource StringToImageSourceConverter}}"
+                                <Image Source="{Binding HwMonSvc.CpuName, Converter={StaticResource ManufacturerImagePathConverter}, ConverterParameter='intel,amd,qualcomm'}"
                                    Height="18" 
                                    Width="Auto"
                                    VerticalAlignment="Center" 
@@ -443,7 +444,7 @@
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <Image Source="{Binding GpuImagePath, Converter={StaticResource StringToImageSourceConverter}}"
+                                <Image Source="{Binding HwMonSvc.GpuName, Converter={StaticResource ManufacturerImagePathConverter}, ConverterParameter='nvidia,amd,intel'}"
                                    Height="18" 
                                    Width="Auto"
                                    VerticalAlignment="Center" 

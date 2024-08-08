@@ -295,6 +295,7 @@ public partial class HardwareMonitorService : ObservableObject, IHostedService
     /// <returns></returns>
     public Task StopAsync(CancellationToken cancellationToken)
     {
+        Logger.Write("HardwareMonitorService stopping...");
         _computer.Close();
         return Task.CompletedTask;
     }

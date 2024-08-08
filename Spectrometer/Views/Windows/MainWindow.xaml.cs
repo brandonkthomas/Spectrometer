@@ -54,9 +54,12 @@ public partial class MainWindow : INavigationWindow
         // Check for App Updates
         // Is the auto-update setting true, and have we not asked in the last 48 hours?
 
-        if (App.SettingsMgr?.Settings?.AutomaticallyCheckForUpdates ?? true
-            && App.SettingsMgr?.Settings?.LastUpdateDefer != null
-            && (DateTime.Now - App.SettingsMgr.Settings.LastUpdateDefer.Value).TotalHours > 48)
+        bool automaticallyCheckForUpdates = App.SettingsMgr?.Settings?.AutomaticallyCheckForUpdates ?? true;
+
+        DateTime? lastUpdateDefer = App.SettingsMgr?.Settings?.LastUpdateDefer;
+        double hoursSinceLastDefer = lastUpdateDefer.HasValue ? (DateTime.Now - lastUpdateDefer.Value).TotalHours : 0;
+
+        if (automaticallyCheckForUpdates && lastUpdateDefer != null && hoursSinceLastDefer > 48)
         {
             AppUpdateManager updateManager = new();
             if (!await updateManager.IsUpdateAvailable())
@@ -99,6 +102,13 @@ public partial class MainWindow : INavigationWindow
                 Logger.Write("User deferred update; asking again in 48 hours");
             }
         }
+        else
+        {
+            if (!automaticallyCheckForUpdates)
+                Logger.Write("Skipping update check; auto-update is disabled");
+            else if (hoursSinceLastDefer < 48)
+                Logger.Write("Skipping update check; last check was less than 48 hours ago");
+        }
 
     }
 
@@ -123,12 +133,14 @@ public partial class MainWindow : INavigationWindow
     // ------------------------------------------------------------------------------------------------
     /// <summary>
     /// Raises the closed event.
+    /// Closing this window needs to begin the process of shutting down the application.
     /// </summary>
     protected override void OnClosed(EventArgs e)
     {
         base.OnClosed(e);
 
-        // Make sure that closing this window will begin the process of closing the application.
+        Logger.Write("Main window closed; Spectrometer shutting down...");
+
         Application.Current.Shutdown();
     }
 

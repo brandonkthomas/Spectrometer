@@ -174,9 +174,9 @@ public partial class App
     /// </summary>
     private async void OnExit(object sender, ExitEventArgs e)
     {
-        GetService<HardwareMonitorService>()?.Dispose();
+        // HardwareMonitorService is stopped by HostedService
+
         GetService<LoggingService>()?.Dispose();
-        //_host.Services.GetService<LoggingService>()?.Dispose();
 
         await _host.StopAsync();
         _host.Dispose();

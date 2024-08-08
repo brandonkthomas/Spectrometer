@@ -92,15 +92,6 @@ public partial class MainWindowViewModel : ObservableObject
     }
 
     [ObservableProperty]
-    private string _cpuImagePath = string.Empty;
-
-    [ObservableProperty]
-    private string _gpuImagePath = string.Empty;
-
-    [ObservableProperty]
-    private string _mbImagePath = string.Empty;
-
-    [ObservableProperty]
     private string _memoryImagePath = string.Empty;
 
     [ObservableProperty]
@@ -129,23 +120,11 @@ public partial class MainWindowViewModel : ObservableObject
     private Task InitializeAsync()
     {
         Logger.Write("MainWindowViewModel initializing...");
-
         IsLoading = true;
 
-        // -------------------------------------------------------------------------------------------
-        // This takes a sec to initialize; await it in a new thread so we don't block the UI
-        // Will also poll all sensors initially in the ctor
-
-        //await Task.Run(() =>
-        //{
-        //    HwMonSvc = HardwareMonitorService.Instance;
-        //});
-
-        GetManufacturerImagePaths();
+        _timer.Start();
 
         IsLoading = false;
-
-        _timer.Start();
         _initializationTcs.SetResult(true); // Signal that initialization is complete
 
         Logger.Write("MainWindowViewModel initialized");
@@ -153,35 +132,4 @@ public partial class MainWindowViewModel : ObservableObject
     }
 
     public Task InitializationTask => _initializationTcs.Task;
-
-    // -------------------------------------------------------------------------------------------
-    // Image path calculations
-    // -------------------------------------------------------------------------------------------
-
-    // -------------------------------------------------------------------------------------------
-    /// <summary>
-    /// 
-    /// </summary>
-    private void GetManufacturerImagePaths()
-    {
-        if (HwMonSvc is null)
-            return; // todo: placeholder image (maybe? should we just leave invisible?)
-
-        var isDarkMode = ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Dark;
-
-        CpuImagePath = GetImagePath(HwMonSvc.CpuName, isDarkMode, "intel", "amd", "qualcomm");
-        GpuImagePath = GetImagePath(HwMonSvc.GpuName, isDarkMode, "nvidia", "amd", "intel");
-        MbImagePath = GetImagePath(HwMonSvc.MbName, isDarkMode, "msi", "asus");
-    }
-
-    private string GetImagePath(string name, bool isDarkMode, params string[] keywords)
-    {
-        string logoColor = isDarkMode ? "white" : "black";
-
-        foreach (var keyword in keywords)
-            if (name.Contains(keyword, StringComparison.CurrentCultureIgnoreCase))
-                return $"pack://application:,,,/Assets/Manufacturers/{keyword}-logo-{logoColor}.png";
-
-        return string.Empty;
-    }
 }

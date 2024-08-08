@@ -27,7 +27,7 @@ public partial class DashboardPage : INavigableView<DashboardViewModel>
     // Click Events
     // -------------------------------------------------------------------------------------------
 
-    private void CpuCard_Click(object sender, RoutedEventArgs e)
+    private void DashboardCard_Click(object sender, RoutedEventArgs e)
     {
         _hostService?.Navigate(typeof(SensorsPage));
     }

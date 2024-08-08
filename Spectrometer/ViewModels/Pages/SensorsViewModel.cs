@@ -13,9 +13,6 @@ public partial class SensorsViewModel : ObservableObject
     private readonly MainWindowViewModel _mainWindowViewModel;
 
     public bool IsLoading => _mainWindowViewModel.IsLoading;
-    public string CpuImagePath => _mainWindowViewModel.CpuImagePath;
-    public string GpuImagePath => _mainWindowViewModel.GpuImagePath;
-    public string MbImagePath => _mainWindowViewModel.MbImagePath;
     public string MemoryImagePath => _mainWindowViewModel.MemoryImagePath;
     public string StorageImagePath => _mainWindowViewModel.StorageImagePath;
 
@@ -59,15 +56,6 @@ public partial class SensorsViewModel : ObservableObject
 
         if (e.PropertyName == nameof(MainWindowViewModel.IsLoading))
             OnPropertyChanged(nameof(IsLoading));
-
-        if (e.PropertyName == nameof(MainWindowViewModel.CpuImagePath))
-            OnPropertyChanged(nameof(CpuImagePath));
-
-        if (e.PropertyName == nameof(MainWindowViewModel.GpuImagePath))
-            OnPropertyChanged(nameof(GpuImagePath));
-
-        if (e.PropertyName == nameof(MainWindowViewModel.MbImagePath))
-            OnPropertyChanged(nameof(MbImagePath));
 
         if (e.PropertyName == nameof(MainWindowViewModel.MemoryImagePath))
             OnPropertyChanged(nameof(MemoryImagePath));
