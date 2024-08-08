@@ -17,6 +17,7 @@ public class AppSettings
     public bool StartWithWindows { get; set; }
     public bool AutomaticallyCheckForUpdates { get; set; } = true;
     public DateTime? LastUpdateDefer { get; set; }
+    public List<string> PinnedSensorIdentifiers { get; set; } = [];
 }
 
 // -------------------------------------------------------------------------------------------
@@ -79,7 +80,9 @@ public class AppSettingsManager
                 StartingTab = "Dashboard",
                 PollingRate = 1750,
                 StartWithWindows = false,
-                AutomaticallyCheckForUpdates = true
+                AutomaticallyCheckForUpdates = true,
+                LastUpdateDefer = null,
+                PinnedSensorIdentifiers = []
             };
 
             SaveSettings();

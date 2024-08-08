@@ -51,38 +51,10 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
-        <!--<Style x:Key="DataGridHeaderStyle" TargetType="DataGridColumnHeader">
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="FontWeight" Value="Bold" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="Padding" Value="8" />
-            <Setter Property="BorderThickness" Value="0,0,0,1" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ApplicationBackgroundColorDarkBrush}" />
-        </Style>
-
-        <Style x:Key="DataGridCellStyle" TargetType="DataGridCell">
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="Padding" Value="5"/>
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="DataGridCell">
-                        <Border Background="{TemplateBinding Background}" 
-                            BorderBrush="{TemplateBinding BorderBrush}" 
-                            BorderThickness="{TemplateBinding BorderThickness}">
-                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalAlignment}" 
-                                          VerticalAlignment="{TemplateBinding VerticalAlignment}" 
-                                          Margin="{TemplateBinding Padding}"/>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>-->
     </Page.Resources>
 
     <Grid>
-
+        
         <!-- ======================================================================= -->
         <!-- Primary Content Grid -->
 
@@ -95,8 +67,6 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
             <Grid.ColumnDefinitions>
