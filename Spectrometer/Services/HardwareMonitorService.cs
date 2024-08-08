@@ -1,4 +1,5 @@
 using LibreHardwareMonitor.Hardware;
+using Microsoft.Extensions.Hosting;
 using Spectrometer.Extensions;
 using Spectrometer.Models;
 using System.Collections.ObjectModel;
@@ -12,7 +13,7 @@ namespace Spectrometer.Services;
 /// <summary>
 /// Service that uses LibreHardwareMonitorLib to monitor the system's hardware.
 /// </summary>
-public partial class HardwareMonitorService : ObservableObject
+public partial class HardwareMonitorService : ObservableObject, IHostedService
 {
     // -------------------------------------------------------------------------------------------
     // Sensor Collections
@@ -263,6 +264,9 @@ public partial class HardwareMonitorService : ObservableObject
         Logger.Write("HardwareMonitorService initialized");
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public void Update() => _computer.Accept(new UpdateVisitor());
 
     /// <summary>
@@ -272,6 +276,27 @@ public partial class HardwareMonitorService : ObservableObject
     {
         Logger.Write("HardwareMonitorService disposing...");
         _computer.Close();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        _computer.Close();
+        return Task.CompletedTask;
     }
 
     // -------------------------------------------------------------------------------------------

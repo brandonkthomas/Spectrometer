@@ -1,7 +1,6 @@
 ﻿using Spectrometer.Helpers;
 using Spectrometer.Models;
 using Spectrometer.ViewModels.Windows;
-using System.Windows.Media.Effects;
 using Wpf.Ui;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;

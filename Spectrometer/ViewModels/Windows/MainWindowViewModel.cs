@@ -22,18 +22,21 @@ public partial class MainWindowViewModel : ObservableObject
         new NavigationViewItem()
         {
             Content = "Dashboard",
-            Icon = new SymbolIcon { Symbol = SymbolRegular.Home24 },
+            Name = "DashboardTabButton",
+            Icon = new SymbolIcon { Symbol = SymbolRegular.Grid24 },
             TargetPageType = typeof(Views.Pages.DashboardPage)
         },
         new NavigationViewItem()
         {
             Content = "Graphs",
+            Name = "GraphsTabButton",
             Icon = new SymbolIcon { Symbol = SymbolRegular.ArrowTrending24 },
             TargetPageType = typeof(Views.Pages.GraphsPage)
         },
         new NavigationViewItem()
         {
             Content = "Sensors",
+            Name = "SensorsTabButton",
             Icon = new SymbolIcon { Symbol = SymbolRegular.Book24 },
             TargetPageType = typeof(Views.Pages.SensorsPage)
         }
@@ -45,6 +48,7 @@ public partial class MainWindowViewModel : ObservableObject
         new NavigationViewItem()
         {
             Content = "Settings",
+            Name = "SettingsTabButton",
             Icon = new SymbolIcon { Symbol = SymbolRegular.Settings24 },
             TargetPageType = typeof(Views.Pages.SettingsPage)
         }
@@ -85,7 +89,6 @@ public partial class MainWindowViewModel : ObservableObject
         HwMonSvc?.Update();
         HwMonSvc?.PollAllSensors();
         HwMonSvc?.PollSpecificSensors();
-        //GetProcesses();
     }
 
     [ObservableProperty]
@@ -104,33 +107,17 @@ public partial class MainWindowViewModel : ObservableObject
     private string _storageImagePath = string.Empty;
 
     // -------------------------------------------------------------------------------------------
-    // Process Service
-    // -------------------------------------------------------------------------------------------
-
-    /// <summary>
-    /// Process service
-    /// </summary>
-    //[ObservableProperty]
-    //private ProcessesService? _prcssSvc;
-
-    /// <summary>
-    /// Process info collection
-    /// </summary>
-    //[ObservableProperty]
-    //private ObservableCollection<ProcessInfo?> _prcssInfoList;
-
-    // -------------------------------------------------------------------------------------------
     // Constructor + Events
     // -------------------------------------------------------------------------------------------
 
-    public MainWindowViewModel()
+    public MainWindowViewModel(HardwareMonitorService hwMonSvc)
     {
         IsLoading = true;
 
-        //PrcssInfoList = [];
-
         _timer = new System.Timers.Timer(App.SettingsMgr?.Settings?.PollingRate ?? 1750); // 1750 = default
         _timer.Elapsed += OnTimerElapsed;
+
+        HwMonSvc = hwMonSvc;
 
         InitializeAsync();
     }
@@ -139,7 +126,7 @@ public partial class MainWindowViewModel : ObservableObject
     /// <summary>
     /// 
     /// </summary>
-    private async void InitializeAsync()
+    private Task InitializeAsync()
     {
         Logger.Write("MainWindowViewModel initializing...");
 
@@ -149,10 +136,10 @@ public partial class MainWindowViewModel : ObservableObject
         // This takes a sec to initialize; await it in a new thread so we don't block the UI
         // Will also poll all sensors initially in the ctor
 
-        await Task.Run(() =>
-        {
-            HwMonSvc = HardwareMonitorService.Instance;
-        });
+        //await Task.Run(() =>
+        //{
+        //    HwMonSvc = HardwareMonitorService.Instance;
+        //});
 
         GetManufacturerImagePaths();
 
@@ -162,41 +149,10 @@ public partial class MainWindowViewModel : ObservableObject
         _initializationTcs.SetResult(true); // Signal that initialization is complete
 
         Logger.Write("MainWindowViewModel initialized");
+        return Task.CompletedTask;
     }
 
     public Task InitializationTask => _initializationTcs.Task;
-
-    // -------------------------------------------------------------------------------------------
-    // Process Service helpers
-    // -------------------------------------------------------------------------------------------
-
-    // -------------------------------------------------------------------------------------------
-    /// <summary>
-    /// 
-    /// </summary>
-    //private void GetProcesses()
-    //{
-    //    if (PrcssSvc is null)
-    //        return;
-
-    //    var processes = PrcssSvc.LoadProcesses();
-
-    //    try
-    //    {
-    //        Application.Current.Dispatcher.Invoke(() =>
-    //        {
-    //            PrcssInfoList.Clear();
-    //            foreach (var proc in processes)
-    //            {
-    //                PrcssInfoList.Add(proc);
-    //            }
-    //        });
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        Logger.WriteExc(ex);
-    //    }
-    //}
 
     // -------------------------------------------------------------------------------------------
     // Image path calculations

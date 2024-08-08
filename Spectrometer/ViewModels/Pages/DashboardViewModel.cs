@@ -1,7 +1,6 @@
 ﻿using Spectrometer.Models;
 using Spectrometer.Services;
 using Spectrometer.ViewModels.Windows;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 namespace Spectrometer.ViewModels.Pages;
@@ -13,8 +12,6 @@ public partial class DashboardViewModel : ObservableObject
     public bool IsLoading => _mainWindowViewModel.IsLoading;
     public string CpuImagePath => _mainWindowViewModel.CpuImagePath;
     public string GpuImagePath => _mainWindowViewModel.GpuImagePath;
-
-    //public ObservableCollection<ProcessInfo?> ProcessesList => _mainWindowViewModel.PrcssInfoList;
 
     public HardwareMonitorService? HwMonSvc
     {
@@ -62,6 +59,5 @@ public partial class DashboardViewModel : ObservableObject
     {
         await _mainWindowViewModel.InitializationTask;
         OnPropertyChanged(nameof(HwMonSvc));
-        //OnPropertyChanged(nameof(ProcessesList));
     }
 }

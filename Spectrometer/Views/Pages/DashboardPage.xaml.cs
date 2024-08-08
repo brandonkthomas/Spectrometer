@@ -1,4 +1,5 @@
 ﻿using Spectrometer.Models;
+using Spectrometer.Services;
 using Spectrometer.ViewModels.Pages;
 using Wpf.Ui.Controls;
 
@@ -8,13 +9,26 @@ public partial class DashboardPage : INavigableView<DashboardViewModel>
 {
     public DashboardViewModel ViewModel { get; }
 
-    public DashboardPage(DashboardViewModel viewModel)
+    private readonly ApplicationHostService? _hostService;
+
+    public DashboardPage(DashboardViewModel viewModel, ApplicationHostService hostService)
     {
         Logger.Write("DashboardPage initializing...");
         ViewModel = viewModel;
         DataContext = viewModel;
 
+        _hostService = hostService;
+
         InitializeComponent();
         Logger.Write("DashboardPage initialized");
+    }
+
+    // -------------------------------------------------------------------------------------------
+    // Click Events
+    // -------------------------------------------------------------------------------------------
+
+    private void CpuCard_Click(object sender, RoutedEventArgs e)
+    {
+        _hostService?.Navigate(typeof(SensorsPage));
     }
 }

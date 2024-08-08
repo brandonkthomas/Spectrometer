@@ -21,47 +21,19 @@ namespace Spectrometer;
 
 // -------------------------------------------------------------------------------------------
 /// <summary>
-/// User32 native APIs
-/// </summary>
-internal static class NativeMethods
-{
-    [DllImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool SetForegroundWindow(IntPtr hWnd);
-
-    [DllImport("user32.dll")]
-    private static extern bool IsIconic(IntPtr hWnd);
-
-    [DllImport("user32.dll")]
-    private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
-    private const int SW_RESTORE = 9;
-
-    public static void FocusWindow(IntPtr hWnd)
-    {
-        if (IsIconic(hWnd))
-        {
-            ShowWindow(hWnd, SW_RESTORE);
-        }
-        SetForegroundWindow(hWnd);
-    }
-}
-
-// -------------------------------------------------------------------------------------------
-/// <summary>
 /// Interaction logic for App.xaml
 /// </summary>
 public partial class App
 {
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     // Global Fields
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
 
     public static AppSettingsManager? SettingsMgr { get; private set; }
 
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     // Entry + Configuration
-    // ------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
 
     // -------------------------------------------------------------------------------------------
     /// <summary>
@@ -102,7 +74,11 @@ public partial class App
         .ConfigureAppConfiguration(c => { c.SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) ?? ""); })
         .ConfigureServices((context, services) =>
         {
+            // Application host service (HOSTED)
             services.AddHostedService<ApplicationHostService>();
+
+            // Hardware monitor service (HOSTED)
+            services.AddHostedService<HardwareMonitorService>();
 
             // Page resolver service
             services.AddSingleton<IPageService, PageService>();
@@ -113,12 +89,6 @@ public partial class App
             // TaskBar manipulation
             services.AddSingleton<ITaskBarService, TaskBarService>();
 
-            // Hardware monitor service (singleton so that only one instance is active across the application)
-            services.AddSingleton<HardwareMonitorService>();
-
-            // Process info service
-            //services.AddSingleton<ProcessesService>();
-
             // Logging service
             services.AddSingleton<LoggingService>();
 
@@ -126,24 +96,53 @@ public partial class App
             services.AddSingleton<INavigationService, NavigationService>();
 
             // Main window with navigation
+            services.AddSingleton<MainWindowViewModel>(provider =>
+            {
+                return new(provider.GetServices<IHostedService>().OfType<HardwareMonitorService>().FirstOrDefault() 
+                    ?? throw new Exception("An unknown error occurred loading Hardware Monitor support files."));
+            });
+            
             services.AddSingleton<INavigationWindow, MainWindow>();
-            services.AddSingleton<MainWindowViewModel>();
 
-            // Register ViewModels with MainWindowViewModel dependency
-            services.AddSingleton(provider => new DashboardViewModel(provider.GetRequiredService<MainWindowViewModel>()));
-            services.AddSingleton(provider => new SensorsViewModel(provider.GetRequiredService<MainWindowViewModel>()));
-            services.AddSingleton(provider => new GraphsViewModel(provider.GetRequiredService<MainWindowViewModel>()));
+            // Dashboard
+            services.AddSingleton<DashboardViewModel>(provider => new(
+                provider.GetRequiredService<MainWindowViewModel>()));
 
-            // Register Pages
-            services.AddSingleton<DashboardPage>();
+            //services.AddSingleton<DashboardPage>(provider => new(
+            //    provider.GetRequiredService<DashboardViewModel>(),
+            //    (ApplicationHostService)provider.GetRequiredService<IHostedService>()));
+
+            services.AddSingleton<DashboardPage>(provider =>
+            {
+                DashboardViewModel? dashboardViewModel = provider.GetRequiredService<DashboardViewModel>();
+                ApplicationHostService? hostService = provider.GetServices<IHostedService>().OfType<ApplicationHostService>().FirstOrDefault();
+                return new(dashboardViewModel, hostService ?? throw new Exception("An unknown error occurred loading the Dashboard page."));
+            });
+
+            // Sensors
+            services.AddSingleton<SensorsViewModel>(provider => new(
+                provider.GetRequiredService<MainWindowViewModel>()));
+
             services.AddSingleton<SensorsPage>();
-            services.AddSingleton(provider => new GraphsPage(provider.GetRequiredService<GraphsViewModel>(), provider.GetRequiredService<MainWindowViewModel>()));
 
+            // Graphs
+            services.AddSingleton<GraphsViewModel>(provider => new(
+                provider.GetRequiredService<MainWindowViewModel>()));
+
+            services.AddSingleton<GraphsPage>(provider => new(
+                provider.GetRequiredService<GraphsViewModel>(), 
+                provider.GetRequiredService<MainWindowViewModel>()));
+
+            // Graph UC + ViewModel
             services.AddSingleton<GraphUserControl>();
-            services.AddTransient(provider => new GraphViewModel(provider.GetRequiredService<MainWindowViewModel>(), provider.GetRequiredService<HardwareSensor>()));
+            services.AddTransient<GraphViewModel>(provider => new(
+                provider.GetRequiredService<MainWindowViewModel>(), 
+                provider.GetRequiredService<HardwareSensor>()));
 
-            services.AddSingleton<SettingsPage>();
+            // Settings
             services.AddSingleton<SettingsViewModel>();
+            services.AddSingleton<SettingsPage>();
+
         }).Build();
 
     // -------------------------------------------------------------------------------------------
@@ -217,5 +216,33 @@ public partial class App
             MessageBoxImage.Error);
 
         Environment.Exit(1);
+    }
+}
+
+// -------------------------------------------------------------------------------------------
+/// <summary>
+/// User32 native APIs
+/// </summary>
+internal static class NativeMethods
+{
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    private static extern bool IsIconic(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+    private const int SW_RESTORE = 9;
+
+    public static void FocusWindow(IntPtr hWnd)
+    {
+        if (IsIconic(hWnd))
+        {
+            ShowWindow(hWnd, SW_RESTORE);
+        }
+        SetForegroundWindow(hWnd);
     }
 }
