@@ -37,7 +37,7 @@ public class LoggingService : IDisposable
                 AutoFlush = true
             };
 
-            this.Write("Logging service started");
+            this.Write("Logging service started", "Logger", "Logger", 40);
         }
         catch (Exception ex)
         {
@@ -71,7 +71,7 @@ public class LoggingService : IDisposable
                 }
             }
 
-            this.Write($"{modifiedLogs} existing log file(s) renamed");
+            this.Write($"{modifiedLogs} existing log file(s) renamed", "Logger", "Logger", 74);
         }
 
         // -------------------------------------------------------------------------------------------
@@ -89,7 +89,7 @@ public class LoggingService : IDisposable
         }
 
         if (deletedLogs > 0)
-            this.Write($"{deletedLogs} log file(s) older than 7 days deleted");
+            this.Write($"{deletedLogs} log file(s) older than 7 days deleted", "Logger", "Logger", 92);
     }
 
     // -------------------------------------------------------------------------------------------
@@ -97,10 +97,11 @@ public class LoggingService : IDisposable
     /// 
     /// </summary>
     /// <param name="message"></param>
-    public void Write(string message)
+    public void Write(string message, string memberName, string filePath, int lineNumber)
     {
-        _streamWriter?.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} - {message}");
-        Debug.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} - {message}");
+        string logMessage = FormatLogMessage("", message, memberName, filePath, lineNumber);
+        _streamWriter?.WriteLine(logMessage);
+        Debug.WriteLine(logMessage);
     }
 
     // -------------------------------------------------------------------------------------------
@@ -108,10 +109,11 @@ public class LoggingService : IDisposable
     /// 
     /// </summary>
     /// <param name="message"></param>
-    public void WriteWarn(string message)
+    public void WriteWarn(string message, string memberName, string filePath, int lineNumber)
     {
-        _streamWriter?.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} - WARN: {message}");
-        Debug.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} - WARN: {message}");
+        string logMessage = FormatLogMessage("WARN", message, memberName, filePath, lineNumber);
+        _streamWriter?.WriteLine(logMessage);
+        Debug.WriteLine(logMessage);
     }
 
     // -------------------------------------------------------------------------------------------
@@ -119,10 +121,16 @@ public class LoggingService : IDisposable
     /// 
     /// </summary>
     /// <param name="ex"></param>
-    public void WriteExc(Exception ex)
+    public void WriteExc(Exception ex, string memberName, string filePath, int lineNumber)
     {
-        _streamWriter?.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} - ERROR: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
-        Debug.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} - ERROR: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
+        string logMessage = FormatLogMessage("ERROR", $"{ex.Message}{Environment.NewLine}{ex.StackTrace}", memberName, filePath, lineNumber);
+        _streamWriter?.WriteLine(logMessage);
+        Debug.WriteLine(logMessage);
+    }
+
+    private string FormatLogMessage(string level, string message, string memberName, string filePath, int lineNumber)
+    {
+        return $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}{(level == "" ? "" : $" [{level}]")} - {Path.GetFileName(filePath)}.{memberName}:{lineNumber} - {message}";
     }
 
     public void Dispose() => _streamWriter?.Dispose();

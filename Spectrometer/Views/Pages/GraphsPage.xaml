@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:Spectrometer.Models"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-    xmlns:hlp="clr-namespace:Spectrometer.Helpers"
+    xmlns:helpers="clr-namespace:Spectrometer.Helpers"
     xmlns:ctrl="clr-namespace:Spectrometer.Views.UserControls"
     Title="GraphsPage"
     d:DataContext="{d:DesignInstance local:GraphsPage,
@@ -24,35 +24,52 @@
     <!-- Resources -->
 
     <Page.Resources>
-        <hlp:ProgressToWidthConverter x:Key="ProgressToWidthConverter" />
-        <hlp:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-        <hlp:StringToImageSourceConverter x:Key="StringToImageSourceConverter" />
-        <hlp:ValueToPercentageMultiConverter x:Key="ValueToPercentageMultiConverter" />
+        <helpers:ProgressToWidthConverter x:Key="ProgressToWidthConverter" />
+        <helpers:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <helpers:StringToImageSourceConverter x:Key="StringToImageSourceConverter" />
+        <helpers:ValueToPercentageMultiConverter x:Key="ValueToPercentageMultiConverter" />
     </Page.Resources>
     
-    <!-- ======================================================================= -->
-    <!-- Primary Content Grid -->
+    <Grid>
 
-    <Grid Name="ContentGrid" 
+        <!-- ======================================================================= -->
+        <!-- Primary Content Grid -->
+        
+        <Grid Name="ContentGrid" 
         VerticalAlignment="Top"
         AllowDrop="True"
         Drop="Grid_Drop"
         DragOver="Grid_DragOver">
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-        <!-- Close: Primary Content Grid -->
+            <!-- Close: Primary Content Grid -->
+        </Grid>
+        
+        <!-- ======================================================================= -->
+        <!-- Loading Indicator -->
+
+        <Grid Name="LoadingGrid" 
+              VerticalAlignment="Center" 
+              HorizontalAlignment="Center" 
+              Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=False}"
+              helpers:TransitionBehavior.Transition="FadeInWithSlide">
+            <ui:ProgressRing IsIndeterminate="True" 
+                             Foreground="{DynamicResource TextFillColorPrimaryBrush}" 
+                             Opacity="0.65"/>
+        </Grid>
     </Grid>
+    
 </Page>

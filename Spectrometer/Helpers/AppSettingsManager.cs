@@ -18,6 +18,7 @@ public class AppSettings
     public bool AutomaticallyCheckForUpdates { get; set; } = true;
     public DateTime? LastUpdateDefer { get; set; }
     public List<string> PinnedSensorIdentifiers { get; set; } = [];
+    public List<string> GraphedSensorIdentifiers { get; set; } = [];
 }
 
 // -------------------------------------------------------------------------------------------
@@ -82,7 +83,8 @@ public class AppSettingsManager
                 StartWithWindows = false,
                 AutomaticallyCheckForUpdates = true,
                 LastUpdateDefer = null,
-                PinnedSensorIdentifiers = []
+                PinnedSensorIdentifiers = [],
+                GraphedSensorIdentifiers = []
             };
 
             SaveSettings();

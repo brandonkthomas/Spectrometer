@@ -306,12 +306,17 @@ public partial class HardwareMonitorService : ObservableObject, IHostedService
 
     // -------------------------------------------------------------------------------------------
     /// <summary>
-    /// Initialize sensors once on startup
+    /// Initialize sensors once on startup. 
+    /// This method cannot be called after initialization.
     /// </summary>
     public void InitializeAllSensors()
     {
         if (_isInitialized) return;
 
+        // Get all sensors first (doesnt seem to work with the checkboxes on Sensors tab)
+        //AddSensorsToCollection(AllSensors, _computer.Hardware.SelectMany(h => h.Sensors));
+
+        // Group by type next
         AddSensorsToCollection(MbSensors, GetSensorsByHardwareType(HardwareType.Motherboard));
         AddSensorsToCollection(CpuSensors, GetSensorsByHardwareType(HardwareType.Cpu));
         AddSensorsToCollection(GpuSensors, GetSensorsByHardwareType(_gpuType));
@@ -326,17 +331,19 @@ public partial class HardwareMonitorService : ObservableObject, IHostedService
 
         AllSensors = new ObservableCollection<HardwareSensor>(
             _mbSensors.Concat(CpuSensors ?? [])
-                     .Concat(GpuSensors ?? [])
-                     .Concat(MemorySensors ?? [])
-                     .Concat(StorageSensors ?? [])
-                     .Concat(NetworkSensors ?? [])
-                     .Concat(ControllerSensors ?? [])
-                     .Concat(PsuSensors ?? [])) ?? [];
+                .Concat(GpuSensors ?? [])
+                .Concat(MemorySensors ?? [])
+                .Concat(StorageSensors ?? [])
+                .Concat(NetworkSensors ?? [])
+                .Concat(ControllerSensors ?? [])
+                .Concat(PsuSensors ?? [])) ?? [];
 
-        // Load any previously pinned sensors from AppSettings
+        // Load any previously pinned or graphed sensors from AppSettings
         LoadPinnedSensorsFromSettings();
+        LoadGraphedSensorsFromSettings();
 
-        Logger.Write($"{AllSensors.Count} total system sensors");
+        // Log final sensor counts
+        Logger.Write($"{AllSensors?.Count.ToString() ?? "Error retrieving"} total system sensors");
         Logger.Write($"{PinnedSensors?.Count.ToString() ?? "Error retrieving"} user-pinned sensors");
         Logger.Write($"{MbSensors?.Count.ToString() ?? "Error retrieving"} motherboard sensors");
         Logger.Write($"{CpuSensors?.Count.ToString() ?? "Error retrieving"} CPU sensors");
@@ -351,32 +358,76 @@ public partial class HardwareMonitorService : ObservableObject, IHostedService
     }
 
     /// <summary>
-    /// Helper method to get pinned sensors from AppSettings & populate local PinnedSensors collection
+    /// Helper method to get pinned sensors from AppSettings & populate local PinnedSensors collection.
     /// </summary>
     private void LoadPinnedSensorsFromSettings()
     {
         var pinnedSensorIdentifiers = App.SettingsMgr?.Settings?.PinnedSensorIdentifiers;
 
-        if (pinnedSensorIdentifiers != null)
+        if (pinnedSensorIdentifiers != null && pinnedSensorIdentifiers.Count > 0)
         {
             var pinnedSensorsFromConfig = pinnedSensorIdentifiers
                 .Select(id => AllSensors?.FirstOrDefault(s => s.Identifier.ToString() == id))
                 .Where(s => s != null)
                 .Cast<ISensor>();
 
+            // Update AllSensors with saved Pinned statuses from AppSettings
+            if (AllSensors != null)
+            {
+                foreach (var id in pinnedSensorIdentifiers)
+                {
+                    var matchingSensorHandle = AllSensors.FirstOrDefault(s => s.Identifier.ToString() == id);
+                    if (matchingSensorHandle == null) continue;
+                    matchingSensorHandle.IsPinned = true;
+                }
+            }
+
+            Logger.Write($"HardwareMonitorService: {pinnedSensorsFromConfig.Count()} pinned sensor(s) found in settings & matched to available system sensors");
+
             AddSensorsToCollection(PinnedSensors, pinnedSensorsFromConfig);
         }
     }
 
     /// <summary>
-    /// Helper method to get sensors for a specific hardware type (reduces boilerplate above)
+    /// Helper method to get graphed sensors from AppSettings & override local IsGraphEnabled property in matching AllSensors sensors.
+    /// </summary>
+    private void LoadGraphedSensorsFromSettings()
+    {
+        if (AllSensors == null)
+            return;
+
+        var graphedSensorIdentifiers = App.SettingsMgr?.Settings?.GraphedSensorIdentifiers;
+
+        // Update AllSensors with saved Graphed statuses from AppSettings
+        if (graphedSensorIdentifiers != null)
+        {
+            int count = 0;
+            foreach (var id in graphedSensorIdentifiers)
+            {
+                var matchingSensorHandle = AllSensors.FirstOrDefault(s => s.Identifier.ToString() == id);
+                if (matchingSensorHandle == null) continue;
+                matchingSensorHandle.IsGraphEnabled = true;
+
+                count += 1;
+            }
+
+            Logger.Write($"HardwareMonitorService: {count} graphed sensor(s) found in settings & matched to available system sensors");
+        }
+    }
+
+    /// <summary>
+    /// Helper method to get sensors for a specific hardware type (reduces boilerplate above).
+    /// Checks from AllSensors first, then falls back to _computer.Hardware
     /// </summary>
     /// <param name="hardwareType"></param>
     private IEnumerable<ISensor> GetSensorsByHardwareType(HardwareType hardwareType)
     {
-        return _computer.Hardware
-            .Where(h => h.HardwareType == hardwareType)
-            .SelectMany(h => h.Sensors ?? []);
+        //if (AllSensors != null && AllSensors.Count > 0)
+        //    return AllSensors.Where(s => s.Hardware.HardwareType == hardwareType);
+        //else
+            return _computer.Hardware
+                .Where(h => h.HardwareType == hardwareType)
+                .SelectMany(h => h.Sensors ?? []);
     }
 
     /// <summary>
@@ -420,15 +471,25 @@ public partial class HardwareMonitorService : ObservableObject, IHostedService
         // every time (but keeping the app-specific properties like IsPinned and IsGraphEnabled).
         // It's 12am and I'm tired. This will never get fixed.
 
-        ObservableCollection<HardwareSensor>? allSensors = AllSensors?.UpdateSensorCollection(_computer.Hardware.SelectMany(h => h.Sensors));
-        ObservableCollection<HardwareSensor>? mbSensors = MbSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Motherboard)?.Sensors ?? []);
-        ObservableCollection<HardwareSensor>? cpuSensors = CpuSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu)?.Sensors ?? []);
-        ObservableCollection<HardwareSensor>? gpuSensors = GpuSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == _gpuType)?.Sensors ?? []);
-        ObservableCollection<HardwareSensor>? memorySensors = MemorySensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Memory)?.Sensors ?? []);
-        ObservableCollection<HardwareSensor>? storageSensors = StorageSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Storage)?.Sensors ?? []);
-        ObservableCollection<HardwareSensor>? networkSensors = NetworkSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Network)?.Sensors ?? []);
-        ObservableCollection<HardwareSensor>? controllerSensors = ControllerSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.EmbeddedController)?.Sensors ?? []);
-        ObservableCollection<HardwareSensor>? psuSensors = PsuSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Psu)?.Sensors ?? []);
+        //ObservableCollection<HardwareSensor>? allSensors = AllSensors?.UpdateSensorCollection(_computer.Hardware.SelectMany(h => h.Sensors));
+        //ObservableCollection<HardwareSensor>? mbSensors = MbSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Motherboard)?.Sensors ?? []);
+        //ObservableCollection<HardwareSensor>? cpuSensors = CpuSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu)?.Sensors ?? []);
+        //ObservableCollection<HardwareSensor>? gpuSensors = GpuSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == _gpuType)?.Sensors ?? []);
+        //ObservableCollection<HardwareSensor>? memorySensors = MemorySensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Memory)?.Sensors ?? []);
+        //ObservableCollection<HardwareSensor>? storageSensors = StorageSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Storage)?.Sensors ?? []);
+        //ObservableCollection<HardwareSensor>? networkSensors = NetworkSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Network)?.Sensors ?? []);
+        //ObservableCollection<HardwareSensor>? controllerSensors = ControllerSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.EmbeddedController)?.Sensors ?? []);
+        //ObservableCollection<HardwareSensor>? psuSensors = PsuSensors?.UpdateSensorCollection(_computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Psu)?.Sensors ?? []);
+
+        var allSensors = AllSensors?.UpdateSensorCollection(_computer.Hardware.SelectMany(h => h.Sensors));
+        var mbSensors = MbSensors?.UpdateSensorCollection(GetSensorsByHardwareType(HardwareType.Motherboard));
+        var cpuSensors = CpuSensors?.UpdateSensorCollection(GetSensorsByHardwareType(HardwareType.Cpu));
+        var gpuSensors = GpuSensors?.UpdateSensorCollection(GetSensorsByHardwareType(_gpuType));
+        var memorySensors = MemorySensors?.UpdateSensorCollection(GetSensorsByHardwareType(HardwareType.Memory));
+        var storageSensors = StorageSensors?.UpdateSensorCollection(GetSensorsByHardwareType(HardwareType.Storage));
+        var networkSensors = NetworkSensors?.UpdateSensorCollection(GetSensorsByHardwareType(HardwareType.Network));
+        var controllerSensors = ControllerSensors?.UpdateSensorCollection(GetSensorsByHardwareType(HardwareType.EmbeddedController));
+        var psuSensors = PsuSensors?.UpdateSensorCollection(GetSensorsByHardwareType(HardwareType.Psu));
 
         AllSensors = new(allSensors ?? []);
         PinnedSensors = new(allSensors?.Where(s => s.IsPinned) ?? []);
@@ -460,7 +521,6 @@ public partial class HardwareMonitorService : ObservableObject, IHostedService
         {
             config.PinnedSensorIdentifiers = currentPinnedIdentifiers;
             App.SettingsMgr?.SaveSettings();
-            Logger.Write("Pinned sensor identifiers updated in settings.");
         }
     }
 

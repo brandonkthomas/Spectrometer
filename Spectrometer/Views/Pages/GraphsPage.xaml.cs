@@ -9,9 +9,17 @@ using Wpf.Ui.Controls;
 
 namespace Spectrometer.Views.Pages;
 
-public partial class GraphsPage : INavigableView<GraphsViewModel>
+public partial class GraphsPage : INavigableView<GraphsViewModel>, INavigationAware
 {
+    // -------------------------------------------------------------------------------------------
+    // Fields
+    // -------------------------------------------------------------------------------------------
+
     public GraphsViewModel ViewModel { get; }
+
+    public bool IsLoading { get; set; }
+
+    private readonly MainWindowViewModel _mainWindowViewModel;
 
     // -------------------------------------------------------------------------------------------
     // Constructor
@@ -20,12 +28,18 @@ public partial class GraphsPage : INavigableView<GraphsViewModel>
     public GraphsPage(GraphsViewModel viewModel, MainWindowViewModel mainWindowViewModel)
     {
         Logger.Write("GraphsPage initializing...");
+        IsLoading = true;
+
         ViewModel = viewModel;
         DataContext = viewModel;
+        _mainWindowViewModel = mainWindowViewModel;
 
         InitializeComponent();
-        LoadGraphControls(mainWindowViewModel);
 
+        ClearControls();
+        LoadGraphControls();
+
+        IsLoading = false;
         Logger.Write("GraphsPage initialized");
     }
 
@@ -36,13 +50,9 @@ public partial class GraphsPage : INavigableView<GraphsViewModel>
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="mainWindowViewModel"></param>
-    public void LoadGraphControls(MainWindowViewModel mainWindowViewModel)
+    public void LoadGraphControls()
     {
-        List<HardwareSensor> sensors = GetEnabledGraphSensors(mainWindowViewModel);
-
-        // Clear existing controls (there shouldnt be any on first launch)
-        ClearControls();
+        List<HardwareSensor> sensors = GetEnabledGraphSensors();
 
         if (sensors.Count == 0)
         {
@@ -80,7 +90,7 @@ public partial class GraphsPage : INavigableView<GraphsViewModel>
         for (int i = 0; i < sensors.Count; i++)
         {
             var sensor = sensors[i];
-            var viewModel = new GraphViewModel(mainWindowViewModel, sensor);
+            var viewModel = new GraphViewModel(_mainWindowViewModel, sensor);
             var graphControl = new GraphUserControl(viewModel);
 
             var card = new CardAction
@@ -102,21 +112,38 @@ public partial class GraphsPage : INavigableView<GraphsViewModel>
     }
 
     /// <summary>
-    /// 
+    /// Helper function: Concat saved sensors (settings) with global sensors where IsGraphEnabled = true
     /// </summary>
     /// <param name="mainWindowViewModel"></param>
     /// <returns></returns>
-    private List<HardwareSensor> GetEnabledGraphSensors(MainWindowViewModel mainWindowViewModel)
+    private List<HardwareSensor> GetEnabledGraphSensors()
     {
-        if (mainWindowViewModel.HwMonSvc == null)
+        if (_mainWindowViewModel.HwMonSvc == null)
             return [];
 
-        return mainWindowViewModel.HwMonSvc.MbSensors?.Where(s => s.IsGraphEnabled)
-            .Concat(mainWindowViewModel.HwMonSvc.CpuSensors?.Where(s => s.IsGraphEnabled) ?? [])
-            .Concat(mainWindowViewModel.HwMonSvc.GpuSensors?.Where(s => s.IsGraphEnabled) ?? [])
-            .Concat(mainWindowViewModel.HwMonSvc.MemorySensors?.Where(s => s.IsGraphEnabled) ?? [])
-            .Concat(mainWindowViewModel.HwMonSvc.StorageSensors?.Where(s => s.IsGraphEnabled) ?? [])
+        // -------------------------------------------------------------------------------------------
+        // Check settings first
+
+        List<string>? graphedSensorIdentifiers = App.SettingsMgr?.Settings?.GraphedSensorIdentifiers;
+        List<HardwareSensor> graphedSensors = [];
+
+        if (graphedSensorIdentifiers != null)
+            graphedSensors = graphedSensorIdentifiers
+                .Select(id => _mainWindowViewModel.HwMonSvc.AllSensors?.FirstOrDefault(s => s.Identifier.ToString() == id))
+                .Where(s => s != null)
+                .Cast<HardwareSensor>()
+                .ToList();
+
+        // -------------------------------------------------------------------------------------------
+        // Concat saved sensors with currently enabled sensors
+
+        List<HardwareSensor> graphedSensorsConcat = _mainWindowViewModel.HwMonSvc.AllSensors?
+            .Where(s => s.IsGraphEnabled)
+            .Concat(graphedSensors)
             .ToList() ?? [];
+
+        Logger.Write($"{graphedSensorsConcat.Count} graphed sensor(s) found in settings & matched to available system sensors");
+        return graphedSensorsConcat;
     }
 
     // -------------------------------------------------------------------------------------------
@@ -128,6 +155,9 @@ public partial class GraphsPage : INavigableView<GraphsViewModel>
     /// </summary>
     public void ClearControls()
     {
+        if (ContentGrid == null)
+            return;
+
         ContentGrid.Children.Clear();
         ContentGrid.RowDefinitions.Clear();
         ContentGrid.ColumnDefinitions.Clear();
@@ -135,7 +165,25 @@ public partial class GraphsPage : INavigableView<GraphsViewModel>
     }
 
     // -------------------------------------------------------------------------------------------
-    // Graph Drag and Drop Support
+    // Navigation
+    // -------------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// Refresh controls on navigation change
+    /// </summary>
+    public void OnNavigatedTo()
+    {
+        ClearControls();
+        LoadGraphControls();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void OnNavigatedFrom() { }
+
+    // -------------------------------------------------------------------------------------------
+    // Graph Drag and Drop Support (WIP)
     // -------------------------------------------------------------------------------------------
 
     /// <summary>
