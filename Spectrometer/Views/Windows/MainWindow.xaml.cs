@@ -50,16 +50,27 @@ public partial class MainWindow : INavigationWindow
     /// </summary>
     private async void InitializeAsync()
     {
-        // -------------------------------------------------------------------------------------------
-        // Check for App Updates
-        // Is the auto-update setting true, and have we not asked in the last 48 hours?
+        await CheckForUpdates();
+    }
 
+    // -------------------------------------------------------------------------------------------
+    /// <summary>
+    /// Check for App Updates
+    /// Is the auto-update setting true, and have we not asked in the last 48 hours?
+    /// </summary>
+    private async Task CheckForUpdates()
+    {
         bool automaticallyCheckForUpdates = App.SettingsMgr?.Settings?.AutomaticallyCheckForUpdates ?? true;
 
         DateTime? lastUpdateDefer = App.SettingsMgr?.Settings?.LastUpdateDefer;
         double hoursSinceLastDefer = lastUpdateDefer.HasValue ? (DateTime.Now - lastUpdateDefer.Value).TotalHours : 0;
 
-        if (automaticallyCheckForUpdates && lastUpdateDefer != null && hoursSinceLastDefer > 48)
+        // -------------------------------------------------------------------------------------------
+        // Check for updates if auto-update is enabled
+        // .. and LastUpdateDefer is either default value (minvalue) or greater than 48 hours ago
+
+        if (automaticallyCheckForUpdates
+            && (lastUpdateDefer == DateTime.MinValue || hoursSinceLastDefer > 48))
         {
             AppUpdateManager updateManager = new();
             if (!await updateManager.IsUpdateAvailable())
@@ -102,6 +113,10 @@ public partial class MainWindow : INavigationWindow
                 Logger.Write("User deferred update; asking again in 48 hours");
             }
         }
+
+        // -------------------------------------------------------------------------------------------
+        // Skip update check
+
         else
         {
             if (!automaticallyCheckForUpdates)
@@ -109,7 +124,6 @@ public partial class MainWindow : INavigationWindow
             else if (hoursSinceLastDefer < 48)
                 Logger.Write("Skipping update check; last check was less than 48 hours ago");
         }
-
     }
 
     // ------------------------------------------------------------------------------------------------

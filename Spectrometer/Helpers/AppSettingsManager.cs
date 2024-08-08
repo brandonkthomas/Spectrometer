@@ -82,7 +82,7 @@ public class AppSettingsManager
                 PollingRate = 1750,
                 StartWithWindows = false,
                 AutomaticallyCheckForUpdates = true,
-                LastUpdateDefer = null,
+                LastUpdateDefer = DateTime.MinValue,
                 PinnedSensorIdentifiers = [],
                 GraphedSensorIdentifiers = []
             };
