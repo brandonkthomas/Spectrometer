@@ -158,8 +158,6 @@ public partial class GraphViewModel : ObservableObject
 
                 Sensor = sensor;
                 OnPropertyChanged(nameof(Sensor)); // update sensor value textblock in UI
-
-                Logger.Write($"{sensor.Name},{sensor.Value}");
             }
         }
     }
