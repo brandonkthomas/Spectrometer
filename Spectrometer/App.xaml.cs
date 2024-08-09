@@ -80,6 +80,9 @@ public partial class App
             // Hardware monitor service (HOSTED)
             services.AddHostedService<HardwareMonitorService>();
 
+            // Logging service (HOSTED)
+            services.AddHostedService<LoggingService>();
+
             // Page resolver service
             services.AddSingleton<IPageService, PageService>();
 
@@ -88,9 +91,6 @@ public partial class App
 
             // TaskBar manipulation
             services.AddSingleton<ITaskBarService, TaskBarService>();
-
-            // Logging service
-            services.AddSingleton<LoggingService>();
 
             // Service containing navigation, same as INavigationWindow... but without window
             services.AddSingleton<INavigationService, NavigationService>();
@@ -174,9 +174,7 @@ public partial class App
     /// </summary>
     private async void OnExit(object sender, ExitEventArgs e)
     {
-        // HardwareMonitorService is stopped by HostedService
-
-        GetService<LoggingService>()?.Dispose();
+        // HardwareMonitorService & LoggingService are auto-stopped by IHostedService inheritance
 
         await _host.StopAsync();
         _host.Dispose();
@@ -189,6 +187,7 @@ public partial class App
     private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
         // For more info see https://docs.microsoft.com/en-us/dotnet/api/system.windows.application.dispatcherunhandledexception?view=windowsdesktop-6.0
+        LogUnhandledException(e.Exception);
     }
 
     // -------------------------------------------------------------------------------------------

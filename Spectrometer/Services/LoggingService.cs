@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Hosting;
 using System.Diagnostics;
 using System.IO;
 
@@ -7,11 +8,12 @@ namespace Spectrometer.Services;
 /// <summary>
 /// Logging service that handles writing logs to a file in appdata/roaming.
 /// </summary>
-public class LoggingService : IDisposable
+public class LoggingService : IDisposable, IHostedService
 {
     private readonly string _logDirectory = string.Empty;
     private readonly string _logFilePath = string.Empty;
     private readonly StreamWriter? _streamWriter;
+    private static LoggingService? _instance;
 
     // -------------------------------------------------------------------------------------------
     /// <summary>
@@ -19,6 +21,11 @@ public class LoggingService : IDisposable
     /// </summary>
     public LoggingService()
     {
+        if (_instance != null)
+            return; // do not allow multiple instances of LoggingService
+
+        _instance = this;
+
         try
         {
             _logDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Spectrometer\\Logs");
@@ -37,7 +44,7 @@ public class LoggingService : IDisposable
                 AutoFlush = true
             };
 
-            this.Write("Logging service started", "Logger", "Logger", 40);
+            this.Write("Logging service started", ".ctor", "LoggingService.cs", 47);
         }
         catch (Exception ex)
         {
@@ -46,9 +53,37 @@ public class LoggingService : IDisposable
         }
     }
 
-    // -------------------------------------------------------------------------------------------
     /// <summary>
     /// 
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        this.Write("LoggingService stopping...", "StopAsync", "LoggingService.cs", 73);
+        //_streamWriter?.Dispose();
+        this.Dispose();
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void Dispose() => _streamWriter?.Dispose();
+
+    // -------------------------------------------------------------------------------------------
+    /// <summary>
+    /// Rename existing log files to *_001.log (etc) & delete any log files older than 7 days.
     /// </summary>
     /// <param name="logFilePath"></param>
     private void HandleExistingLogFiles(string logFilePath)
@@ -71,7 +106,7 @@ public class LoggingService : IDisposable
                 }
             }
 
-            this.Write($"{modifiedLogs} existing log file(s) renamed", "Logger", "Logger", 74);
+            this.Write($"{modifiedLogs} existing log file(s) renamed", "HandleExistingLogFiles", "LoggingService.cs", 109);
         }
 
         // -------------------------------------------------------------------------------------------
@@ -89,12 +124,12 @@ public class LoggingService : IDisposable
         }
 
         if (deletedLogs > 0)
-            this.Write($"{deletedLogs} log file(s) older than 7 days deleted", "Logger", "Logger", 92);
+            this.Write($"{deletedLogs} log file(s) older than 7 days deleted", "HandleExistingLogFiles", "LoggingService.cs", 127);
     }
 
     // -------------------------------------------------------------------------------------------
     /// <summary>
-    /// 
+    /// Write message to log file and debug output.
     /// </summary>
     /// <param name="message"></param>
     public void Write(string message, string memberName, string filePath, int lineNumber)
@@ -106,7 +141,7 @@ public class LoggingService : IDisposable
 
     // -------------------------------------------------------------------------------------------
     /// <summary>
-    /// 
+    /// Write warning to log file and debug output.
     /// </summary>
     /// <param name="message"></param>
     public void WriteWarn(string message, string memberName, string filePath, int lineNumber)
@@ -118,7 +153,7 @@ public class LoggingService : IDisposable
 
     // -------------------------------------------------------------------------------------------
     /// <summary>
-    /// 
+    /// Write exception to log file and debug output.
     /// </summary>
     /// <param name="ex"></param>
     public void WriteExc(Exception ex, string memberName, string filePath, int lineNumber)
@@ -128,10 +163,18 @@ public class LoggingService : IDisposable
         Debug.WriteLine(logMessage);
     }
 
-    private string FormatLogMessage(string level, string message, string memberName, string filePath, int lineNumber)
+    // -------------------------------------------------------------------------------------------
+    /// <summary>
+    /// Helper function to format log messages.
+    /// </summary>
+    /// <param name="level"></param>
+    /// <param name="message"></param>
+    /// <param name="memberName"></param>
+    /// <param name="filePath"></param>
+    /// <param name="lineNumber"></param>
+    /// <returns></returns>
+    private static string FormatLogMessage(string level, string message, string memberName, string filePath, int lineNumber)
     {
         return $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}{(level == "" ? "" : $" [{level}]")} - {Path.GetFileName(filePath)}.{memberName}:{lineNumber} - {message}";
     }
-
-    public void Dispose() => _streamWriter?.Dispose();
 }
