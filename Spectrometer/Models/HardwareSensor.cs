@@ -11,44 +11,24 @@ namespace Spectrometer.Models;
 /// Inherits LibreHardwareMonitor.Hardware.ISensor
 /// Used in collections populated by HardwareMonitorService
 /// </summary>
-public partial class HardwareSensor : ObservableObject, ISensor
+public partial class HardwareSensor(ISensor sensor) : ObservableObject, ISensor
 {
-    // -------------------------------------------------------------------------------------------
-    // ISensor => HardwareSensor constructor
-
-    public HardwareSensor(ISensor sensor)
-    {
-        Control = sensor.Control;
-        Hardware = sensor.Hardware;
-        Identifier = sensor.Identifier;
-        Index = sensor.Index;
-        IsDefaultHidden = sensor.IsDefaultHidden;
-        Max = sensor.Max;
-        Min = sensor.Min;
-        Name = sensor.Name;
-        Parameters = sensor.Parameters;
-        SensorType = sensor.SensorType;
-        Value = sensor.Value;
-        Values = sensor.Values;
-        ValuesTimeWindow = sensor.ValuesTimeWindow;
-    }
-
     // -------------------------------------------------------------------------------------------
     // ISensor Properties
 
-    public IControl Control { get; }
-    public IHardware Hardware { get; }
-    public Identifier Identifier { get; set; }
-    public int Index { get; }
-    public bool IsDefaultHidden { get; }
-    public float? Max { get; set; }
-    public float? Min { get; set; }
-    public string Name { get; set; }
-    public IReadOnlyList<IParameter> Parameters { get; }
-    public SensorType SensorType { get; }
-    public float? Value { get; set; }
-    public IEnumerable<SensorValue> Values { get; }
-    public TimeSpan ValuesTimeWindow { get; set; }
+    public IControl Control { get; } = sensor.Control;
+    public IHardware Hardware { get; } = sensor.Hardware;
+    public Identifier Identifier { get; set; } = sensor.Identifier;
+    public int Index { get; } = sensor.Index;
+    public bool IsDefaultHidden { get; } = sensor.IsDefaultHidden;
+    public float? Max { get; set; } = sensor.Max;
+    public float? Min { get; set; } = sensor.Min;
+    public string Name { get; set; } = sensor.Name;
+    public IReadOnlyList<IParameter> Parameters { get; } = sensor.Parameters;
+    public SensorType SensorType { get; } = sensor.SensorType;
+    public float? Value { get; set; } = sensor.Value;
+    public IEnumerable<SensorValue> Values { get; } = sensor.Values;
+    public TimeSpan ValuesTimeWindow { get; set; } = sensor.ValuesTimeWindow;
 
     public void ResetMin() => Min = null;
     public void ResetMax() => Max = null;

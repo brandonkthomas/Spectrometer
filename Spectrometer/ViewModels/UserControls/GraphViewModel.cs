@@ -23,7 +23,7 @@ public partial class GraphViewModel : ObservableObject
     public ObservableCollection<ISeries> Series { get; set; }
     public Axis[] XAxes { get; set; }
     public Axis[] YAxes { get; set; }
-    public object Sync { get; } = new object();
+    public object Sync { get; } = new();
     public bool IsReading { get; set; } = true;
     public string ChartTitle { get; set; } = string.Empty;
     public HardwareSensor Sensor { get; set; }
@@ -42,9 +42,8 @@ public partial class GraphViewModel : ObservableObject
     /// <param name="sensor"></param>
     public GraphViewModel(MainWindowViewModel mainWindowViewModel, HardwareSensor sensor)
     {
+        _values = [];
         _mainWindowViewModel = mainWindowViewModel;
-        _values = new ObservableCollection<DateTimePoint>();
-
         Sensor = sensor;
 
         // -------------------------------------------------------------------------------------------
@@ -61,8 +60,8 @@ public partial class GraphViewModel : ObservableObject
         // -------------------------------------------------------------------------------------------
         // Graph Configuration
 
-        Series = new ObservableCollection<ISeries>
-        {
+        Series =
+        [
             new LineSeries<DateTimePoint>
             {
                 Values = _values,
@@ -72,7 +71,7 @@ public partial class GraphViewModel : ObservableObject
                 GeometryStroke = null,
                 Name = Sensor.Name,
             }
-        };
+        ];
 
         XAxes = 
         [ 
@@ -121,23 +120,7 @@ public partial class GraphViewModel : ObservableObject
     private void StartReadingData()
     {
         if (_mainWindowViewModel?.HwMonSvc?.AllSensors != null) // HwMonSvc and AllSensors are ObservableObjects
-        {
             _mainWindowViewModel.HwMonSvc.PropertyChanged += HwMonSvc_PropertyChanged;
-
-            try
-            {
-                foreach (var sensor in _mainWindowViewModel.HwMonSvc.AllSensors)
-                    if (sensor.Name == Sensor.Name)
-                    {
-                        sensor.PropertyChanged += Sensor_PropertyChanged;
-                        break;
-                    }
-            }
-            catch (Exception ex)
-            {
-                Logger.WriteExc(ex);
-            }
-        }
     }
 
     // -------------------------------------------------------------------------------------------
@@ -153,11 +136,16 @@ public partial class GraphViewModel : ObservableObject
 
         ObservableCollection<HardwareSensor>? sensors = e.PropertyName switch
         {
+            nameof(HardwareMonitorService.AllSensors) => _mainWindowViewModel.HwMonSvc?.AllSensors,
+            nameof(HardwareMonitorService.PinnedSensors) => _mainWindowViewModel.HwMonSvc?.PinnedSensors,
+            nameof(HardwareMonitorService.MbSensors) => _mainWindowViewModel.HwMonSvc?.MbSensors,
             nameof(HardwareMonitorService.CpuSensors) => _mainWindowViewModel.HwMonSvc?.CpuSensors,
             nameof(HardwareMonitorService.GpuSensors) => _mainWindowViewModel.HwMonSvc?.GpuSensors,
-            nameof(HardwareMonitorService.MbSensors) => _mainWindowViewModel.HwMonSvc?.MbSensors,
             nameof(HardwareMonitorService.MemorySensors) => _mainWindowViewModel.HwMonSvc?.MemorySensors,
             nameof(HardwareMonitorService.StorageSensors) => _mainWindowViewModel.HwMonSvc?.StorageSensors,
+            nameof(HardwareMonitorService.NetworkSensors) => _mainWindowViewModel.HwMonSvc?.NetworkSensors,
+            nameof(HardwareMonitorService.ControllerSensors) => _mainWindowViewModel.HwMonSvc?.ControllerSensors,
+            nameof(HardwareMonitorService.PsuSensors) => _mainWindowViewModel.HwMonSvc?.PsuSensors,
             _ => null,
         };
 
@@ -166,25 +154,13 @@ public partial class GraphViewModel : ObservableObject
             HardwareSensor? sensor = sensors.FirstOrDefault(s => s.Name == Sensor.Name);
             if (sensor != null)
             {
-                sensor.PropertyChanged += Sensor_PropertyChanged;
                 UpdateChart(sensor.Value ?? float.NaN);
-            }
-        }
-    }
 
-    // -------------------------------------------------------------------------------------------
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private void Sensor_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(HardwareSensor.Value))
-        {
-            HardwareSensor? sensor = sender as HardwareSensor;
-            if (sensor != null)
-                UpdateChart(sensor.Value ?? float.NaN);
+                Sensor = sensor;
+                OnPropertyChanged(nameof(Sensor)); // update sensor value textblock in UI
+
+                Logger.Write($"{sensor.Name},{sensor.Value}");
+            }
         }
     }
 
