@@ -1,6 +1,9 @@
 ﻿using Spectrometer.Helpers;
 using Spectrometer.Models;
 using Spectrometer.ViewModels.Windows;
+using System.Diagnostics;
+using System.IO;
+using System.Runtime.InteropServices;
 using Wpf.Ui;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
@@ -50,7 +53,8 @@ public partial class MainWindow : INavigationWindow
     /// </summary>
     private async void InitializeAsync()
     {
-        await CheckForUpdates();
+        await CheckForUpdatesAsync();
+        await InstallAppAsync();
     }
 
     // -------------------------------------------------------------------------------------------
@@ -58,7 +62,7 @@ public partial class MainWindow : INavigationWindow
     /// Check for App Updates
     /// Is the auto-update setting true, and have we not asked in the last 48 hours?
     /// </summary>
-    private async Task CheckForUpdates()
+    private async Task CheckForUpdatesAsync()
     {
         bool automaticallyCheckForUpdates = App.SettingsMgr?.Settings?.AutomaticallyCheckForUpdates ?? true;
 
@@ -73,7 +77,7 @@ public partial class MainWindow : INavigationWindow
             && (lastUpdateDefer == DateTime.MinValue || hoursSinceLastDefer > 48))
         {
             AppUpdateManager updateManager = new();
-            if (!await updateManager.IsUpdateAvailable())
+            if (!await updateManager.IsUpdateAvailableAsync())
                 return;
 
             // -------------------------------------------------------------------------------------------
@@ -103,7 +107,7 @@ public partial class MainWindow : INavigationWindow
 
             if (contentDialogResult == ContentDialogResult.Primary)
             {
-                await updateManager.DownloadAndInstallLatestVersion();
+                await updateManager.DownloadAndInstallLatestVersionAsync();
             }
             else if (App.SettingsMgr?.Settings is not null)
             {
@@ -124,6 +128,129 @@ public partial class MainWindow : INavigationWindow
             else if (hoursSinceLastDefer < 48)
                 Logger.Write("Skipping update check; last check was less than 48 hours ago");
         }
+    }
+
+    // -------------------------------------------------------------------------------------------
+    /// <summary>
+    /// Checks if the application is located in the Downloads folder, 
+    /// and prompts the user to move it to AppData\Roaming if it is.
+    /// </summary>
+    private async Task InstallAppAsync()
+    {
+        if (App.SettingsMgr?.Settings?.IsInstallDeclined ?? false)
+            return; // user has declined pseudo-install (or we don't have settings yet)
+
+        string currentExePath = Process.GetCurrentProcess().MainModule?.FileName ?? string.Empty;
+        string downloadsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+
+        if (!currentExePath.StartsWith(downloadsPath, StringComparison.OrdinalIgnoreCase))
+            return; // nothing to do
+
+        Logger.Write("Executable located in Downloads folder. Prompting for pseudo-install...");
+
+        ContentDialogService contentDialogService = new();
+        contentDialogService.SetDialogHost(RootContentDialog);
+
+        var contentDialogResult = await contentDialogService.ShowAsync(
+            new ContentDialog()
+            {
+                Title = "Install Application",
+                Content = "The application is currently located in your Downloads folder.\n\nWould you like to install it and add a Start Menu shortcut?",
+                PrimaryButtonText = "Yes",
+                CloseButtonText = "Never",
+                IsSecondaryButtonEnabled = false,
+                DialogHeight = 240,
+                DialogMaxHeight = 240
+            },
+            CancellationToken.None
+        );
+
+        if (contentDialogResult == ContentDialogResult.Primary)
+        {
+            string targetPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Spectrometer");
+            Directory.CreateDirectory(targetPath);
+            string newExePath = Path.Combine(targetPath, Path.GetFileName(currentExePath));
+
+            try
+            {
+                File.Move(currentExePath, newExePath, overwrite: true);
+
+                CreateShortcutInStartMenu(newExePath);
+
+                Process.Start(new ProcessStartInfo(newExePath)
+                {
+                    UseShellExecute = true,
+                    Verb = "runas"
+                });
+
+                if (App.SettingsMgr?.Settings is not null)
+                {
+                    App.SettingsMgr.Settings.IsInstallDeclined = true; // we just moved; do not ask again
+                    App.SettingsMgr.SaveSettings();
+                }
+
+                Application.Current.Shutdown(); // properly close this instance
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteExc(ex);
+            }
+        }
+        else if (App.SettingsMgr?.Settings is not null)
+        {
+            App.SettingsMgr.Settings.IsInstallDeclined = true;
+            App.SettingsMgr.SaveSettings();
+
+            Logger.Write("User declined pseudo-install. We won't ask again. Continuing...");
+        }
+    }
+
+    // -------------------------------------------------------------------------------------------
+    /// <summary>
+    /// Creates a shortcut to the application in the Start Menu Programs folder.
+    /// </summary>
+    /// <param name="applicationPath">The path to the application's executable.</param>
+    private void CreateShortcutInStartMenu(string applicationPath)
+    {
+        Logger.Write("Creating Start Menu shortcut...");
+
+        string startMenuPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Programs");
+        string shortcutPath = Path.Combine(startMenuPath, "Spectrometer.lnk");
+
+        // Create the WScript.Shell COM object to interact with Windows Script Host
+        Type? shellType = Type.GetTypeFromProgID("WScript.Shell");
+        if (shellType == null)
+        {
+            Logger.WriteWarn("Failed to create WScript.Shell COM object.");
+            return;
+        }
+
+        dynamic? shell = Activator.CreateInstance(shellType);
+        if (shell == null)
+        {
+            Logger.WriteWarn("Failed to instantiate WScript.Shell.");
+            return;
+        }
+
+        var shortcut = shell.CreateShortcut(shortcutPath);
+        if (shortcut == null)
+        {
+            Logger.WriteWarn("Failed to create shortcut object.");
+            Marshal.ReleaseComObject(shell);
+            return;
+        }
+
+        shortcut.TargetPath = applicationPath;
+        shortcut.WorkingDirectory = Path.GetDirectoryName(applicationPath);
+        shortcut.WindowStyle = 1;  // Normal window
+        shortcut.Description = "Shortcut for Spectrometer application";
+        shortcut.Save();
+
+        Logger.Write("Start Menu shortcut created");
+
+        // Cleanup
+        Marshal.ReleaseComObject(shortcut);
+        Marshal.ReleaseComObject(shell);
     }
 
     // ------------------------------------------------------------------------------------------------

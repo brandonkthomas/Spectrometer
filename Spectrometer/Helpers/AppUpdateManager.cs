@@ -20,7 +20,7 @@ public class AppUpdateManager
     /// 
     /// </summary>
     /// <returns></returns>
-    public async Task<bool> IsUpdateAvailable()
+    public async Task<bool> IsUpdateAvailableAsync()
     {
         Logger.Write("Polling GitHub for available app updates...");
 
@@ -65,7 +65,7 @@ public class AppUpdateManager
     /// <summary>
     /// Downloads the latest version executable from GitHub releases.
     /// </summary>
-    public async Task DownloadAndInstallLatestVersion()
+    public async Task DownloadAndInstallLatestVersionAsync()
     {
         try
         {
@@ -171,7 +171,7 @@ public class AppUpdateManager
             //if (File.Exists(backupPath))
             //    File.Delete(backupPath); // 2024-08-07: This doesn't seem to work ("permission denied"). TBD
 
-            Environment.Exit(0);
+            Application.Current.Shutdown(); // properly close this instance
         }
         catch (Exception ex)
         {

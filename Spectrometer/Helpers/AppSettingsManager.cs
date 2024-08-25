@@ -17,6 +17,7 @@ public class AppSettings
     public bool StartWithWindows { get; set; }
     public bool AutomaticallyCheckForUpdates { get; set; } = true;
     public DateTime? LastUpdateDefer { get; set; }
+    public bool IsInstallDeclined { get; set; } = false;
     public List<string> PinnedSensorIdentifiers { get; set; } = [];
     public List<string> GraphedSensorIdentifiers { get; set; } = [];
 }
