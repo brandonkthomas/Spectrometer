@@ -79,7 +79,7 @@ jobs:
       run: dotnet publish -p:PublishProfile=PackagedApplication -o ./publish
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: Spectrometer
         path: ./publish/Spectrometer.exe
@@ -91,7 +91,7 @@ jobs:
         
     - name: Create GitHub Release
       id: create_release
-      uses: actions/create-release@v1
+      uses: actions/create-release@v4
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -101,7 +101,7 @@ jobs:
         prerelease: false
 
     - name: Upload release asset
-      uses: actions/upload-release-asset@v1
+      uses: actions/upload-release-asset@v4
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
