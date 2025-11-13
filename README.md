@@ -11,4 +11,6 @@
 
 Modern hardware monitor for Windows.
 
-Currently under active development.
+Includes list view of all system sensors, customizable graph view, and various customization settings.
+
+This project is incomplete; more features are planned for future implementation.
