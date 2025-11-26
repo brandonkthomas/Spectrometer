@@ -1,7 +1,7 @@
 <div align="center">
   <a href="https://github.com/brandonkthomas/Spectrometer">
     <picture>
-      <img width="200" alt="icon" src="Spectrometer/Assets/Branding/icon.png">
+      <img width="200" alt="icon" src="Spectrometer/Assets/Branding/icon-crop.png">
     </picture>
   </a>
 
